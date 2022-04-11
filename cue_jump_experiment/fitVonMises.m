@@ -22,7 +22,7 @@ angular_midline_distances_2pi = mod(angular_midline_distances,2*pi);
 
 %2) Create the fit function
 fo = fitoptions('Method','NonlinearLeastSquares',...
-    'Lower',[0,0,0,-inf],... % [a,c,k,u]
+    'Lower',[0,-inf,0,-inf],... % [a,c,k,u]
     'StartPoint',[1,0,1,0]);
 
 ft = fittype('a*exp(k*cos(x-u))+c','options',fo);
