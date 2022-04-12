@@ -331,7 +331,63 @@ ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/CueJump-Experime
 
 
 ##### bump pars ratio and pref index
-bump_pars_ratio_data <- read.csv("bump_pars_ratio_data.csv")
+# bump_pars_ratio_data <- read.csv("bump_pars_ratio_data.csv")
+# 
+# bump_mag_ratio_ordered_data <- bump_pars_ratio_data %>%
+#   select(bm_ratio=initial_bm_ratio_1, starts_with("pref_")) %>%
+#   mutate(fly = 1:14) %>%
+#   pivot_longer(cols = starts_with("pref"))
+# bump_mag_ratio_ordered_data <- subset(bump_mag_ratio_ordered_data, select = -c(name))
+# colnames(bump_mag_ratio_ordered_data) <- c('bump_mag_ratio','fly','pref_ind')
+# 
+# bump_mag_ratio_and_PI_mdl <- lme(pref_ind ~ bump_mag_ratio,random=~1|fly, bump_mag_ratio_ordered_data)
+# summary(bump_mag_ratio_and_PI_mdl)
+# 
+# ggplot(bump_mag_ratio_ordered_data,aes(bump_mag_ratio, pref_ind)) + 
+#   geom_line(aes(bump_mag_ratio, pref_ind, group = fly),color = 'gray70') +
+#   geom_point() +
+#   geom_smooth(method='lm', se = FALSE, color = 'red')  +
+#   theme(panel.background = element_rect(fill=NA),
+#         text=element_text(size=22),
+#         axis.text = element_text(size=20), axis.ticks.length.x = unit(0.5, "cm"),
+#         axis.line.x = element_line(size=1.5),
+#         axis.line.y = element_line(size=1.5)) +
+#   labs(x = "Bar bump mag/ Wind bump mag", y='Bump preference index') +
+#   scale_x_continuous(breaks=1:14) +
+#   ylim(-1,1)
+# 
+# ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/CueJump-Experiment", file="bump_PI_vs_bump_mag_ratio.svg",device = 'svg', width=10, height=8)
+# 
+# 
+# bump_width_ratio_ordered_data <- bump_pars_ratio_data %>%
+#   select(bw_ratio=initial_bw_ratio_1, starts_with("pref_")) %>%
+#   mutate(fly = 1:14) %>%
+#   pivot_longer(cols = starts_with("pref"))
+# bump_width_ratio_ordered_data <- subset(bump_width_ratio_ordered_data, select = -c(name))
+# colnames(bump_width_ratio_ordered_data) <- c('bump_width_ratio','fly','pref_ind')
+# 
+# bump_width_ratio_and_PI_mdl <- lme(pref_ind ~ bump_width_ratio,random=~1|fly, bump_width_ratio_ordered_data)
+# summary(bump_width_ratio_and_PI_mdl)
+# 
+# ggplot(bump_width_ratio_ordered_data,aes(bump_width_ratio, pref_ind)) + 
+#   geom_line(aes(bump_width_ratio, pref_ind, group = fly),color = 'gray70') +
+#   geom_point() +
+#   geom_smooth(method='lm', se = FALSE, color = 'red')  +
+#   theme(panel.background = element_rect(fill=NA),
+#         text=element_text(size=22),
+#         axis.text = element_text(size=20), axis.ticks.length.x = unit(0.5, "cm"),
+#         axis.line.x = element_line(size=1.5),
+#         axis.line.y = element_line(size=1.5)) +
+#   labs(x = "Bar bump width/ Wind bump width", y='Bump preference index') +
+#   scale_x_continuous(breaks=1:14) +
+#   ylim(-1,1)
+# 
+# ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/CueJump-Experiment", file="bump_PI_vs_bump_width_ratio.svg",device = 'svg', width=10, height=8)
+
+
+
+#Using the opposite ratio
+bump_pars_ratio_data <- read.csv("bump_pars_ratio_data2.csv")
 
 bump_mag_ratio_ordered_data <- bump_pars_ratio_data %>%
   select(bm_ratio=initial_bm_ratio_1, starts_with("pref_")) %>%
@@ -352,7 +408,7 @@ ggplot(bump_mag_ratio_ordered_data,aes(bump_mag_ratio, pref_ind)) +
         axis.text = element_text(size=20), axis.ticks.length.x = unit(0.5, "cm"),
         axis.line.x = element_line(size=1.5),
         axis.line.y = element_line(size=1.5)) +
-  labs(x = "Bar bump mag/ Wind bump mag", y='Bump preference index') +
+  labs(x = "Wind bump mag/Bar bump mag", y='Bump preference index') +
   scale_x_continuous(breaks=1:14) +
   ylim(-1,1)
 
@@ -378,7 +434,7 @@ ggplot(bump_width_ratio_ordered_data,aes(bump_width_ratio, pref_ind)) +
         axis.text = element_text(size=20), axis.ticks.length.x = unit(0.5, "cm"),
         axis.line.x = element_line(size=1.5),
         axis.line.y = element_line(size=1.5)) +
-  labs(x = "Bar bump width/ Wind bump width", y='Bump preference index') +
+  labs(x = "Wind bump width/ bar bump width", y='Bump preference index') +
   scale_x_continuous(breaks=1:14) +
   ylim(-1,1)
 
@@ -389,16 +445,16 @@ ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/CueJump-Experime
 
 
 ### Rotational speed around jumps
-rot_speed_abj <- read.csv("rot_speed_abj.csv",header = FALSE)
-
-ggplot(rot_speed_abj) + 
-  geom_smooth(method='lm', se = FALSE, color = 'red')  +
-  theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=22),
-        axis.text = element_text(size=20), axis.ticks.length.x = unit(0.5, "cm"),
-        axis.line.x = element_line(size=1.5),
-        axis.line.y = element_line(size=1.5)) +
-  labs(y = 'Rotational speed (deg/s)') +
-  scale_x_continuous(breaks=1:14) +
-  ylim(-1,1)
+# rot_speed_abj <- read.csv("rot_speed_abj.csv",header = FALSE)
+# 
+# ggplot(rot_speed_abj) + 
+#   geom_smooth(method='lm', se = FALSE, color = 'red')  +
+#   theme(panel.background = element_rect(fill=NA),
+#         text=element_text(size=22),
+#         axis.text = element_text(size=20), axis.ticks.length.x = unit(0.5, "cm"),
+#         axis.line.x = element_line(size=1.5),
+#         axis.line.y = element_line(size=1.5)) +
+#   labs(y = 'Rotational speed (deg/s)') +
+#   scale_x_continuous(breaks=1:14) +
+#   ylim(-1,1)
 

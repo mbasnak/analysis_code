@@ -652,25 +652,25 @@ for folder = 1:length(foldernames)
                 good_fit = continuous_data.adj_rs>0.45;
                 
                 
-                %% Offset and mean bump parameters for initial bouts (last four min of each cue)
+                %% Offset and mean bump parameters for initial bouts (last 3 min of each cue)
                 
                 if configuration == 1
                     
-                    initial_bar_period = ceil(panels_change_frames(1)-240*sec_to_frames):panels_change_frames(2)-1;
+                    initial_bar_period = ceil(panels_change_frames(1)-180*sec_to_frames):panels_change_frames(2)-1;
                     initial_bar_moving = continuous_data.total_mvt_ds(initial_bar_period) > 25;
                     initial_bar_good_fit = continuous_data.adj_rs(initial_bar_period) > 0.45;
                     initial_bar_offset = bar_offset(initial_bar_period);
-                    initial_bar_offset = initial_bar_offset(initial_bar_moving & initial_bar_good_fit);
+                    initial_bar_offset = initial_bar_offset(initial_bar_moving);
                     initial_bar_bm = continuous_data.bump_magnitude(initial_bar_period);
                     initial_bar_bm = initial_bar_bm(initial_bar_moving & initial_bar_good_fit);
                     initial_bar_bw = continuous_data.bump_width(initial_bar_period);
                     initial_bar_bw = initial_bar_bw(initial_bar_moving & initial_bar_good_fit);
                     
-                    initial_wind_period = ceil(panels_change_frames(2)-240*sec_to_frames):panels_change_frames(2)-1;
+                    initial_wind_period = ceil(panels_change_frames(2)-180*sec_to_frames):panels_change_frames(2)-1;
                     initial_wind_moving = continuous_data.total_mvt_ds(initial_wind_period) > 25;
                     initial_wind_good_fit = continuous_data.adj_rs(initial_wind_period) > 0.45;
                     initial_wind_offset = wind_offset(initial_wind_period);
-                    initial_wind_offset = initial_wind_offset(initial_wind_moving & initial_wind_good_fit);
+                    initial_wind_offset = initial_wind_offset(initial_wind_moving);
                     initial_wind_bm = continuous_data.bump_magnitude(initial_wind_period);
                     initial_wind_bm = initial_wind_bm(initial_wind_moving & initial_wind_good_fit);
                     initial_wind_bw = continuous_data.bump_width(initial_wind_period);

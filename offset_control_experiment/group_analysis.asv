@@ -16,15 +16,15 @@ end
 
 %Remove empty rows
 data = data(all(~cellfun(@isempty,struct2cell(data))));
+% data2 =  squeeze(cell2mat(struct2cell(data)));
+% 
+% %Reorder to make it bar - wind - empty
+% reordered_data = data2;
+% reordered_data(2,:) = data2(3,:);
+% reordered_data(3,:) = data2(2,:);
 
 reordered_data = [data(:).offset_precision_bar;data(:).offset_precision_wind;data(:).offset_precision_empty];
-
-%Save data for stats
-all_offset_precision = [data(:).offset_precision_bar,data(:).offset_precision_wind,data(:).offset_precision_empty];
-block_type = [repelem(1,1,length(data)),repelem(2,1,length(data)),repelem(3,1,length(data))];
-fly_num = [1:10,1:10,1:10];
-offset_precision_data = table(all_offset_precision',block_type',fly_num','VariableNames',{'offset_precision','block','fly'});
-writetable(offset_precision_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Offset_control\data\offset_precision_data.csv');
+offset
 
 %% Plot offset precision
 
@@ -71,11 +71,6 @@ ylabel('Bump width');
 saveas(gcf,[path,'\groupPlots\bump_pars.png']);
 saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Offset-Control\bump_pars.svg');
 
-%Save data for stats
-all_bump_mag = [data(:).bump_mag_bar,data(:).bump_mag_wind,data(:).bump_mag_empty];
-all_bump_width = [data(:).bump_width_bar,data(:).bump_width_wind,data(:).bump_width_empty];
-bump_pars_data = table(all_bump_mag',all_bump_width',block_type',fly_num','VariableNames',{'bump_mag','bump_width','block','fly'});
-writetable(bump_pars_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Offset_control\data\bump_pars_data.csv');
 
 %% Plot relationship between offset precision and bump parameters
 

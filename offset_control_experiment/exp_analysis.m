@@ -76,23 +76,23 @@ for file = 1:length(fileNames)
         
         %store relevant data
         %determine type of trial
-        sid = str2num(fileNames(file).name(25));
+        sid = str2num(fileNames(file).name(25:end-10));
         
         if sid == session_info.session_info.empty
             trial = 'empty';
-            offset_empty = offset;
-            bump_mag_empty = nanmean(continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
-            bump_width_empty = nanmean(continuous_data.bump_width(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
+            offset_empty = offset(continuous_data.total_mvt_ds > 25);
+            bump_mag_empty = nanmean(continuous_data.bump_magnitude(continuous_data.adj_rs>=0.45 & continuous_data.total_mvt_ds > 25));
+            bump_width_empty = nanmean(continuous_data.bump_width(continuous_data.adj_rs>=0.45 & continuous_data.total_mvt_ds > 25));
         elseif sid == session_info.session_info.bar
             trial = 'bar';
-            offset_bar = offset;
-            bump_mag_bar = nanmean(continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
-            bump_width_bar = nanmean(continuous_data.bump_width(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
+            offset_bar = offset(continuous_data.total_mvt_ds > 25);
+            bump_mag_bar = nanmean(continuous_data.bump_magnitude(continuous_data.adj_rs>=0.45 & continuous_data.total_mvt_ds > 25));
+            bump_width_bar = nanmean(continuous_data.bump_width(continuous_data.adj_rs>=0.45 & continuous_data.total_mvt_ds > 25));
         else
             trial = 'wind';
-            offset_wind = offset;
-            bump_mag_wind = nanmean(continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
-            bump_width_wind = nanmean(continuous_data.bump_width(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
+            offset_wind = offset(continuous_data.total_mvt_ds > 25);
+            bump_mag_wind = nanmean(continuous_data.bump_magnitude(continuous_data.adj_rs>=0.45 & continuous_data.total_mvt_ds > 25));
+            bump_width_wind = nanmean(continuous_data.bump_width(continuous_data.adj_rs>=0.45 & continuous_data.total_mvt_ds > 25));
         end
         
         

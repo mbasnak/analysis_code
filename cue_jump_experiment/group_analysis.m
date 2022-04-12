@@ -1304,8 +1304,14 @@ repeated_bm_ratio = repmat(initial_bm_ratio,8,1);
 repeated_bw_ratio = repmat(initial_bw_ratio,8,1);
 bump_pars_ratio_data = table(repeated_bm_ratio',repeated_bw_ratio',PI','VariableNames',{'initial_bm_ratio','initial_bw_ratio','pref_index'});
 writetable(bump_pars_ratio_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\bump_pars_ratio_data.csv')
+repeated_bm_ratio2 = repmat(initial_bm_ratio2,8,1);
+repeated_bw_ratio2 = repmat(initial_bw_ratio2,8,1);
+bump_pars_ratio_data2 = table(repeated_bm_ratio2',repeated_bw_ratio2',PI','VariableNames',{'initial_bm_ratio','initial_bw_ratio','pref_index'});
+writetable(bump_pars_ratio_data2,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\bump_pars_ratio_data2.csv')
+
 
 %% repeat with the inverse ratio
+
 figure('Position',[100 100 1600 800]),
 subplot(1,2,1)
 plot(initial_bm_ratio2(configuration==1),pref_index(configuration==1),'ko','MarkerFaceColor','r','MarkerSize',8)
