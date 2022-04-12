@@ -203,12 +203,9 @@ for folder = 1:length(foldernames)
         
         %% Save data
         
-        all_bump_mag = [bump_mag_empty,bump_mag_wind,bump_mag_bar];
-        all_bump_width = [bump_width_empty,bump_width_wind,bump_width_bar];
-        all_yaw_speed = [yaw_speed_empty,yaw_speed_wind,yaw_speed_bar];
-        block = [repelem(1,1,length(yaw_speed_empty)),repelem(2,1,length(yaw_speed_wind)),repelem(3,1,length(yaw_speed_bar))];
-        
-        all_data = table(all_bump_mag',all_bump_width',all_yaw_speed',block','VariableNames',{'bump_mag','bump_width','yaw_speed','block'});        
+        all_mean_bump_mag = [mean_bump_mag_empty,mean_bump_mag_wind,mean_bump_mag_bar];
+        all_mean_bump_width = [mean_bump_width_empty,mean_bump_width_wind,mean_bump_width_bar];
+        all_data = table(all_bump_mag,all_bump_width,all_yaw_speed,block,'VariableNames',{'bump_mag','bump_width','yaw_speed','block'});        
         save([path,'\offset_precision_data.mat'],'offset_precision_bar','offset_precision_wind','offset_precision_empty','mean_bump_mag_bar','mean_bump_mag_wind','mean_bump_mag_empty','mean_bump_width_bar','mean_bump_width_wind','mean_bump_width_empty','mean_yaw_speed_empty','mean_yaw_speed_bar','mean_yaw_speed_wind','all_data')
         
         %%

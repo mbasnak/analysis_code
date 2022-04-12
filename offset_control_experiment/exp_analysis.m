@@ -59,17 +59,17 @@ for file = 1:length(fileNames)
         set(gca,'xticklabel',{[]})
         
         subplot(5,1,4)
-        plot(continuous_data.time(continuous_data.adj_rs>=0.5),continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5),'r.','handleVisibility','off')
+        plot(continuous_data.time(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25),continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25),'r.','handleVisibility','off')
         hold on
-        plot(continuous_data.time(continuous_data.adj_rs<0.5),continuous_data.bump_magnitude(continuous_data.adj_rs<0.5),'k.','handleVisibility','off')
+        plot(continuous_data.time(continuous_data.adj_rs<0.5 & continuous_data.total_mvt_ds > 25),continuous_data.bump_magnitude(continuous_data.adj_rs<0.5 & continuous_data.total_mvt_ds > 25),'k.','handleVisibility','off')
         title('Bump magnitude')
         xlim([0 continuous_data.time(end)]);
         set(gca,'xticklabel',{[]})
         
         subplot(5,1,5)
-        plot(continuous_data.time(continuous_data.adj_rs>=0.5),continuous_data.bump_width(continuous_data.adj_rs>=0.5),'r.','handleVisibility','off')
+        plot(continuous_data.time(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25),continuous_data.bump_width(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25),'r.','handleVisibility','off')
         hold on
-        plot(continuous_data.time(continuous_data.adj_rs<0.5),continuous_data.bump_width(continuous_data.adj_rs<0.5),'k.','handleVisibility','off')
+        plot(continuous_data.time(continuous_data.adj_rs<0.5 & continuous_data.total_mvt_ds > 25),continuous_data.bump_width(continuous_data.adj_rs<0.5 & continuous_data.total_mvt_ds > 25),'k.','handleVisibility','off')
         xlabel('Time (sec)');
         title('Bump width');
         xlim([0 continuous_data.time(end)]);
@@ -80,19 +80,22 @@ for file = 1:length(fileNames)
         
         if sid == session_info.session_info.empty
             trial = 'empty';
+            suptitle('Empty trial');
             offset_empty = offset(continuous_data.total_mvt_ds > 25);
-            bump_mag_empty = nanmean(continuous_data.bump_magnitude(continuous_data.adj_rs>=0.45 & continuous_data.total_mvt_ds > 25));
-            bump_width_empty = nanmean(continuous_data.bump_width(continuous_data.adj_rs>=0.45 & continuous_data.total_mvt_ds > 25));
+            bump_mag_empty = nanmean(continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
+            bump_width_empty = nanmean(continuous_data.bump_width(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
         elseif sid == session_info.session_info.bar
             trial = 'bar';
+            suptitle('Bar trial');
             offset_bar = offset(continuous_data.total_mvt_ds > 25);
-            bump_mag_bar = nanmean(continuous_data.bump_magnitude(continuous_data.adj_rs>=0.45 & continuous_data.total_mvt_ds > 25));
-            bump_width_bar = nanmean(continuous_data.bump_width(continuous_data.adj_rs>=0.45 & continuous_data.total_mvt_ds > 25));
+            bump_mag_bar = nanmean(continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
+            bump_width_bar = nanmean(continuous_data.bump_width(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
         else
             trial = 'wind';
+            suptitle('Wind trial');
             offset_wind = offset(continuous_data.total_mvt_ds > 25);
-            bump_mag_wind = nanmean(continuous_data.bump_magnitude(continuous_data.adj_rs>=0.45 & continuous_data.total_mvt_ds > 25));
-            bump_width_wind = nanmean(continuous_data.bump_width(continuous_data.adj_rs>=0.45 & continuous_data.total_mvt_ds > 25));
+            bump_mag_wind = nanmean(continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
+            bump_width_wind = nanmean(continuous_data.bump_width(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
         end
         
         
