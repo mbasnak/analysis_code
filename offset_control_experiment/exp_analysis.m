@@ -162,6 +162,31 @@ ylabel('Offset precision');
 %save figure
 saveas(gcf,[path,'\analysis\plots\offset_precision.png'])
 
+%% Plot bump parameters
+
+all_bump_mag = [bump_mag_empty,bump_mag_wind,bump_mag_bar];
+all_bump_width = [bump_width_empty,bump_width_wind,bump_width_bar];
+
+figure,
+subplot(1,2,1)
+plot(all_bump_mag,'-ko')
+xlim([0 4]);
+%ylim([0 1]);
+xticks([1:3]);
+xticklabels({'Empty trial','Wind trial','Bar trial'});
+ylabel('Bump magnitude');
+
+subplot(1,2,2)
+plot(all_bump_width,'-ko')
+xlim([0 4]);
+%ylim([0 1]);
+xticks([1:3]);
+xticklabels({'Empty trial','Wind trial','Bar trial'});
+ylabel('Bump width');
+
+%save figure
+saveas(gcf,[path,'\analysis\plots\bump_pars.png'])
+
 %% Save data
 
 save([path,'\analysis\offset_var_data.mat'],'offset_var_bar','offset_var_wind','offset_var_empty')
