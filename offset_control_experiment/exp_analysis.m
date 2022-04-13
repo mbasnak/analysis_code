@@ -90,7 +90,7 @@ for file = 1:length(fileNames)
             offset_bar = offset(continuous_data.total_mvt_ds > 25);
             bump_mag_bar = nanmean(continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
             bump_width_bar = nanmean(continuous_data.bump_width(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
-        else
+        elseif sid == session_info.session_info.wind
             trial = 'wind';
             suptitle('Wind trial');
             offset_wind = offset(continuous_data.total_mvt_ds > 25);
