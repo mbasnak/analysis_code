@@ -127,25 +127,6 @@ set(gca,'ThetaZeroLocation','top');
 
 saveas(gcf,[path,'\analysis\plots\offset_distribution.png'])
 
-%% Get and plot offset variability 
-
-[~, offset_var_empty] = circ_std(deg2rad(offset_empty));
-[~, offset_var_wind] = circ_std(deg2rad(offset_wind));
-[~, offset_var_bar] = circ_std(deg2rad(offset_bar));
-
-all_offset_var = [offset_var_empty,offset_var_wind,offset_var_bar];
-
-figure,
-plot(all_offset_var,'-ko')
-xlim([0 4]);
-ylim([0 3]);
-xticks([1:3]);
-xticklabels({'Empty trial','Wind trial','Bar trial'});
-ylabel('Offset variability (rad)');
-
-%save figure
-saveas(gcf,[path,'\analysis\plots\offset_var.png'])
-
 %% Get and plot offset precision
 
 offset_precision_empty = circ_r(deg2rad(offset_empty));
@@ -192,7 +173,6 @@ saveas(gcf,[path,'\analysis\plots\bump_pars.png'])
 
 %% Save data
 
-save([path,'\analysis\offset_var_data.mat'],'offset_var_bar','offset_var_wind','offset_var_empty')
 save([path,'\analysis\offset_precision_data.mat'],'offset_precision_bar','offset_precision_wind','offset_precision_empty','bump_mag_bar','bump_mag_wind','bump_mag_empty','bump_width_bar','bump_width_wind','bump_width_empty')
 
 %%

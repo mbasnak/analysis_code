@@ -22,7 +22,7 @@ angular_midline_distances_2pi = mod(angular_midline_distances,2*pi);
 
 %2) Create the fit function
 fo = fitoptions('Method','NonlinearLeastSquares',...
-    'Lower',[0,-inf,0,-inf],... % [a,c,k,u]
+    'Lower',[0,0,0,-inf],... % [a,c,k,u]
     'StartPoint',[1,0,1,0]);
 
 ft = fittype('a*exp(k*cos(x-u))+c','options',fo);
@@ -52,23 +52,23 @@ for timepoint = 1:length(dff_data)
      
     
     %7) Uncomment to plot the original data and the fit
-    figure,
-    subplot(2,1,1)
-    plot(angular_midline_distances,dff_data(timepoint,:)')
-    hold on
-    plot(angular_midline_distances,feval(model_data,angular_midline_distances))
-    %add the bump position estimate
-    plot(bump_pos(timepoint),feval(model_data,bump_pos(timepoint)),'ro')
-    xlabel('Angular distance (radians)');
-    ylabel('DF/F');
-    title(['Frame #',num2str(timepoint),' AdjR2 =',num2str(gof.adjrsquare)]);
-    legend('data','fit');
-    %Add the bump parameters
-    subplot(2,1,2)
-    text(0,0.5,['Bump magnitude = ',num2str(bump_mag(timepoint))]);
-    hold on
-    text(0.5,0.5,['Bump width = ',num2str(bump_width(timepoint))]);
-    text(0.25,0,['Bump pos = ',num2str(u)]); axis off
+%     figure,
+%     subplot(2,1,1)
+%     plot(angular_midline_distances,dff_data(timepoint,:)')
+%     hold on
+%     plot(angular_midline_distances,feval(model_data,angular_midline_distances))
+%     %add the bump position estimate
+%     plot(bump_pos(timepoint),feval(model_data,bump_pos(timepoint)),'ro')
+%     xlabel('Angular distance (radians)');
+%     ylabel('DF/F');
+%     title(['Frame #',num2str(timepoint),' AdjR2 =',num2str(gof.adjrsquare)]);
+%     legend('data','fit');
+%     %Add the bump parameters
+%     subplot(2,1,2)
+%     text(0,0.5,['Bump magnitude = ',num2str(bump_mag(timepoint))]);
+%     hold on
+%     text(0.5,0.5,['Bump width = ',num2str(bump_width(timepoint))]);
+%     text(0.25,0,['Bump pos = ',num2str(u)]); axis off
     
 end
 
