@@ -115,6 +115,12 @@ saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\MovementPanel\offse
 %stats
 ranksum(offset_precision_standing,offset_precision_moving)
 
+offset_precision_empty_trials = [offset_precision_standing,offset_precision_moving];
+movement = [repelem(0,1,length(offset_precision_standing)),repelem(1,1,length(offset_precision_moving))];
+Fly = [1:length(offset_precision_standing),1:length(offset_precision_moving)];
+offset_precision_data = table(offset_precision_empty_trials',movement',Fly','VariableNames',{'offset_precision','movement','fly'});
+writetable(offset_precision_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\offset_precision_empty_data.csv')
+
 %% Plot bump parameters comparison
 
 figure
@@ -144,3 +150,7 @@ saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\MovementPanel\bump_
 ranksum(mean_bump_mag_standing,mean_bump_mag_moving)
 ranksum(mean_bump_width_standing,mean_bump_width_moving)
 
+mean_bump_mag_empty_trials = [mean_bump_mag_standing,mean_bump_mag_moving];
+mean_bump_width_empty_trials = [mean_bump_width_standing,mean_bump_width_moving];
+bump_pars_data = table(mean_bump_mag_empty_trials',mean_bump_width_empty_trials',movement',Fly','VariableNames',{'bump_mag','bump_width','movement','fly'});
+writetable(bump_pars_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\mean_bump_pars_empty_data.csv')

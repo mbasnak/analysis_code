@@ -264,6 +264,70 @@ cor.test(learning_data$offset_ratio,learning_data$offset_precision,method = "pea
 
 
 
+## Repeat using the difference instead of the ratio
+
+learning_data_diff <- read.csv('learning_data_diff.csv')
+
+#run linear regression
+summary(lm(offset_diff ~ bump_mag, learning_data_diff))
+summary(lm(offset_diff ~ bump_width, learning_data_diff))
+summary(lm(offset_diff ~ offset_precision, learning_data_diff))
+
+#Plot
+p1 <- ggplot(learning_data_diff,aes(offset_diff,bump_mag)) +
+  geom_point(size = 2.5) +
+  geom_smooth(method='lm', se = FALSE, color = 'red', linetype="dashed") +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=18),
+        axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  scale_x_continuous(name="Heading - bar offset precision") +
+  scale_y_continuous(name="Bump magntiude", limits=c(0, 3)) 
+
+p2 <- ggplot(learning_data_diff,aes(offset_diff,bump_width)) +
+  geom_point(size = 2.5)+
+  geom_smooth(method='lm', se = FALSE, color = 'red') +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=18),
+        axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  scale_x_continuous(name="Heading - bar offset precision") +
+  scale_y_continuous(name="Bump width" , limits=c(1.5,3)) 
+
+p3 <- ggplot(learning_data_diff,aes(offset_diff,offset_precision)) +
+  geom_point(size = 2.5)+
+  geom_smooth(method='lm', se = FALSE, color = 'red') +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=18),
+        axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  scale_x_continuous(name="Heading - bar offset precision") +
+  scale_y_continuous(name="Offset precision", limits=c(0, 1))
+
+p <- plot_grid(p1, p2, p3,ncol = 3)
+p
+
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/InvertedGain-Experiment", file="learning_prediction_diff.svg",device = 'svg', width=11, height=6)
+
+
+
+#as correlation (to get the coefficient)
+cor.test(learning_data_diff$offset_diff,learning_data_diff$bump_mag,method = "pearson")
+cor.test(learning_data_diff$offset_diff,learning_data_diff$bump_width,method = "pearson")
+cor.test(learning_data_diff$offset_diff,learning_data_diff$offset_precision,method = "pearson")
+
+
+
+
+
+
+
+
+
+
 
 
 # ###### 2) bump pars vs offset precision and total movement

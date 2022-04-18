@@ -13,7 +13,7 @@ session_info = load([path,'\analysis\session_info.mat']);
 
 mkdir([path,'\analysis'],'\plots')
 
-%% 
+%% Plot full trials
 
 %load files
 for file = 1:length(fileNames)
@@ -22,10 +22,10 @@ for file = 1:length(fileNames)
         
         %load the data
         load(fullfile(fileNames(file).folder,fileNames(file).name))
-               
+        
         %Plot full trial
         figure('Position',[100 100 1800 1000]),
-        subplot(5,1,1)
+        subplot(6,1,1)
         dff = continuous_data.dff_matrix';
         imagesc(flip(dff))
         colormap(flipud(gray))
@@ -33,7 +33,7 @@ for file = 1:length(fileNames)
         set(gca,'xticklabel',{[]});
         set(gca,'yticklabel',{[]});
         
-        subplot(5,1,2)
+        subplot(6,1,2)
         bump_pos = wrapTo180(rad2deg(continuous_data.bump_pos));
         %Remove wrapped lines to plot
         [x_out_bump,bump_to_plot] = removeWrappedLines(continuous_data.time,bump_pos');
@@ -49,7 +49,7 @@ for file = 1:length(fileNames)
         xlim([0 x_out_bump(end-1)]);
         set(gca,'xticklabel',{[]})
         
-        subplot(5,1,3)
+        subplot(6,1,3)
         offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',-continuous_data.heading)));
         [x_out_offset,offset_to_plot] = removeWrappedLines(continuous_data.time,offset);
         plot(x_out_offset,offset_to_plot,'LineWidth',1.5,'color',[0.8500 0.3250 0.0980])
@@ -58,21 +58,27 @@ for file = 1:length(fileNames)
         xlim([0 x_out_offset(end-1)]);
         set(gca,'xticklabel',{[]})
         
-        subplot(5,1,4)
-        plot(continuous_data.time(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25),continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25),'r.','handleVisibility','off')
+        subplot(6,1,4)
+        plot(continuous_data.time(continuous_data.adj_rs>=0.5),continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5),'r.','handleVisibility','off')
         hold on
-        plot(continuous_data.time(continuous_data.adj_rs<0.5 & continuous_data.total_mvt_ds > 25),continuous_data.bump_magnitude(continuous_data.adj_rs<0.5 & continuous_data.total_mvt_ds > 25),'k.','handleVisibility','off')
+        plot(continuous_data.time(continuous_data.adj_rs<0.5),continuous_data.bump_magnitude(continuous_data.adj_rs<0.5),'k.','handleVisibility','off')
         title('Bump magnitude')
         xlim([0 continuous_data.time(end)]);
         set(gca,'xticklabel',{[]})
         
-        subplot(5,1,5)
-        plot(continuous_data.time(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25),continuous_data.bump_width(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25),'r.','handleVisibility','off')
+        subplot(6,1,5)
+        plot(continuous_data.time(continuous_data.adj_rs>=0.5),continuous_data.bump_width(continuous_data.adj_rs>=0.5),'r.','handleVisibility','off')
         hold on
-        plot(continuous_data.time(continuous_data.adj_rs<0.5 & continuous_data.total_mvt_ds > 25),continuous_data.bump_width(continuous_data.adj_rs<0.5 & continuous_data.total_mvt_ds > 25),'k.','handleVisibility','off')
-        xlabel('Time (sec)');
+        plot(continuous_data.time(continuous_data.adj_rs<0.5),continuous_data.bump_width(continuous_data.adj_rs<0.5),'k.','handleVisibility','off')
         title('Bump width');
         xlim([0 continuous_data.time(end)]);
+        
+        subplot(6,1,6)
+        plot(continuous_data.time,abs(continuous_data.vel_yaw_ds))
+        title('Yaw speed');
+        xlabel('Time (sec)');
+        xlim([0 continuous_data.time(end)]);
+        
         
         %store relevant data
         %determine type of trial
@@ -81,26 +87,39 @@ for file = 1:length(fileNames)
         if sid == session_info.session_info.empty
             trial = 'empty';
             suptitle('Empty trial');
+            saveas(gcf,[path,'\analysis\plots\empty_trial.png'])
             offset_empty = offset(continuous_data.total_mvt_ds > 25);
-            bump_mag_empty = nanmean(continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
-            bump_width_empty = nanmean(continuous_data.bump_width(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
+            bump_mag_empty = continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25);
+            bump_width_empty = continuous_data.bump_width(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25);
+            yaw_speed_empty = abs(continuous_data.vel_yaw_ds(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
+            mean_bump_mag_empty = nanmean(continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
+            mean_bump_width_empty = nanmean(continuous_data.bump_width(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
+            mean_yaw_speed_empty = nanmean(abs(continuous_data.vel_yaw_ds(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25)));
         elseif sid == session_info.session_info.bar
             trial = 'bar';
             suptitle('Bar trial');
+            saveas(gcf,[path,'\analysis\plots\bar_trial.png'])
             offset_bar = offset(continuous_data.total_mvt_ds > 25);
-            bump_mag_bar = nanmean(continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
-            bump_width_bar = nanmean(continuous_data.bump_width(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
-        elseif sid == session_info.session_info.wind
+            bump_mag_bar = continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25);
+            bump_width_bar = continuous_data.bump_width(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25);
+            yaw_speed_bar = abs(continuous_data.vel_yaw_ds(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
+            mean_bump_mag_bar = nanmean(continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
+            mean_bump_width_bar = nanmean(continuous_data.bump_width(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
+            mean_yaw_speed_bar = nanmean(abs(continuous_data.vel_yaw_ds(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25)));
+        else
             trial = 'wind';
             suptitle('Wind trial');
+            saveas(gcf,[path,'\analysis\plots\wind_trial.png'])
             offset_wind = offset(continuous_data.total_mvt_ds > 25);
-            bump_mag_wind = nanmean(continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
-            bump_width_wind = nanmean(continuous_data.bump_width(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
+            bump_mag_wind = continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25);
+            bump_width_wind = continuous_data.bump_width(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25);
+            yaw_speed_wind = abs(continuous_data.vel_yaw_ds(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
+            mean_bump_mag_wind = nanmean(continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
+            mean_bump_width_wind = nanmean(continuous_data.bump_width(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
+            mean_yaw_speed_wind = nanmean(abs(continuous_data.vel_yaw_ds(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25)));
         end
         
-        
     end
-       
 end
 
 %% Plot offset distribution
@@ -148,8 +167,8 @@ saveas(gcf,[path,'\analysis\plots\offset_precision.png'])
 
 %% Plot bump parameters
 
-all_bump_mag = [bump_mag_empty,bump_mag_wind,bump_mag_bar];
-all_bump_width = [bump_width_empty,bump_width_wind,bump_width_bar];
+all_bump_mag = [mean_bump_mag_empty,mean_bump_mag_wind,mean_bump_mag_bar];
+all_bump_width = [mean_bump_width_empty,mean_bump_width_wind,mean_bump_width_bar];
 
 figure,
 subplot(1,2,1)

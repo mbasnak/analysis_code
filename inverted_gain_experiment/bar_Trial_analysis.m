@@ -39,7 +39,7 @@ for folder = 1:length(folderNames)
         load([path,'\analysis\continuous_analysis_sid_',num2str(sessions_info.offset_stabilizer),'_tid_0.mat']);
         
         moving = continuous_data.total_mvt_ds > 25;
-        gof = continuous_data.adj_rs > 0.45;
+        gof = continuous_data.adj_rs > 0.5;
         
         mean_bump_mag_standing = [mean(continuous_data.bump_magnitude(~moving & gof)),mean_bump_mag_standing];       
         mean_bump_mag_moving = [mean(continuous_data.bump_magnitude(moving & gof)),mean_bump_mag_moving];
@@ -86,7 +86,7 @@ for folder = 1:length(folderNames2)
         load([path,'\analysis\continuous_analysis_sid_',num2str(session_info.bar),'_tid_0.mat']);
         
         moving = continuous_data.total_mvt_ds > 25;
-        gof = continuous_data.adj_rs > 0.45;
+        gof = continuous_data.adj_rs > 0.5;
         
         mean_bump_mag_standing = [mean(continuous_data.bump_magnitude(~moving & gof)),mean_bump_mag_standing];       
         mean_bump_mag_moving = [mean(continuous_data.bump_magnitude(moving & gof)),mean_bump_mag_moving];
@@ -133,7 +133,7 @@ for folder = 1:length(folderNames3)
         load([path,'\analysis\continuous_analysis_sid_',num2str(sessions_info.offset_stabilizer),'_tid_0.mat']);
         
         moving = continuous_data.total_mvt_ds > 25;
-        gof = continuous_data.adj_rs > 0.45;
+        gof = continuous_data.adj_rs > 0.5;
         
         mean_bump_mag_standing = [mean(continuous_data.bump_magnitude(~moving & gof)),mean_bump_mag_standing];       
         mean_bump_mag_moving = [mean(continuous_data.bump_magnitude(moving & gof)),mean_bump_mag_moving];
@@ -192,6 +192,12 @@ saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\MovementPanel\offse
 %stats
 ranksum(offset_precision_standing,offset_precision_moving)
 
+offset_precision_bar_trials = [offset_precision_standing,offset_precision_moving];
+movement = [repelem(0,1,length(offset_precision_standing)),repelem(1,1,length(offset_precision_moving))];
+Fly = [1:length(offset_precision_standing),1:length(offset_precision_moving)];
+offset_precision_data = table(offset_precision_bar_trials',movement',Fly','VariableNames',{'offset_precision','movement','fly'});
+writetable(offset_precision_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\offset_precision_bar_data.csv')
+
 %% Plot bump parameters comparison
 
 figure
@@ -221,3 +227,7 @@ saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\MovementPanel\bump_
 ranksum(mean_bump_mag_standing,mean_bump_mag_moving)
 ranksum(mean_bump_width_standing,mean_bump_width_moving)
 
+mean_bump_mag_bar_trials = [mean_bump_mag_standing,mean_bump_mag_moving];
+mean_bump_width_bar_trials = [mean_bump_width_standing,mean_bump_width_moving];
+bump_pars_data = table(mean_bump_mag_bar_trials',mean_bump_width_bar_trials',movement',Fly','VariableNames',{'bump_mag','bump_width','movement','fly'});
+writetable(bump_pars_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\mean_bump_pars_bar_data.csv')

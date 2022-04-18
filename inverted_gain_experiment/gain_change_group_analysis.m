@@ -94,7 +94,7 @@ for fly = 1:length(data)
     
     figure,
     subplot(1,3,1)
-    polarhistogram(offset_data_ng(1:gain_changes(1)),15,'FaceColor',[.6 .6 .6])
+    polarhistogram(offset_data_ng(1:gain_changes(1)),25,'FaceColor',[.6 .6 .6])
     hold on
     rl = rlim;
     offset_mean = circ_mean(offset_data_ng(1:gain_changes(1)));
@@ -108,7 +108,7 @@ for fly = 1:length(data)
     thetaticks([0 90 180 270]);
     
     subplot(1,3,2)
-    polarhistogram(offset_data_ig,15,'FaceColor',[.6 .6 .6])
+    polarhistogram(offset_data_ig,25,'FaceColor',[.6 .6 .6])
     hold on
     rl = rlim;
     offset_mean = circ_mean(offset_data_ig);
@@ -122,7 +122,7 @@ for fly = 1:length(data)
     thetaticks([0 90 180 270]);
     
     subplot(1,3,3)
-    polarhistogram(offset_data_ng(gain_changes(1)+1:end),15,'FaceColor',[.6 .6 .6])
+    polarhistogram(offset_data_ng(gain_changes(1)+1:end),25,'FaceColor',[.6 .6 .6])
     hold on
     rl = rlim;
     offset_mean = circ_mean(offset_data_ng(gain_changes(1)+1:end));
@@ -175,146 +175,146 @@ fly_number = [1:length(offset_precision_ng_initial),1:length(offset_precision_ng
 all_offset_precision = [offset_precision_ng_initial,offset_precision_ng_final];
 all_offset_precision_ng = table(all_offset_precision',block_type',fly_number','VariableNames',{'offset_precision','block','fly'});
 writetable(all_offset_precision_ng,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\offset_precision_ng.csv')
-
-%% Plot total movement in time per fly
-
-for fly = 1:length(data)
-   total_movement(:,fly) = data(fly).movementData.total_mvt;   
-end
-
-figure('Position',[100 100 1600 1000]),
-for fly = 1:length(data)
-    subplot(length(data),1,fly)
-    plot(total_movement(:,fly))
-    hold on
-    xline(gain_changes(1),'color','r','linewidth',2);
-    xline(gain_changes(2),'color','r','linewidth',2);
-    set(gca,'xticklabel',{[]})
-end
-
-saveas(gcf,[path,'\groupPlots\total_movement_evo.png']);
-  
-%1) Plot mean total movement per block
-mean_total_movement = [nanmean(total_movement(1:gain_changes(1),:));nanmean(total_movement(gain_changes(1):gain_changes(2),:));nanmean(total_movement(gain_changes(2):end,:))];
-
-figure,
-plot(mean_total_movement,'color',[.6 .6 .6])
-xlim([0 4]);
-xticks([1:3]);
-xticklabels({'NG','IG','NG'});
-hold on
-plot(mean(mean_total_movement'),'-ko','linewidth',2)
-ylabel('Mean total movement');
-
-saveas(gcf,[path,'\groupPlots\total_movement_per_block.png']);
-
-
-%% Repeat for angular speed
-
-for fly = 1:length(data)
-   yaw_speed(:,fly) = data(fly).movementData.yaw_speed;   
-end
-
-%plot
-figure('Position',[100 100 1600 1000]),
-for fly = 1:length(data)
-    subplot(length(data),1,fly)
-    plot(yaw_speed(:,fly))
-    hold on
-    xline(gain_changes(1),'color','r','linewidth',2);
-    xline(gain_changes(2),'color','r','linewidth',2);
-    set(gca,'xticklabel',{[]})
-end
-
-saveas(gcf,[path,'\groupPlots\yaw_speed_evo.png']);
-  
-%1) Plot mean yaw speed per block
-mean_yaw_speed = [nanmean(yaw_speed(1:gain_changes(1),:));nanmean(yaw_speed(gain_changes(1):gain_changes(2),:));nanmean(yaw_speed(gain_changes(2):end,:))];
-
-figure,
-plot(mean_yaw_speed,'color',[.6 .6 .6])
-xlim([0 4]);
-xticks([1:3]);
-xticklabels({'NG','IG','NG'});
-hold on
-plot(mean(mean_yaw_speed'),'-ko','linewidth',2)
-ylabel('Mean yaw speed');
-
-saveas(gcf,[path,'\groupPlots\yaw_speed_per_block.png']);
-
-%2) Plot evolution of yaw speed within the inverted gain period
-length_inverted_gain = gain_changes(2) - gain_changes(1);
-mean_yaw_speed_ig = [nanmean(yaw_speed(1:floor(length_inverted_gain/4),:));
-    nanmean(yaw_speed(floor(length_inverted_gain/4):floor(length_inverted_gain/2),:));
-    nanmean(yaw_speed(floor(length_inverted_gain/2):3*floor(length_inverted_gain/4),:));
-    nanmean(yaw_speed(3*floor(length_inverted_gain/4):end,:))];
-
-figure,
-plot(mean_yaw_speed_ig,'color',[.6 .6 .6])
-xlim([0 5]);
-xticks([1:4]);
-xticklabels({'1st quarter','2nd quarter','3rd quarter','4th quarter'});
-hold on
-plot(mean(mean_yaw_speed_ig'),'-ko','linewidth',2)
-ylabel('Mean yaw speed');
-
-saveas(gcf,[path,'\groupPlots\yaw_speed_during_ig.png']);
-
-
-%% Repeat for forward vel
-
-for fly = 1:length(data)
-   for_vel(:,fly) = data(fly).movementData.for_vel;   
-end
-
-%plot
-figure('Position',[100 100 1600 1000]),
-for fly = 1:length(data)
-    subplot(length(data),1,fly)
-    plot(for_vel(:,fly))
-    hold on
-    xline(gain_changes(1),'color','r','linewidth',2);
-    xline(gain_changes(2),'color','r','linewidth',2);
-    set(gca,'xticklabel',{[]})
-end
-
-saveas(gcf,[path,'\groupPlots\for_vel_evo.png']);
-
-%1) Plot mean for vel per block
-mean_for_vel = [nanmean(for_vel(1:gain_changes(1),:));nanmean(for_vel(gain_changes(1):gain_changes(2),:));nanmean(for_vel(gain_changes(2):end,:))];
-
-figure,
-plot(mean_for_vel,'color',[.6 .6 .6])
-xlim([0 4]);
-xticks([1:3]);
-xticklabels({'NG','IG','NG'});
-hold on
-plot(mean(mean_for_vel'),'-ko','linewidth',2)
-ylabel('Mean forward velocity');
-
-saveas(gcf,[path,'\groupPlots\for_vel_per_block.png']);
-
-
-%% Plot probability of stopping per block
-
-for fly = 1:length(mean_total_movement)
-   p_stopping_1(fly) = 100*sum(total_movement(1:gain_changes(1),fly) < 25) / length(total_movement(1:gain_changes(1),fly));
-   p_stopping_2(fly) = 100*sum(total_movement(gain_changes(1):gain_changes(2),fly) < 25) / length(total_movement(gain_changes(1):gain_changes(2),fly));
-   p_stopping_3(fly) = 100*sum(total_movement(gain_changes(2):end,fly) < 25) / length(total_movement(gain_changes(2):end,fly));
-end
-
-p_stopping = [p_stopping_1;p_stopping_2;p_stopping_3];
-
-figure,
-plot(p_stopping,'color',[.6 .6 .6])
-xlim([0 4]);
-xticks([1:3]);
-xticklabels({'NG','IG','NG'});
-hold on
-plot(mean(p_stopping'),'-ko','linewidth',2)
-ylabel('Probability of stopping');
-
-saveas(gcf,[path,'\groupPlots\p_stop_per_block.png']);
+% 
+% %% Plot total movement in time per fly
+% 
+% for fly = 1:length(data)
+%    total_movement(:,fly) = data(fly).movementData.total_mvt;   
+% end
+% 
+% figure('Position',[100 100 1600 1000]),
+% for fly = 1:length(data)
+%     subplot(length(data),1,fly)
+%     plot(total_movement(:,fly))
+%     hold on
+%     xline(gain_changes(1),'color','r','linewidth',2);
+%     xline(gain_changes(2),'color','r','linewidth',2);
+%     set(gca,'xticklabel',{[]})
+% end
+% 
+% saveas(gcf,[path,'\groupPlots\total_movement_evo.png']);
+%   
+% %1) Plot mean total movement per block
+% mean_total_movement = [nanmean(total_movement(1:gain_changes(1),:));nanmean(total_movement(gain_changes(1):gain_changes(2),:));nanmean(total_movement(gain_changes(2):end,:))];
+% 
+% figure,
+% plot(mean_total_movement,'color',[.6 .6 .6])
+% xlim([0 4]);
+% xticks([1:3]);
+% xticklabels({'NG','IG','NG'});
+% hold on
+% plot(mean(mean_total_movement'),'-ko','linewidth',2)
+% ylabel('Mean total movement');
+% 
+% saveas(gcf,[path,'\groupPlots\total_movement_per_block.png']);
+% 
+% 
+% %% Repeat for angular speed
+% 
+% for fly = 1:length(data)
+%    yaw_speed(:,fly) = data(fly).movementData.yaw_speed;   
+% end
+% 
+% %plot
+% figure('Position',[100 100 1600 1000]),
+% for fly = 1:length(data)
+%     subplot(length(data),1,fly)
+%     plot(yaw_speed(:,fly))
+%     hold on
+%     xline(gain_changes(1),'color','r','linewidth',2);
+%     xline(gain_changes(2),'color','r','linewidth',2);
+%     set(gca,'xticklabel',{[]})
+% end
+% 
+% saveas(gcf,[path,'\groupPlots\yaw_speed_evo.png']);
+%   
+% %1) Plot mean yaw speed per block
+% mean_yaw_speed = [nanmean(yaw_speed(1:gain_changes(1),:));nanmean(yaw_speed(gain_changes(1):gain_changes(2),:));nanmean(yaw_speed(gain_changes(2):end,:))];
+% 
+% figure,
+% plot(mean_yaw_speed,'color',[.6 .6 .6])
+% xlim([0 4]);
+% xticks([1:3]);
+% xticklabels({'NG','IG','NG'});
+% hold on
+% plot(mean(mean_yaw_speed'),'-ko','linewidth',2)
+% ylabel('Mean yaw speed');
+% 
+% saveas(gcf,[path,'\groupPlots\yaw_speed_per_block.png']);
+% 
+% %2) Plot evolution of yaw speed within the inverted gain period
+% length_inverted_gain = gain_changes(2) - gain_changes(1);
+% mean_yaw_speed_ig = [nanmean(yaw_speed(1:floor(length_inverted_gain/4),:));
+%     nanmean(yaw_speed(floor(length_inverted_gain/4):floor(length_inverted_gain/2),:));
+%     nanmean(yaw_speed(floor(length_inverted_gain/2):3*floor(length_inverted_gain/4),:));
+%     nanmean(yaw_speed(3*floor(length_inverted_gain/4):end,:))];
+% 
+% figure,
+% plot(mean_yaw_speed_ig,'color',[.6 .6 .6])
+% xlim([0 5]);
+% xticks([1:4]);
+% xticklabels({'1st quarter','2nd quarter','3rd quarter','4th quarter'});
+% hold on
+% plot(mean(mean_yaw_speed_ig'),'-ko','linewidth',2)
+% ylabel('Mean yaw speed');
+% 
+% saveas(gcf,[path,'\groupPlots\yaw_speed_during_ig.png']);
+% 
+% 
+% %% Repeat for forward vel
+% 
+% for fly = 1:length(data)
+%    for_vel(:,fly) = data(fly).movementData.for_vel;   
+% end
+% 
+% %plot
+% figure('Position',[100 100 1600 1000]),
+% for fly = 1:length(data)
+%     subplot(length(data),1,fly)
+%     plot(for_vel(:,fly))
+%     hold on
+%     xline(gain_changes(1),'color','r','linewidth',2);
+%     xline(gain_changes(2),'color','r','linewidth',2);
+%     set(gca,'xticklabel',{[]})
+% end
+% 
+% saveas(gcf,[path,'\groupPlots\for_vel_evo.png']);
+% 
+% %1) Plot mean for vel per block
+% mean_for_vel = [nanmean(for_vel(1:gain_changes(1),:));nanmean(for_vel(gain_changes(1):gain_changes(2),:));nanmean(for_vel(gain_changes(2):end,:))];
+% 
+% figure,
+% plot(mean_for_vel,'color',[.6 .6 .6])
+% xlim([0 4]);
+% xticks([1:3]);
+% xticklabels({'NG','IG','NG'});
+% hold on
+% plot(mean(mean_for_vel'),'-ko','linewidth',2)
+% ylabel('Mean forward velocity');
+% 
+% saveas(gcf,[path,'\groupPlots\for_vel_per_block.png']);
+% 
+% 
+% %% Plot probability of stopping per block
+% 
+% for fly = 1:length(mean_total_movement)
+%    p_stopping_1(fly) = 100*sum(total_movement(1:gain_changes(1),fly) < 25) / length(total_movement(1:gain_changes(1),fly));
+%    p_stopping_2(fly) = 100*sum(total_movement(gain_changes(1):gain_changes(2),fly) < 25) / length(total_movement(gain_changes(1):gain_changes(2),fly));
+%    p_stopping_3(fly) = 100*sum(total_movement(gain_changes(2):end,fly) < 25) / length(total_movement(gain_changes(2):end,fly));
+% end
+% 
+% p_stopping = [p_stopping_1;p_stopping_2;p_stopping_3];
+% 
+% figure,
+% plot(p_stopping,'color',[.6 .6 .6])
+% xlim([0 4]);
+% xticks([1:3]);
+% xticklabels({'NG','IG','NG'});
+% hold on
+% plot(mean(p_stopping'),'-ko','linewidth',2)
+% ylabel('Probability of stopping');
+% 
+% saveas(gcf,[path,'\groupPlots\p_stop_per_block.png']);
 
 %% Compute model for bump parameters as a function of bar offset precision for all flies
 
@@ -714,20 +714,26 @@ for fly = 1:length(data)
     
     %get offset precision
     bar_offset_precision_initial_quarter = circ_r(bar_offset_initial_quarter);
-    bar_offset_precision_initial_quarter_thresh = circ_r(bar_offset_initial_quarter(rsq_initial_quarter > 0.45));
+    bar_offset_precision_initial_quarter_thresh = circ_r(bar_offset_initial_quarter(mvt_initial_quarter > 25));
     bar_offset_precision_final_quarter = circ_r(bar_offset_final_quarter);
-    bar_offset_precision_final_quarter_thresh = circ_r(bar_offset_final_quarter(rsq_final_quarter > 0.45 & mvt_final_quarter > 25));
+    bar_offset_precision_final_quarter_thresh = circ_r(bar_offset_final_quarter(mvt_final_quarter > 25));
     
     heading_offset_precision_initial_quarter = circ_r(heading_offset_initial_quarter);
-    heading_offset_precision_initial_quarter_thresh = circ_r(heading_offset_initial_quarter(rsq_initial_quarter > 0.45));
+    heading_offset_precision_initial_quarter_thresh = circ_r(heading_offset_initial_quarter(mvt_initial_quarter > 25));
     heading_offset_precision_final_quarter = circ_r(heading_offset_final_quarter);
-    heading_offset_precision_final_quarter_thresh = circ_r(heading_offset_final_quarter(rsq_final_quarter > 0.45 & mvt_final_quarter > 25));   
+    heading_offset_precision_final_quarter_thresh = circ_r(heading_offset_final_quarter(mvt_final_quarter > 25));   
     
     %get offset precision ratios
     heading_bar_offset_precision_ratio_initial_quarter(fly) = heading_offset_precision_initial_quarter/bar_offset_precision_initial_quarter;
     heading_bar_offset_precision_ratio_final_quarter(fly) = heading_offset_precision_final_quarter/bar_offset_precision_final_quarter;
     heading_bar_offset_precision_ratio_initial_quarter_thresh(fly) = heading_offset_precision_initial_quarter_thresh/bar_offset_precision_initial_quarter_thresh;
     heading_bar_offset_precision_ratio_final_quarter_thresh(fly) = heading_offset_precision_final_quarter_thresh/bar_offset_precision_final_quarter_thresh;
+    
+    %get offset precision differences
+    heading_bar_offset_precision_diff_initial_quarter(fly) = heading_offset_precision_initial_quarter - bar_offset_precision_initial_quarter;
+    heading_bar_offset_precision_diff_final_quarter(fly) = heading_offset_precision_final_quarter - bar_offset_precision_final_quarter;
+    heading_bar_offset_precision_diff_initial_quarter_thresh(fly) = heading_offset_precision_initial_quarter_thresh - bar_offset_precision_initial_quarter_thresh;
+    heading_bar_offset_precision_diff_final_quarter_thresh(fly) = heading_offset_precision_final_quarter_thresh - bar_offset_precision_final_quarter_thresh;
     
 end
 
@@ -743,38 +749,59 @@ ylabel('Heading/bar offset precision','fontsize',16);
 a = get(gca,'XTickLabel');  
 set(gca,'XTickLabel',a,'fontsize',14)
 
+ranksum(heading_bar_offset_precision_ratio_initial_quarter_thresh,heading_bar_offset_precision_ratio_final_quarter_thresh)
+
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\InvertedGain-Experiment\first_and_fourth_quarter.png')
 saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\InvertedGain-Experiment\first_and_fourth_quarter.svg')
 
 %save data to plot in R
 heading_bar_offset_ratio = table(heading_bar_offset_precision_ratio_initial_quarter_thresh',heading_bar_offset_precision_ratio_final_quarter_thresh','VariableNames',{'Initial_hb_ratio','Final_hb_ratio'});
 writetable(heading_bar_offset_ratio,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\hb_offset_ratio_evo.csv')
 
+
+%% Repeat for the difference
+
+figure('Position',[100 100 800 800]),
+plot([heading_bar_offset_precision_diff_initial_quarter_thresh;heading_bar_offset_precision_diff_final_quarter_thresh],'-o','color',[.5 .5 .5])
+hold on
+plot(mean([heading_bar_offset_precision_diff_initial_quarter_thresh;heading_bar_offset_precision_diff_final_quarter_thresh],2),'-ko','linewidth',2,'MarkerFaceColor','k')
+xlim([0 3]);
+xticks([1 2]);
+xticklabels({'Initial quarter','Final quarter'});
+ylabel('Heading - bar offset precision','fontsize',16);
+a = get(gca,'XTickLabel');  
+set(gca,'XTickLabel',a,'fontsize',14)
+
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\InvertedGain-Experiment\first_and_fourth_quarter_diff.png')
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\InvertedGain-Experiment\first_and_fourth_quarter_diff.svg')
+
+ranksum(heading_bar_offset_precision_diff_initial_quarter_thresh,heading_bar_offset_precision_diff_final_quarter_thresh)
+
+%save data to plot in R
+heading_bar_offset_diff = [heading_bar_offset_precision_diff_initial_quarter_thresh,heading_bar_offset_precision_diff_final_quarter_thresh];
+block = [repelem(1,1,length(heading_bar_offset_precision_diff_initial_quarter_thresh)),repelem(2,1,length(heading_bar_offset_precision_diff_final_quarter_thresh))];
+fly_number = [1:length(heading_bar_offset_precision_diff_initial_quarter_thresh),1:length(heading_bar_offset_precision_diff_final_quarter_thresh)];
+heading_bar_offset_diff_data = table(heading_bar_offset_diff',block',fly_number','VariableNames',{'offset_diff','block','fly'});
+writetable(heading_bar_offset_diff_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\hb_offset_diff_evo.csv')
+
+
 %% Plot the between the ratio of bar/heading offset precision in the last quarter vs normal gain par values
 
 figure('Position',[100 100 1400 600]),
 subplot(1,3,1)
 plot(heading_bar_offset_precision_ratio_final_quarter_thresh,mean_NG_bump_mag_thresh,'ko')
-% hold on
-% plot(heading_bar_offset_precision_ratio_final_quarter_thresh(12),mean_NG_bump_mag_thresh(12),'ko','MarkerFaceColor','r')
-% plot(heading_bar_offset_precision_ratio_final_quarter_thresh(13),mean_NG_bump_mag_thresh(13),'ko','MarkerFaceColor','r')
 xlabel('Final heading/bar offset precision');
 ylabel('Bump magnitude in the preceding block')
 ylim([0.5 3]);
 
 subplot(1,3,2)
 plot(heading_bar_offset_precision_ratio_final_quarter_thresh,mean_NG_bump_width_thresh,'ko')
-% hold on
-% plot(heading_bar_offset_precision_ratio_final_quarter_thresh(12),mean_NG_bump_width_thresh(12),'ko','MarkerFaceColor','r')
-% plot(heading_bar_offset_precision_ratio_final_quarter_thresh(13),mean_NG_bump_width_thresh(13),'ko','MarkerFaceColor','r')
 xlabel('Final heading/bar offset precision');
 ylabel('Bump width in the preceding block')
 ylim([1.5 2.5]);
 
 subplot(1,3,3)
 plot(heading_bar_offset_precision_ratio_final_quarter_thresh,NG_offset_precision,'ko')
-% hold on
-% plot(heading_bar_offset_precision_ratio_final_quarter_thresh(12),NG_offset_precision(12),'ko','MarkerFaceColor','r')
-% plot(heading_bar_offset_precision_ratio_final_quarter_thresh(13),NG_offset_precision(13),'ko','MarkerFaceColor','r')
 xlabel('Final heading/bar offset precision');
 ylabel('Offset precision in the preceding block')
 
@@ -783,38 +810,35 @@ saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\InvertedGain-Experi
 % Save data for statistical analysis in R
 learning_data = table(heading_bar_offset_precision_ratio_final_quarter_thresh',mean_NG_bump_mag_thresh',mean_NG_bump_width_thresh',NG_offset_precision','VariableNames',{'offset_ratio','bump_mag','bump_width','offset_precision'});
 writetable(learning_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\learning_data.csv')
-% 
-% %% Repeat eliminating flies that weren't walking
-% 
-% heading_bar_offset_precision_ratio_final_quarter_thresh(12:13) = [];
-% mean_NG_bump_mag_thresh(12:13) = [];
-% mean_NG_bump_width_thresh(12:13) = [];
-% NG_offset_precision(12:13) = [];
-% 
-% figure('Position',[100 100 1400 600]),
-% subplot(1,3,1)
-% plot(heading_bar_offset_precision_ratio_final_quarter_thresh,mean_NG_bump_mag_thresh,'ko')
-% xlabel('Final heading/bar offset precision');
-% ylabel('Bump magnitude in the preceding block')
-% ylim([0.5 3]);
-% 
-% subplot(1,3,2)
-% plot(heading_bar_offset_precision_ratio_final_quarter_thresh,mean_NG_bump_width_thresh,'ko')
-% xlabel('Final heading/bar offset precision');
-% ylabel('Bump width in the preceding block')
-% ylim([1.5 2.5]);
-% 
-% subplot(1,3,3)
-% plot(heading_bar_offset_precision_ratio_final_quarter_thresh,NG_offset_precision,'ko')
-% xlabel('Final heading/bar offset precision');
-% ylabel('Offset precision in the preceding block')
-% 
-% saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\InvertedGain-Experiment\learning_strategy_prediction_without_poor_walkers.svg')
-% 
-% % Save data for statistical analysis in R
-% learning_data_without_poor_walkers = table(heading_bar_offset_precision_ratio_final_quarter_thresh',mean_NG_bump_mag_thresh',mean_NG_bump_width_thresh',NG_offset_precision','VariableNames',{'offset_ratio','bump_mag','bump_width','offset_precision'});
-% writetable(learning_data_without_poor_walkers,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\learning_data_without_poor_walkers.csv')
 
+
+
+%% Plot the diff between heading and bar offset precision in the last quarter vs normal gain par values
+
+figure('Position',[100 100 1400 600]),
+subplot(1,3,1)
+plot(heading_bar_offset_precision_diff_final_quarter_thresh,mean_NG_bump_mag_thresh,'ko')
+xlabel('Final heading - bar offset precision');
+ylabel('Bump magnitude in the preceding block')
+ylim([0.5 3]);
+
+subplot(1,3,2)
+plot(heading_bar_offset_precision_diff_final_quarter_thresh,mean_NG_bump_width_thresh,'ko')
+xlabel('Final heading - bar offset precision');
+ylabel('Bump width in the preceding block')
+ylim([1.5 2.5]);
+
+subplot(1,3,3)
+plot(heading_bar_offset_precision_diff_final_quarter_thresh,NG_offset_precision,'ko')
+xlabel('Final heading - bar offset precision');
+ylabel('Offset precision in the preceding block')
+
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\InvertedGain-Experiment\learning_strategy_prediction_diff.svg')
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\InvertedGain-Experiment\learning_strategy_prediction_diff.png')
+
+% Save data for statistical analysis in R
+learning_data_diff = table(heading_bar_offset_precision_diff_final_quarter_thresh',mean_NG_bump_mag_thresh',mean_NG_bump_width_thresh',NG_offset_precision','VariableNames',{'offset_diff','bump_mag','bump_width','offset_precision'});
+writetable(learning_data_diff,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\learning_data_diff.csv')
 
 %% 
 clear all; close all;

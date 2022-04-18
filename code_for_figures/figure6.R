@@ -1,0 +1,184 @@
+#code for figure 6
+
+#load useful libraries
+library(nlme)
+library(lmer)
+library(multcomp)
+library(ggplot2)
+library(tidyverse)
+library(cowplot)
+library(rCAT)
+
+# comparison of offset precision between visual and wind environments
+
+
+
+# offset precision vs block type
+offset_precision_data_3_blocks <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability//offset_precision_data_3_blocks.csv", header = FALSE)
+colnames(offset_precision_data_3_blocks) <- c('initial_single_cue','cue_combination','final_single_cue','fly')
+offset_precision_data_3_blocks <- gather(offset_precision_data_3_blocks, key = "block_type", value = "offset_precision",-fly)
+offset_precision_data_3_blocks$block_type = as.factor(offset_precision_data_3_blocks$block_type)
+offset_precision_data_3_blocks$fly = as.factor(offset_precision_data_3_blocks$fly)
+
+#run model
+offset_precision_model_3_blocks <- lme(offset_precision ~ block_type , random=~1|fly, offset_precision_data_3_blocks)
+summary(offset_precision_model_3_blocks)
+anova(offset_precision_model_3_blocks)
+#posthoc comparisons
+summary(glht(offset_precision_model_3_blocks, linfct = mcp(block_type = "Tukey")), test = adjusted("bonferroni"))
+summary(glht(offset_precision_model_3_blocks, llinfct = c("initial_single_cue - cue_combination = 0", "final_single_cue - cue_combination = 0")), test = adjusted("bonferroni"))
+
+offset_precision_data_3_blocks <-
+  offset_precision_data_3_blocks %>% 
+  mutate(block_type = factor(
+    case_when(block_type == "initial_single_cue" ~ "Initial single cue",
+              block_type == "final_single_cue" ~ "Final single cue",
+              block_type == "cue_combination" ~ "Cue combination"), 
+    levels = c("Initial single cue", "Cue combination", "Final single cue"))
+  )
+
+#get mean and sd
+mean_and_sd_offset_precision <- offset_precision_data_3_blocks %>%
+  group_by(block_type) %>% 
+  summarise(sd_offset_precision = sd(offset_precision),
+            mean_offset_precision = mean(offset_precision),
+            n = n())
+#plot
+ggplot() + 
+  geom_line(offset_precision_data_3_blocks, mapping = aes(block_type, offset_precision, group = fly),color = 'gray50',size=0.5) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=18),
+        axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
+        axis.text.x = element_text(angle = 30, vjust=.8, hjust=0.8),
+        axis.line.x = element_line(size=1.5),
+        axis.line.y = element_line(size=1.5)) +
+  geom_line(data = mean_and_sd_offset_precision,aes(block_type,mean_offset_precision,group = 1),color = 'gray0',size=2) +
+  geom_errorbar(data=mean_and_sd_offset_precision, mapping=aes(x=block_type, ymin=mean_offset_precision + sd_offset_precision/sqrt(n), ymax=mean_offset_precision - sd_offset_precision/sqrt(n)), width=0, size=2, color="gray0") +
+  scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
+                   labels=scales::wrap_format(10)) +
+  labs(x="", y="HD encoding reliability")+
+  ylim(c(0,1))
+
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig6", file="offset_precision_per_block.svg",device = 'svg', width=4, height=6)
+
+
+
+# bump pars vs block type
+#load data
+bump_mag_data_3_blocks <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability/bump_mag_data_3_blocks.csv", header = FALSE)
+colnames(bump_mag_data_3_blocks) <- c('initial_single_cue','cue_combination','final_single_cue','fly')
+bump_mag_data_3_blocks <- gather(bump_mag_data_3_blocks, key = "block_type", value = "bump_mag",-fly)
+bump_mag_data_3_blocks$block_type = as.factor(bump_mag_data_3_blocks$block_type)
+bump_mag_data_3_blocks$fly = as.factor(bump_mag_data_3_blocks$fly)
+
+#run model
+bump_mag_model_3_blocks <- lme(bump_mag ~ block_type , random=~1|fly, bump_mag_data_3_blocks)
+summary(bump_mag_model_3_blocks)
+anova(bump_mag_model_3_blocks)
+#posthoc comparisons
+summary(glht(bump_mag_model_3_blocks, linfct = mcp(block_type = "Tukey")), test = adjusted("bonferroni"))
+
+
+bump_width_data_3_blocks <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability/bump_width_data_3_blocks.csv", header = FALSE)
+colnames(bump_width_data_3_blocks) <- c('initial_single_cue','cue_combination','final_single_cue','fly')
+bump_width_data_3_blocks <- gather(bump_width_data_3_blocks, key = "block_type", value = "bump_width",-fly)
+bump_width_data_3_blocks$block_type = as.factor(bump_width_data_3_blocks$block_type)
+bump_width_data_3_blocks$fly = as.factor(bump_width_data_3_blocks$fly)
+bump_width_data_3_blocks$bump_width = rad2deg(bump_width_data_3_blocks$bump_width)
+
+#run model
+bump_width_model_3_blocks <- lme(bump_width ~ block_type , random=~1|fly, bump_width_data_3_blocks)
+summary(bump_width_model_3_blocks)
+anova(bump_width_model_3_blocks)
+#posthoc comparisons
+summary(glht(bump_width_model_3_blocks, linfct = mcp(block_type = "Tukey")), test = adjusted("bonferroni"))
+
+
+#plot
+bump_mag_data_3_blocks <-
+  bump_mag_data_3_blocks %>% 
+  mutate(block_type = factor(
+    case_when(block_type == "initial_single_cue" ~ "Initial single cue",
+              block_type == "final_single_cue" ~ "Final single cue",
+              block_type == "cue_combination" ~ "Cue combination"), 
+    levels = c("Initial single cue", "Cue combination", "Final single cue"))
+  )
+
+bump_width_data_3_blocks <-
+  bump_width_data_3_blocks %>% 
+  mutate(block_type = factor(
+    case_when(block_type == "initial_single_cue" ~ "Initial single cue",
+              block_type == "final_single_cue" ~ "Final single cue",
+              block_type == "cue_combination" ~ "Cue combination"), 
+    levels = c("Initial single cue", "Cue combination", "Final single cue"))
+  )
+
+#get mean and sd
+mean_and_sd_bump_mag <- bump_mag_data_3_blocks %>%
+  group_by(block_type) %>% 
+  summarise(sd_bump_mag = sd(bump_mag),
+            mean_bump_mag = mean(bump_mag),
+            n = n())
+
+mean_and_sd_bump_width <- bump_width_data_3_blocks %>%
+  group_by(block_type) %>% 
+  summarise(sd_bump_width = sd(bump_width),
+            mean_bump_width = mean(bump_width),
+            n = n())
+
+#plot
+p1 <- ggplot() + 
+  geom_line(bump_mag_data_3_blocks, mapping = aes(block_type, bump_mag, group = fly),color = 'gray50',size=0.5) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=18),
+        axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
+        axis.text.x = element_text(angle = 30, vjust=.8, hjust=0.8),
+        axis.line.x = element_line(size=1.5),
+        axis.line.y = element_line(size=1.5)) +
+  geom_line(data = mean_and_sd_bump_mag,aes(block_type,mean_bump_mag,group = 1),color = 'gray0',size=2) +
+  geom_errorbar(data=mean_and_sd_bump_mag, mapping=aes(x=block_type, ymin=mean_bump_mag + sd_bump_mag/sqrt(n), ymax=mean_bump_mag - sd_bump_mag/sqrt(n)), width=0, size=2, color="gray0") +
+  scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
+                   labels=scales::wrap_format(10)) +
+  labs(x="", y="Bump mag (DF/F)")
+
+p2 <- ggplot() + 
+  geom_line(bump_width_data_3_blocks, mapping = aes(block_type, bump_width, group = fly),color = 'gray50',size=0.5) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=18),
+        axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
+        axis.text.x = element_text(angle = 30, vjust=.8, hjust=0.8),
+        axis.line.x = element_line(size=1.5),
+        axis.line.y = element_line(size=1.5)) +
+  geom_line(data = mean_and_sd_bump_width,aes(block_type,mean_bump_width,group = 1),color = 'gray0',size=2) +
+  geom_errorbar(data=mean_and_sd_bump_width, mapping=aes(x=block_type, ymin=mean_bump_width + sd_bump_width/sqrt(n), ymax=mean_bump_width - sd_bump_width/sqrt(n)), width=0, size=2, color="gray0") +
+  scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
+                   labels=scales::wrap_format(10)) +
+  labs(x="", y="Bump width (deg)")
+
+
+p <- plot_grid(p1,p2)
+p
+
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig6", file="bump_pars_per_block.svg",device = 'svg', width=4, height=6)
+
+
+
+
+# first vs second cue similarity with cc
+#load data
+cue_order_data <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability/cue_order_data.csv", header = FALSE)
+colnames(cue_order_data) <- c('first_cue','second_cue')
+
+#run wilcoxon test
+wilcox.test(cue_order_data$first_cue,cue_order_data$second_cue, paired = TRUE, alternative = "two.sided")
+
+
+# 1-2 example flies
+
+
+
+# plasticity analysis
+
+#load data
+plasticity_data <- read.csv("plasticity_data.csv")
+plasticity_data_thresh <- read.csv("plasticity_data_thresh.csv")

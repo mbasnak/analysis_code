@@ -204,6 +204,25 @@ xlabel('Offset precision'); ylabel('Bump width');
 suptitle('Wind trials');
 saveas(gcf,[path,'\groupPlots\bump_pars_vs_offset_precision_wind.png']);
 
+%% Plot general relationship between offset precision and bump width
+
+figure,
+
+subplot(1,2,1)
+plot(all_offset_precision,all_mean_bump_mag,'ko')
+[r p] = corrcoef(all_offset_precision,all_mean_bump_mag);
+xlabel('Offset precision'); ylabel('Bump mag');
+xlim([0 1]);
+title(['Corr = ',num2str(r(2)),'; p = ',num2str(p(2))]);
+
+subplot(1,2,2)
+plot(all_offset_precision,all_mean_bump_width,'ko')
+[r p] = corrcoef(all_offset_precision,all_mean_bump_width);
+xlabel('Offset precision'); ylabel('Bump width');
+xlim([0 1]);
+title(['Corr = ',num2str(r(2)),'; p = ',num2str(p(2))]);
+saveas(gcf,[path,'\groupPlots\bump_pars_vs_offset_precision.png']);
+
 %% Get all of bump pars and yaw speed data
 
 %Combine the tables into one
