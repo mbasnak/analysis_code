@@ -444,17 +444,4 @@ ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/CueJump-Experime
 
 
 
-### Rotational speed around jumps
-# rot_speed_abj <- read.csv("rot_speed_abj.csv",header = FALSE)
-# 
-# ggplot(rot_speed_abj) + 
-#   geom_smooth(method='lm', se = FALSE, color = 'red')  +
-#   theme(panel.background = element_rect(fill=NA),
-#         text=element_text(size=22),
-#         axis.text = element_text(size=20), axis.ticks.length.x = unit(0.5, "cm"),
-#         axis.line.x = element_line(size=1.5),
-#         axis.line.y = element_line(size=1.5)) +
-#   labs(y = 'Rotational speed (deg/s)') +
-#   scale_x_continuous(breaks=1:14) +
-#   ylim(-1,1)
 

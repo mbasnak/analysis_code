@@ -35,16 +35,16 @@ halved_dataset <- offset_and_heading_data_closed_loop[-rows_to_remove,]
 #Plot
 p1 <- ggplot(halved_dataset, aes(offset_precision,mean_bump_mag)) +
   geom_point(aes(color = contrast),size = 2.5) +
-  geom_smooth(method='lm', se = FALSE, color = 'red') +
+  geom_smooth(method='lm', se = FALSE, color = 'red', linetype = "dashed") +
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=18),
         axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
         axis.line.x = element_line(size=1),
         axis.line.y = element_line(size=1),
         legend.position="none") +
-  scale_color_manual(values=c('gray30','gray60','gray90')) +
+  scale_color_manual(values=c('gray0','blue','dodgerblue')) +
   scale_x_continuous(name="HD encoding reliability", limits=c(0, 1)) +
-  scale_y_continuous(name="Bump magntiude (DF/F)", limits=c(0, 3)) 
+  scale_y_continuous(name="Bump magntiude (DF/F)", limits=c(0.5,2.5)) 
 
 p2 <- ggplot(halved_dataset, aes(offset_precision,mean_bump_width)) +
   geom_point(aes(color = contrast),size = 2.5) +
@@ -55,15 +55,15 @@ p2 <- ggplot(halved_dataset, aes(offset_precision,mean_bump_width)) +
         axis.line.x = element_line(size=1),
         axis.line.y = element_line(size=1),
         legend.position="none") +
-  scale_color_manual(values=c('gray20','gray50','gray90')) +
+  scale_color_manual(values=c('gray0','blue','dodgerblue')) +
   scale_x_continuous(name="HD encoding reliability", limits=c(0, 1)) +
   scale_y_continuous(name="Bump width (deg)", limits=c(70,150)) 
 
 
 p <- plot_grid(p1, p2)
 p
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig4", file="offset_precision_distribution_all_conditions.svg",device = 'svg', width=8, height=10)
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig4", file="offset_precision_distribution_all_conditions.png",device = 'png', width=8, height=10)
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig4", file="offset_precision_distribution_all_conditions.svg",device = 'svg', width=8, height=6)
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig4", file="offset_precision_distribution_all_conditions.png",device = 'png', width=8, height=6)
 
 
 #as correlation (to get the coefficient)

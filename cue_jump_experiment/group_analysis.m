@@ -1477,11 +1477,19 @@ ylim([0 50]);
 title('Wind jumps');
 
 %save data for statistical analysis
-rot_speed_abj = long_rot_speed_bar_jump(:,half_position-50:half_position+51);
-rot_speed_awj = long_rot_speed_wind_jump(:,half_position-50:half_position+51);
+rot_speed_bj = [];
+rot_speed_wj = [];
+time_aj = [];
+jump_num = [];
+for cue_jump = 1:size(long_rot_speed_bar_jump,1)
+    rot_speed_bj = [rot_speed_bj,long_rot_speed_bar_jump(cue_jump,half_position-50:half_position+51)];
+    rot_speed_wj = [rot_speed_wj,long_rot_speed_wind_jump(cue_jump,half_position-50:half_position+51)];
+    time_aj = [time_aj,half_position-50:half_position+51];
+    jump_num = [jump_num,repelem(cue_jump,1,102)];
+end
 
-writematrix(rot_speed_abj,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\rot_speed_abj.csv')
-writematrix(rot_speed_abj,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\rot_speed_awj.csv')
+rot_speed_aj = table(rot_speed_bj',rot_speed_wj',time_aj',jump_num','VariableNames',{'rot_speed_bj','rot_speed_wj','time','jump_num'});
+writetable(rot_speed_aj,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\rot_speed_aj.csv')
 
 %% Repeat for total movement
 

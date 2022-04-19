@@ -15,8 +15,10 @@ offset_precision_standing = [];
 offset_precision_moving = [];
 mean_bump_mag_standing = [];
 mean_bump_mag_moving = [];
+mean_bump_mag_low_mvt = [];
 mean_bump_width_standing = [];
 mean_bump_width_moving = [];
+mean_bump_width_low_mvt = [];
 bump_mag_moving = [];
 bump_width_moving = [];
 zbump_mag_moving = [];
@@ -43,8 +45,10 @@ for folder = 1:length(folderNames)
         
         mean_bump_mag_standing = [mean(continuous_data.bump_magnitude(~moving & gof)),mean_bump_mag_standing];       
         mean_bump_mag_moving = [mean(continuous_data.bump_magnitude(moving & gof)),mean_bump_mag_moving];
+        mean_bump_mag_low_mvt = [mean(continuous_data.bump_magnitude(gof & continuous_data.total_mvt_ds > 25 & continuous_data.total_mvt_ds < 50)),mean_bump_mag_low_mvt];                        
         mean_bump_width_standing = [mean(continuous_data.bump_width(~moving & gof)),mean_bump_width_standing];
         mean_bump_width_moving = [mean(continuous_data.bump_width(moving & gof)),mean_bump_width_moving];
+        mean_bump_width_low_mvt = [mean(continuous_data.bump_width(gof & continuous_data.total_mvt_ds > 25 & continuous_data.total_mvt_ds < 50)),mean_bump_width_low_mvt];                
         
         offset = circ_dist(-continuous_data.heading,continuous_data.bump_pos');
         offset_precision_standing = [offset_precision_standing,circ_r(offset(~moving))];
@@ -90,8 +94,10 @@ for folder = 1:length(folderNames2)
         
         mean_bump_mag_standing = [mean(continuous_data.bump_magnitude(~moving & gof)),mean_bump_mag_standing];       
         mean_bump_mag_moving = [mean(continuous_data.bump_magnitude(moving & gof)),mean_bump_mag_moving];
+        mean_bump_mag_low_mvt = [mean(continuous_data.bump_magnitude(gof & continuous_data.total_mvt_ds > 25 & continuous_data.total_mvt_ds < 50)),mean_bump_mag_low_mvt];                        
         mean_bump_width_standing = [mean(continuous_data.bump_width(~moving & gof)),mean_bump_width_standing];
         mean_bump_width_moving = [mean(continuous_data.bump_width(moving & gof)),mean_bump_width_moving];
+        mean_bump_width_low_mvt = [mean(continuous_data.bump_width(gof & continuous_data.total_mvt_ds > 25 & continuous_data.total_mvt_ds < 50)),mean_bump_width_low_mvt];                
         
         offset = circ_dist(-continuous_data.heading,continuous_data.bump_pos');
         offset_precision_standing = [offset_precision_standing,circ_r(offset(~moving))];
@@ -123,7 +129,7 @@ end
 folderNames3 = dir('Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data');
 
 for folder = 1:length(folderNames3)
-    if (contains(folderNames3(folder).name,'60D05')==1)
+    if (contains(folderNames3(folder).name,'60D05')==1) & (contains(folderNames3(folder).name, '20220415_60D05_7f') == 0)
         
         path = [folderNames3(folder).folder,'\',folderNames3(folder).name];
         %get the sessions info
@@ -137,8 +143,10 @@ for folder = 1:length(folderNames3)
         
         mean_bump_mag_standing = [mean(continuous_data.bump_magnitude(~moving & gof)),mean_bump_mag_standing];       
         mean_bump_mag_moving = [mean(continuous_data.bump_magnitude(moving & gof)),mean_bump_mag_moving];
+        mean_bump_mag_low_mvt = [mean(continuous_data.bump_magnitude(gof & continuous_data.total_mvt_ds > 25 & continuous_data.total_mvt_ds < 50)),mean_bump_mag_low_mvt];                        
         mean_bump_width_standing = [mean(continuous_data.bump_width(~moving & gof)),mean_bump_width_standing];
         mean_bump_width_moving = [mean(continuous_data.bump_width(moving & gof)),mean_bump_width_moving];
+        mean_bump_width_low_mvt = [mean(continuous_data.bump_width(gof & continuous_data.total_mvt_ds > 25 & continuous_data.total_mvt_ds < 50)),mean_bump_width_low_mvt];                
         
         offset = circ_dist(-continuous_data.heading,continuous_data.bump_pos');
         offset_precision_standing = [offset_precision_standing,circ_r(offset(~moving))];
@@ -231,3 +239,35 @@ mean_bump_mag_bar_trials = [mean_bump_mag_standing,mean_bump_mag_moving];
 mean_bump_width_bar_trials = [mean_bump_width_standing,mean_bump_width_moving];
 bump_pars_data = table(mean_bump_mag_bar_trials',mean_bump_width_bar_trials',movement',Fly','VariableNames',{'bump_mag','bump_width','movement','fly'});
 writetable(bump_pars_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\mean_bump_pars_bar_data.csv')
+
+
+%% Plot bump parameters comparison transition to movement
+
+figure
+subplot(1,2,1)
+plot([mean_bump_mag_standing;mean_bump_mag_low_mvt],'color',[.6 .6 .6])
+hold on
+plot(mean([mean_bump_mag_standing;mean_bump_mag_low_mvt],2),'k','linewidth',2);
+xlim([0 3]);
+xticks([1:2]);
+xticklabels({'Standing still','Starting movement'});
+ylim([.5 3]);
+ylabel('Bump magnitude');
+
+subplot(1,2,2)
+plot([mean_bump_width_standing;mean_bump_width_low_mvt],'color',[.6 .6 .6])
+hold on
+plot(mean([mean_bump_width_standing;mean_bump_width_low_mvt],2),'k','linewidth',2);
+xlim([0 3]);
+xticks([1:2]);
+xticklabels({'Standing still','Starting movement'});
+ylim([.5 3]);
+ylabel('Bump width');
+
+ranksum(mean_bump_mag_standing,mean_bump_mag_low_mvt)
+ranksum(mean_bump_width_standing,mean_bump_width_low_mvt)
+
+mean_bump_mag_bar_trials = [mean_bump_mag_standing,mean_bump_mag_low_mvt];
+mean_bump_width_bar_trials = [mean_bump_width_standing,mean_bump_width_low_mvt];
+bump_pars_data = table(mean_bump_mag_bar_trials',mean_bump_width_bar_trials',movement',Fly','VariableNames',{'bump_mag','bump_width','movement','fly'});
+writetable(bump_pars_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\mean_bump_pars_bar_data_mvt_transition.csv')

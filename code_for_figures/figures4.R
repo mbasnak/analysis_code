@@ -2,7 +2,6 @@
 
 #load useful libraries
 library(nlme)
-library(lmer)
 library(multcomp)
 library(ggplot2)
 library(tidyverse)
@@ -15,22 +14,8 @@ library(reshape2)
 # Two different example flies in the low contrast period with different offset precision
 example_fly_1 <- read.mat('Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp25/data/Experimental/two_ND_filters_3_contrasts/example_data_1.mat')
 
-dff_data <- as.data.frame(t(example_fly_1$dff_matrix))
-names(dff_data) <- paste0("V", stringr::str_pad(1:42, width=2, pad=0))
-dff_data <- dff_data %>% mutate(time = 1:n()) %>% 
-  pivot_longer(cols = -time)
-
-p1 <- ggplot(dff_data,aes(time, name, fill=value)) +
-  geom_tile()
-
-visual_stim = as.data.frame(example_fly_1$visual_stim)
-names(visual_stim) <- NULL
-
-p2 <- ggplot(visual_stim,aes(seq(1,dim(visual_stim)[1]),visual_stim)) +
-  geom_line()
 
 
-p <- plot_grid(p1,p2,ncol = 1)
 
 
 # offset precision distribution in this environment
@@ -100,28 +85,10 @@ p2 <- ggplot(initial_low_contrast, aes(offset_precision,mean_bump_width)) +
 
 
 p <- plot_grid(p1, p2)
-# now add the title
-title <- ggdraw() + 
-  draw_label(
-    "Low contrast",
-    fontface = 'bold',
-    x = 0,
-    hjust = 0
-  ) +
-  theme(
-    # add margin on the left of the drawing canvas,
-    # so title is aligned with left edge of first plot
-    plot.margin = margin(0, 0, 0, 7)
-  )
-plot_grid(
-  title, p,
-  ncol = 1,
-  # rel_heights values control vertical title margins
-  rel_heights = c(0.1, 1)
-)
+p
 
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig4", file="Bump_pars_offset_precision.svg",device = 'svg', width=11, height=10)
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig4", file="Bump_pars_offset_precision.png",device = 'png', width=11, height=10)
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig4", file="Bump_pars_offset_precision.svg",device = 'svg', width=12, height=6)
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig4", file="Bump_pars_offset_precision.png",device = 'png', width=12, height=6)
 
 
 #as correlation (to get the coefficient)

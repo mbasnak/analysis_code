@@ -684,6 +684,25 @@ set(gca,'YTickLabel',a,'fontsize',12);
 
 saveas(gcf,[path,'\groupPlots\heading_plasticity.png']);
 
+%% Compare initial offset precision bar and wind
+
+offset_precision_bar = [];
+offset_precision_wind = [];
+for fly = 1:length(data)
+    if configuration(fly) == 1
+        offset_precision_bar(fly) = offset_precision(fly,1);
+        offset_precision_wind(fly) = offset_precision(fly,2);
+    else
+        offset_precision_bar(fly) = offset_precision(fly,2);
+        offset_precision_wind(fly) = offset_precision(fly,1);
+    end
+end
+
+all_initial_offset_precision = [offset_precision_bar,offset_precision_wind];
+block_type = [repelem(1,1,length(offset_precision_bar)),repelem(2,1,length(offset_precision_wind))];
+fly_num = [1:length(offset_precision_bar),1:length(offset_precision_wind)];
+initial_offset_precision_data = table(all_initial_offset_precision',block_type',fly_num','VariableNames',{'offset_precision','block_type','fly_num'});
+writetable(initial_offset_precision_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp35\data\high_reliability\initial_offset_precision_data.csv')
 
 %% Clear space
 

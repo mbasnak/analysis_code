@@ -29,8 +29,8 @@ sorted_bump_PI %>%
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=22),
         axis.text = element_text(size=20), axis.ticks.length.x = unit(0.5, "cm"),
-        axis.line.x = element_line(size=1.5),
-        axis.line.y = element_line(size=1.5)) +
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
   scale_x_continuous(breaks=1:14) +
   stat_summary(aes(group=fly), fun.y = mean, color="black", geom="crossbar", width=0.5, lwd=0.5) +
   xlab("Fly #") + ylab("Bump preference index")
@@ -53,8 +53,8 @@ sorted_heading_PI %>%
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=22),
         axis.text = element_text(size=20), axis.ticks.length.x = unit(0.5, "cm"),
-        axis.line.x = element_line(size=1.5),
-        axis.line.y = element_line(size=1.5)) +
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
   scale_x_continuous(breaks=1:14) +
   stat_summary(aes(group=fly), fun.y = mean, color="black", geom="crossbar", width=0.5, lwd=0.5) +
   xlab("Fly #") + ylab("Behavioral preference index")
@@ -77,19 +77,19 @@ offset_and_PI_mdl <- lme(pref_ind ~ offset_ratio,random=~1|fly, offset_ratio_ord
 summary(offset_and_PI_mdl)
 
 ggplot(offset_ratio_ordered_data2,aes(offset_ratio, pref_ind)) + 
-  geom_line(aes(offset_ratio, pref_ind, group = fly),color = 'gray70') +
+  geom_line(aes(offset_ratio, pref_ind, group = fly),color = 'gray70',size=1) +
   geom_point() +
   geom_smooth(method='lm', se = FALSE, color = 'red')  +
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=22),
         axis.text = element_text(size=20), axis.ticks.length.x = unit(0.5, "cm"),
-        axis.line.x = element_line(size=1.5),
-        axis.line.y = element_line(size=1.5)) +
-  labs(x = "Wind offset precision / Bar offset precision", y='Bump preference index') +
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  labs(x = "Wind encoding reliability / Bar encoding reliability", y='Bump preference index') +
   scale_x_continuous(breaks=1:14) +
   ylim(-1,1)
 
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig7", file="bump_PI_vs_offset_ratio.svg",device = 'svg', width=10, height=8)
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig7", file="bump_PI_vs_offset_ratio.svg",device = 'svg', width=12, height=8)
 
 
 
@@ -120,5 +120,5 @@ ggplot(all_PI_data, aes(bump.PI,heading.PI))+
   labs(x = 'Bump preference index') +
   labs(y = 'Heading preference index')
 
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig7", file="heading_vs_bump_PI.svg",device = 'svg', width=10, height=8)
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig7", file="heading_vs_bump_PI.svg",device = 'svg', width=8, height=8)
 

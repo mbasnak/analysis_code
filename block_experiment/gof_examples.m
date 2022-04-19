@@ -194,10 +194,13 @@ fo = fitoptions('Method','NonlinearLeastSquares',...
 
 ft = fittype('a*exp(k*cos(x-u))+c','options',fo);
 
-for timepoint = [1485,1494,1589,1677,1791,1961,3654]
+%random_points = datasample(1:length(dff),10);
+random_points = [3494,380,8435];
+
+for timepoint = 1:length(random_points)
     
     %4) Fit the data
-    data_to_fit = dff(timepoint,:);
+    data_to_fit = dff(random_points(timepoint),:);
     [model_data, gof] = fit(angular_midline_distances_2pi,data_to_fit',ft,...
         'MaxIter',20000,'MaxFunEvals',20000);
     adj_rs(timepoint) = gof.adjrsquare;
@@ -220,7 +223,7 @@ for timepoint = [1485,1494,1589,1677,1791,1961,3654]
     
     %7) Uncomment to plot the original data and the fit
     figure,
-    plot(angular_midline_distances,dff(timepoint,:)','k','linewidth',1.5)
+    plot(angular_midline_distances,dff(random_points(timepoint),:)','k','linewidth',1.5)
     hold on
     plot(angular_midline_distances,feval(model_data,angular_midline_distances),'color',[.6 .2 .6],'linewidth',1.5)
     xlabel('Angular distance (radians)');
@@ -228,6 +231,10 @@ for timepoint = [1485,1494,1589,1677,1791,1961,3654]
     title(['R2 = ',num2str(round(gof.adjrsquare,2))]);
     legend('data','fit','location','best');     
     
-    saveas(gcf,[path,'\analysis\continuous_plots\example_gof_frame_',num2str(timepoint),'.png'])
+    data = dff(random_points(timepoint),:);
+    fit_data = feval(model_data,angular_midline_distances);
+    example_data_fit = table(angular_midline_distances,data',fit_data,'VariableNames',{'distance','data','fit'});
+    writetable(example_data_fit,['Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp35\data\high_reliability\example_data_fit_',num2str(timepoint),'.csv'])
+    %saveas(gcf,[path,'\analysis\continuous_plots\example_gof_frame_',num2str(timepoint),'.png'])
     
 end

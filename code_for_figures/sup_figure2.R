@@ -37,8 +37,8 @@ p1 <- ggplot() +
         axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
         axis.line.x = element_line(size=1.5),
         axis.line.y = element_line(size=1.5)) +
-  geom_line(data = mean_and_sd_bump_pars_bar_trials,aes(movement,mean_bump_mag,group = 1),color = 'gray0',size=2) +
-  geom_errorbar(data=mean_and_sd_bump_pars_bar_trials, mapping=aes(x=movement, ymin=mean_bump_mag + sd_bump_mag/sqrt(n), ymax=mean_bump_mag - sd_bump_mag/sqrt(n)), width=0, size=2, color="gray0") +
+  geom_line(data = mean_and_sd_bump_pars_bar_trials,aes(movement,mean_bump_mag,group = 1),color = '#14BDFA',size=2) +
+  geom_errorbar(data=mean_and_sd_bump_pars_bar_trials, mapping=aes(x=movement, ymin=mean_bump_mag + sd_bump_mag/sqrt(n), ymax=mean_bump_mag - sd_bump_mag/sqrt(n)), width=0, size=2, color="#14BDFA") +
   scale_x_discrete(labels=scales::wrap_format(10)) +
   labs(x="", y="Bump magnitude (DF/F)") 
 
@@ -49,8 +49,8 @@ p2 <- ggplot() +
         axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
         axis.line.x = element_line(size=1.5),
         axis.line.y = element_line(size=1.5)) +
-  geom_line(data = mean_and_sd_bump_pars_bar_trials,aes(movement,mean_bump_width,group = 1),color = 'gray0',size=2) +
-  geom_errorbar(data=mean_and_sd_bump_pars_bar_trials, mapping=aes(x=movement, ymin=mean_bump_width + sd_bump_width/sqrt(n), ymax=mean_bump_width - sd_bump_width/sqrt(n)), width=0, size=2, color="gray0") +
+  geom_line(data = mean_and_sd_bump_pars_bar_trials,aes(movement,mean_bump_width,group = 1),color = '#FAAF0F',size=2) +
+  geom_errorbar(data=mean_and_sd_bump_pars_bar_trials, mapping=aes(x=movement, ymin=mean_bump_width + sd_bump_width/sqrt(n), ymax=mean_bump_width - sd_bump_width/sqrt(n)), width=0, size=2, color="#FAAF0F") +
   scale_x_discrete(labels=scales::wrap_format(10)) +
   labs(x="", y="Bump width (deg)") 
 
@@ -98,17 +98,32 @@ ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig2"
 
 
 #individual flies bump pars vs rotational speed
+all_mvt_data_bar_trial <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp28/data/all_movement_data_bar_trial.csv")
+
+all_mvt_data_bar_trial <- all_mvt_data_bar_trial %>% filter(between(rot_speed, 20, 150))
+
+all_mvt_data_bar_trial$bump_width <- rad2deg(all_mvt_data_bar_trial$bump_width)
 
 ## Plot showing individual lines per fly
-p1 <- ggplot(all_mvt_data_bar_trial %>% filter(rot_speed<250), aes(rot_speed, bump_mag, group=fly, color=factor(fly))) +
-  geom_smooth() +
-  fig1_theme +
-  labs(x = 'Rotational speed (deg/s)', y='Bump magnitude', color = '',fill = '')
+p1 <- ggplot(all_mvt_data_bar_trial, aes(rot_speed, bump_mag, group=fly, color=factor(fly))) +
+  geom_smooth(se=FALSE) +
+  theme(legend.position='none',
+        panel.background=element_rect(fill="white"),
+        axis.line = element_line(color="black", size=1),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        text = element_text(size=22),axis.text = element_text(size = 20)) +
+  labs(x = 'Rotational speed (deg/s)', y='Bump magnitude (DF/F)', color = '',fill = '')
 
-p2 <- ggplot(all_mvt_data_bar_trial %>% filter(rot_speed<250), aes(rot_speed, bump_width, group=fly, color=factor(fly))) +
-  geom_smooth() + 
-  fig1_theme +
-  labs(x = 'Rotational speed (deg/s)', y='Bump width', color = '',fill = '')
+p2 <- ggplot(all_mvt_data_bar_trial, aes(rot_speed, bump_width, group=fly, color=factor(fly))) +
+  geom_smooth(se=FALSE) + 
+  theme(legend.position='none',
+        panel.background=element_rect(fill="white"),
+        axis.line = element_line(color="black", size=1),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        text = element_text(size=22),axis.text = element_text(size = 20)) +
+  labs(x = 'Rotational speed (deg/s)', y='Bump width (deg)', color = '',fill = '')
 
 p <- plot_grid(p1, p2)
 p
@@ -152,8 +167,8 @@ p1 <- ggplot() +
         axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
         axis.line.x = element_line(size=1.5),
         axis.line.y = element_line(size=1.5)) +
-  geom_line(data = mean_and_sd_bump_pars_empty_trials,aes(movement,mean_bump_mag,group = 1),color = 'gray0',size=2) +
-  geom_errorbar(data=mean_and_sd_bump_pars_empty_trials, mapping=aes(x=movement, ymin=mean_bump_mag + sd_bump_mag/sqrt(n), ymax=mean_bump_mag - sd_bump_mag/sqrt(n)), width=0, size=2, color="gray0") +
+  geom_line(data = mean_and_sd_bump_pars_empty_trials,aes(movement,mean_bump_mag,group = 1),color = '#14BDFA',size=2) +
+  geom_errorbar(data=mean_and_sd_bump_pars_empty_trials, mapping=aes(x=movement, ymin=mean_bump_mag + sd_bump_mag/sqrt(n), ymax=mean_bump_mag - sd_bump_mag/sqrt(n)), width=0, size=2, color="#14BDFA") +
   scale_x_discrete(labels=scales::wrap_format(10)) +
   labs(x="", y="Bump magnitude (DF/F)") 
 
@@ -164,8 +179,8 @@ p2 <- ggplot() +
         axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
         axis.line.x = element_line(size=1.5),
         axis.line.y = element_line(size=1.5)) +
-  geom_line(data = mean_and_sd_bump_pars_empty_trials,aes(movement,mean_bump_width,group = 1),color = 'gray0',size=2) +
-  geom_errorbar(data=mean_and_sd_bump_pars_empty_trials, mapping=aes(x=movement, ymin=mean_bump_width + sd_bump_width/sqrt(n), ymax=mean_bump_width - sd_bump_width/sqrt(n)), width=0, size=2, color="gray0") +
+  geom_line(data = mean_and_sd_bump_pars_empty_trials,aes(movement,mean_bump_width,group = 1),color = '#FAAF0F',size=2) +
+  geom_errorbar(data=mean_and_sd_bump_pars_empty_trials, mapping=aes(x=movement, ymin=mean_bump_width + sd_bump_width/sqrt(n), ymax=mean_bump_width - sd_bump_width/sqrt(n)), width=0, size=2, color="#FAAF0F") +
   scale_x_discrete(labels=scales::wrap_format(10)) +
   labs(x="", y="Bump width (deg)") 
 

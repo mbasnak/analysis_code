@@ -2,7 +2,6 @@
 
 #load useful libraries
 library(nlme)
-library(lmer)
 library(multcomp)
 library(ggplot2)
 library(tidyverse)
@@ -48,8 +47,8 @@ ggplot() +
         text=element_text(size=18),
         axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
         axis.text.x = element_text(angle = 30, vjust=.8, hjust=0.8),
-        axis.line.x = element_line(size=1.5),
-        axis.line.y = element_line(size=1.5)) +
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
   geom_line(data = mean_and_sd_offset,aes(trial,mean_offset_precision,group = 1),color = 'gray0',size=2) +
   geom_errorbar(data=mean_and_sd_offset, mapping=aes(x=trial, ymin=mean_offset_precision + sd_offset_precision/sqrt(n), ymax=mean_offset_precision - sd_offset_precision/sqrt(n)), width=0, size=2, color="gray0") +
   scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
@@ -90,7 +89,7 @@ p1 <- ggplot(learning_data_diff,aes(offset_diff,bump_mag)) +
         axis.line.x = element_line(size=1),
         axis.line.y = element_line(size=1)) +
   scale_x_continuous(name="Remapping index") +
-  scale_y_continuous(name="Bump magntiude (DF/F)", limits=c(0, 3)) 
+  scale_y_continuous(name="Bump magntiude (DF/F)", limits=c(0.5,2.5)) 
 
 p2 <- ggplot(learning_data_diff,aes(offset_diff,bump_width)) +
   geom_point(size = 2.5)+
@@ -175,6 +174,15 @@ ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig5", f
 
 hb_offset_diff_evo <- read_csv('Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp28/data/hb_offset_diff_evo.csv')
 
+#3) Rename factor levels
+hb_offset_diff_evo <-
+  hb_offset_diff_evo %>% 
+  mutate(block = factor(
+    case_when(block == 1 ~ "Initial part",
+              block == 2 ~ "Final part"), 
+    levels = c("Initial part","Final part"))
+  )
+
 # get mean and sd
 mean_and_sd_offset_diff <- hb_offset_diff_evo %>%
   group_by(block) %>% 
@@ -187,16 +195,16 @@ ggplot() +
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=18),
         axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
-        axis.text.x = element_text(angle = 30, vjust=.8, hjust=0.8),
-        axis.line.x = element_line(size=1.5),
-        axis.line.y = element_line(size=1.5)) +
+        axis.text.x = element_text(vjust=.8, hjust=0.8),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
   geom_line(data = mean_and_sd_offset_diff,aes(block,mean_offset_diff,group = 1),color = 'gray0',size=2) +
   geom_errorbar(data=mean_and_sd_offset_diff, mapping=aes(x=block, ymin=mean_offset_diff + sd_offset_diff/sqrt(n), ymax=mean_offset_diff - sd_offset_diff/sqrt(n)), width=0, size=2, color="gray0") +
   scale_x_discrete(labels=scales::wrap_format(10)) +
   labs(x="", y="Remapping index")+
   ylim(c(-0.8,0.8))
 
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig5", file="offset_diff_evo.svg",device = 'svg', width=11, height=6)
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig5", file="offset_diff_evo.png",device = 'png', width=11, height=6)
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig5", file="offset_diff_evo.svg",device = 'svg', width=4, height=6)
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig5", file="offset_diff_evo.png",device = 'png', width=4, height=6)
 
 
