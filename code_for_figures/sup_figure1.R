@@ -59,7 +59,7 @@ p3 <- ggplot(example_fit_3,aes(distance,data)) +
 
 
 p <- p1/p2/p3
-p
+p + plot_annotation(tag_levels = list(c('A',"","")))
 
 ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig1", file="example_fit.svg",device = 'svg', width=8, height=10)
 

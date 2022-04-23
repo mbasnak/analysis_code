@@ -370,9 +370,6 @@ yticklabels({'0','30','60','90','120','150','180'});
 
 saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Block-Experiment\single_cue_cc_offset_diff.svg');
 
-%save data for statistical analysis
-cue_order_data = [abs(single_cue_cc_diff_1)',abs(single_cue_cc_diff_2)'];
-writematrix(cue_order_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp35\data\high_reliability\cue_order_data.csv');
 
 %% Repeat plotting similarity instead of difference
 
@@ -395,6 +392,9 @@ yticklabels({'0','30','60','90','120','150','180'});
 
 saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Block-Experiment\single_cue_cc_offset_sim.svg');
 
+%save data for statistical analysis
+cue_order_data = [abs(single_cue_cc_sim_1)',abs(single_cue_cc_sim_2)'];
+writematrix(cue_order_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp35\data\high_reliability\cue_order_data.csv');
 
 %% Repeat color-coding by cue type
 
@@ -479,98 +479,98 @@ plasticity_data_thresh = table(all_single_cue_cc_diff_thresh',all_single_cue_dif
 writetable(plasticity_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp35\data\high_reliability\plasticity_data.csv')
 writetable(plasticity_data_thresh,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp35\data\high_reliability\plasticity_data_thresh.csv')
 
-
-%% Total movement per block
-
-for fly = 1:length(data)
-    
-    for block = 1:5
-        
-        t_mvt(fly,block) = nanmean(data(fly).summary_data.TotalMvt(data(fly).summary_data.BlockType == block));
-    
-    end
-    
-end
-
-figure,
-plot(t_mvt','color',[.6 .6 .6])
-hold on
-errorbar([1:5],mean(t_mvt),std(t_mvt)/sqrt(length(t_mvt)),'-k','LineWidth',3)
-xlim([0 6]);
-xticks([1:5]);
-xticklabels({'single cue','single cue','cue combination','single cue','single cue'})
-ylabel('Total movement (deg/s)');
-
-saveas(gcf,[path,'\groupPlots\total_mvt_per_block.png']);
-
-%% Angular speed per block
-
-for fly = 1:length(data)
-    
-    for block = 1:5
-        
-        yaw_speed(fly,block) = nanmean(data(fly).summary_data.YawSpeed(data(fly).summary_data.BlockType == block));
-    
-    end
-    
-end
-
-figure,
-plot(yaw_speed','color',[.6 .6 .6])
-hold on
-errorbar([1:5],mean(yaw_speed),std(yaw_speed)/sqrt(length(yaw_speed)),'-k','LineWidth',3)
-xlim([0 6]);
-xticks([1:5]);
-xticklabels({'single cue','single cue','cue combination','single cue','single cue'})
-ylabel('Yaw speed (deg/s)');
-
-saveas(gcf,[path,'\groupPlots\angular_speed_per_block.png']);
-
-%% Forward vel per block
-
-for fly = 1:length(data)
-    
-    for block = 1:5
-        
-        for_vel(fly,block) = nanmean(data(fly).summary_data.ForVel(data(fly).summary_data.BlockType == block));
-    
-    end
-    
-end
-
-figure,
-plot(for_vel','color',[.6 .6 .6])
-hold on
-errorbar([1:5],mean(for_vel),std(for_vel)/sqrt(length(for_vel)),'-k','LineWidth',3)
-xlim([0 6]);
-xticks([1:5]);
-xticklabels({'single cue','single cue','cue combination','single cue','single cue'})
-ylabel('For vel (mm/s)');
-
-saveas(gcf,[path,'\groupPlots\for_vel_per_block.png']);
-
-%% Probability of stopping per block
-
-for fly = 1:length(data)
-    
-    for block = 1:5
-        
-        p_stopping(fly,block) = sum(data(fly).summary_data.TotalMvt(data(fly).summary_data.BlockType == block)<25)/length(data(fly).summary_data.TotalMvt(data(fly).summary_data.BlockType == block));
-    
-    end
-    
-end
-
-figure,
-plot(p_stopping','color',[.6 .6 .6])
-hold on
-errorbar([1:5],mean(p_stopping),std(p_stopping)/sqrt(length(p_stopping)),'-k','LineWidth',3)
-xlim([0 6]);
-xticks([1:5]);
-xticklabels({'single cue','single cue','cue combination','single cue','single cue'})
-ylabel('P stopping');
-
-saveas(gcf,[path,'\groupPlots\p_stopping_per_block.png']);
+% 
+% %% Total movement per block
+% 
+% for fly = 1:length(data)
+%     
+%     for block = 1:5
+%         
+%         t_mvt(fly,block) = nanmean(data(fly).summary_data.TotalMvt(data(fly).summary_data.BlockType == block));
+%     
+%     end
+%     
+% end
+% 
+% figure,
+% plot(t_mvt','color',[.6 .6 .6])
+% hold on
+% errorbar([1:5],mean(t_mvt),std(t_mvt)/sqrt(length(t_mvt)),'-k','LineWidth',3)
+% xlim([0 6]);
+% xticks([1:5]);
+% xticklabels({'single cue','single cue','cue combination','single cue','single cue'})
+% ylabel('Total movement (deg/s)');
+% 
+% saveas(gcf,[path,'\groupPlots\total_mvt_per_block.png']);
+% 
+% %% Angular speed per block
+% 
+% for fly = 1:length(data)
+%     
+%     for block = 1:5
+%         
+%         yaw_speed(fly,block) = nanmean(data(fly).summary_data.YawSpeed(data(fly).summary_data.BlockType == block));
+%     
+%     end
+%     
+% end
+% 
+% figure,
+% plot(yaw_speed','color',[.6 .6 .6])
+% hold on
+% errorbar([1:5],mean(yaw_speed),std(yaw_speed)/sqrt(length(yaw_speed)),'-k','LineWidth',3)
+% xlim([0 6]);
+% xticks([1:5]);
+% xticklabels({'single cue','single cue','cue combination','single cue','single cue'})
+% ylabel('Yaw speed (deg/s)');
+% 
+% saveas(gcf,[path,'\groupPlots\angular_speed_per_block.png']);
+% 
+% %% Forward vel per block
+% 
+% for fly = 1:length(data)
+%     
+%     for block = 1:5
+%         
+%         for_vel(fly,block) = nanmean(data(fly).summary_data.ForVel(data(fly).summary_data.BlockType == block));
+%     
+%     end
+%     
+% end
+% 
+% figure,
+% plot(for_vel','color',[.6 .6 .6])
+% hold on
+% errorbar([1:5],mean(for_vel),std(for_vel)/sqrt(length(for_vel)),'-k','LineWidth',3)
+% xlim([0 6]);
+% xticks([1:5]);
+% xticklabels({'single cue','single cue','cue combination','single cue','single cue'})
+% ylabel('For vel (mm/s)');
+% 
+% saveas(gcf,[path,'\groupPlots\for_vel_per_block.png']);
+% 
+% %% Probability of stopping per block
+% 
+% for fly = 1:length(data)
+%     
+%     for block = 1:5
+%         
+%         p_stopping(fly,block) = sum(data(fly).summary_data.TotalMvt(data(fly).summary_data.BlockType == block)<25)/length(data(fly).summary_data.TotalMvt(data(fly).summary_data.BlockType == block));
+%     
+%     end
+%     
+% end
+% 
+% figure,
+% plot(p_stopping','color',[.6 .6 .6])
+% hold on
+% errorbar([1:5],mean(p_stopping),std(p_stopping)/sqrt(length(p_stopping)),'-k','LineWidth',3)
+% xlim([0 6]);
+% xticks([1:5]);
+% xticklabels({'single cue','single cue','cue combination','single cue','single cue'})
+% ylabel('P stopping');
+% 
+% saveas(gcf,[path,'\groupPlots\p_stopping_per_block.png']);
 
 %% Heading evolution (look at individual examples and then a plasticity metric of sorts?)
 
@@ -703,6 +703,32 @@ block_type = [repelem(1,1,length(offset_precision_bar)),repelem(2,1,length(offse
 fly_num = [1:length(offset_precision_bar),1:length(offset_precision_wind)];
 initial_offset_precision_data = table(all_initial_offset_precision',block_type',fly_num','VariableNames',{'offset_precision','block_type','fly_num'});
 writetable(initial_offset_precision_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp35\data\high_reliability\initial_offset_precision_data.csv')
+
+%% Repeat for initial bump parameters
+
+bump_mag_bar = [];
+bump_mag_wind = [];
+bump_width_bar = [];
+bump_width_wind = [];
+for fly = 1:length(data)
+    if configuration(fly) == 1
+        bump_mag_bar(fly) = thresh_BM_mean(fly,1);
+        bump_mag_wind(fly) = thresh_BM_mean(fly,2);
+        bump_width_bar(fly) = thresh_BW_mean(fly,1);
+        bump_width_wind(fly) = thresh_BW_mean(fly,2);
+    else
+        bump_mag_bar(fly) = thresh_BM_mean(fly,2);
+        bump_mag_wind(fly) = thresh_BM_mean(fly,1);
+        bump_width_bar(fly) = thresh_BW_mean(fly,2);
+        bump_width_wind(fly) = thresh_BW_mean(fly,1);
+    end
+end
+
+all_initial_bump_mag = [bump_mag_bar,bump_mag_wind];
+all_initial_bump_width = [bump_width_bar,bump_width_wind];
+initial_bump_pars_data = table(all_initial_bump_mag',all_initial_bump_width',block_type',fly_num','VariableNames',{'bump_mag','bump_width','block_type','fly_num'});
+writetable(initial_bump_pars_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp35\data\high_reliability\initial_bump_pars_data.csv')
+
 
 %% Clear space
 

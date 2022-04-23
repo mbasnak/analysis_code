@@ -683,13 +683,13 @@ for fly = 1:length(data)
     movement = data(fly).modelTableNG{1,1}.TotalMovement(1:1836);
     
     BM = data(fly).modelTableNG{1,1}.BumpMagnitude(1:1836);
-    mean_NG_bump_mag_thresh(fly) = mean(BM(gof>0.45 & movement > 25));
+    mean_NG_bump_mag_thresh(fly) = mean(BM(gof>0.45 & movement > 20));
     
     BW = data(fly).modelTableNG{1,1}.BumpWidth(1:1836);
-    mean_NG_bump_width_thresh(fly) = mean(BW(gof>0.45 & movement > 25));
+    mean_NG_bump_width_thresh(fly) = mean(BW(gof>0.45 & movement > 20));
     
     offset = deg2rad(data(fly).modelTableNG{1,1}.Offset(1:1836));
-    NG_offset_precision(fly) = circ_r(offset(movement > 25));
+    NG_offset_precision(fly) = circ_r(offset(movement > 20));
     
 end
 
@@ -714,14 +714,14 @@ for fly = 1:length(data)
     
     %get offset precision
     bar_offset_precision_initial_quarter = circ_r(bar_offset_initial_quarter);
-    bar_offset_precision_initial_quarter_thresh = circ_r(bar_offset_initial_quarter(mvt_initial_quarter > 25));
+    bar_offset_precision_initial_quarter_thresh = circ_r(bar_offset_initial_quarter(mvt_initial_quarter > 20));
     bar_offset_precision_final_quarter = circ_r(bar_offset_final_quarter);
-    bar_offset_precision_final_quarter_thresh = circ_r(bar_offset_final_quarter(mvt_final_quarter > 25));
+    bar_offset_precision_final_quarter_thresh = circ_r(bar_offset_final_quarter(mvt_final_quarter > 20));
     
     heading_offset_precision_initial_quarter = circ_r(heading_offset_initial_quarter);
-    heading_offset_precision_initial_quarter_thresh = circ_r(heading_offset_initial_quarter(mvt_initial_quarter > 25));
+    heading_offset_precision_initial_quarter_thresh = circ_r(heading_offset_initial_quarter(mvt_initial_quarter > 20));
     heading_offset_precision_final_quarter = circ_r(heading_offset_final_quarter);
-    heading_offset_precision_final_quarter_thresh = circ_r(heading_offset_final_quarter(mvt_final_quarter > 25));   
+    heading_offset_precision_final_quarter_thresh = circ_r(heading_offset_final_quarter(mvt_final_quarter > 20));   
     
     %get offset precision ratios
     heading_bar_offset_precision_ratio_initial_quarter(fly) = heading_offset_precision_initial_quarter/bar_offset_precision_initial_quarter;
@@ -735,6 +735,9 @@ for fly = 1:length(data)
     heading_bar_offset_precision_diff_initial_quarter_thresh(fly) = heading_offset_precision_initial_quarter_thresh - bar_offset_precision_initial_quarter_thresh;
     heading_bar_offset_precision_diff_final_quarter_thresh(fly) = heading_offset_precision_final_quarter_thresh - bar_offset_precision_final_quarter_thresh;
     
+    remapping_index_initial(fly) = (heading_offset_precision_initial_quarter_thresh - bar_offset_precision_initial_quarter_thresh)/(heading_offset_precision_initial_quarter_thresh + bar_offset_precision_initial_quarter_thresh);
+    remapping_index_final(fly) = (heading_offset_precision_final_quarter_thresh - bar_offset_precision_final_quarter_thresh)/(heading_offset_precision_final_quarter_thresh + bar_offset_precision_final_quarter_thresh);
+
 end
 
 
@@ -784,34 +787,52 @@ fly_number = [1:length(heading_bar_offset_precision_diff_initial_quarter_thresh)
 heading_bar_offset_diff_data = table(heading_bar_offset_diff',block',fly_number','VariableNames',{'offset_diff','block','fly'});
 writetable(heading_bar_offset_diff_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\hb_offset_diff_evo.csv')
 
+% 
+% %% Plot the between the ratio of bar/heading offset precision in the last quarter vs normal gain par values
+% 
+% figure('Position',[100 100 1400 600]),
+% subplot(1,3,1)
+% plot(heading_bar_offset_precision_ratio_final_quarter_thresh,mean_NG_bump_mag_thresh,'ko')
+% xlabel('Final heading/bar offset precision');
+% ylabel('Bump magnitude in the preceding block')
+% ylim([0.5 3]);
+% 
+% subplot(1,3,2)
+% plot(heading_bar_offset_precision_ratio_final_quarter_thresh,mean_NG_bump_width_thresh,'ko')
+% xlabel('Final heading/bar offset precision');
+% ylabel('Bump width in the preceding block')
+% ylim([1.5 2.5]);
+% 
+% subplot(1,3,3)
+% plot(heading_bar_offset_precision_ratio_final_quarter_thresh,NG_offset_precision,'ko')
+% xlabel('Final heading/bar offset precision');
+% ylabel('Offset precision in the preceding block')
+% 
+% saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\InvertedGain-Experiment\learning_strategy_prediction.svg')
+% 
+% % Save data for statistical analysis in R
+% learning_data = table(heading_bar_offset_precision_ratio_final_quarter_thresh',mean_NG_bump_mag_thresh',mean_NG_bump_width_thresh',NG_offset_precision','VariableNames',{'offset_ratio','bump_mag','bump_width','offset_precision'});
+% writetable(learning_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\learning_data.csv')
 
-%% Plot the between the ratio of bar/heading offset precision in the last quarter vs normal gain par values
+%% repeat for the remapping index
 
-figure('Position',[100 100 1400 600]),
-subplot(1,3,1)
-plot(heading_bar_offset_precision_ratio_final_quarter_thresh,mean_NG_bump_mag_thresh,'ko')
-xlabel('Final heading/bar offset precision');
-ylabel('Bump magnitude in the preceding block')
-ylim([0.5 3]);
+figure('Position',[100 100 800 800]),
+plot([remapping_index_initial;remapping_index_final],'-o','color',[.5 .5 .5])
+hold on
+plot(mean([remapping_index_initial;remapping_index_final],2),'-ko','linewidth',2,'MarkerFaceColor','k')
+xlim([0 3]);
+xticks([1 2]);
+xticklabels({'Initial quarter','Final quarter'});
+ylabel('Remapping index','fontsize',16);
+a = get(gca,'XTickLabel');  
+set(gca,'XTickLabel',a,'fontsize',14)
 
-subplot(1,3,2)
-plot(heading_bar_offset_precision_ratio_final_quarter_thresh,mean_NG_bump_width_thresh,'ko')
-xlabel('Final heading/bar offset precision');
-ylabel('Bump width in the preceding block')
-ylim([1.5 2.5]);
+ranksum(remapping_index_initial,remapping_index_final)
 
-subplot(1,3,3)
-plot(heading_bar_offset_precision_ratio_final_quarter_thresh,NG_offset_precision,'ko')
-xlabel('Final heading/bar offset precision');
-ylabel('Offset precision in the preceding block')
-
-saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\InvertedGain-Experiment\learning_strategy_prediction.svg')
-
-% Save data for statistical analysis in R
-learning_data = table(heading_bar_offset_precision_ratio_final_quarter_thresh',mean_NG_bump_mag_thresh',mean_NG_bump_width_thresh',NG_offset_precision','VariableNames',{'offset_ratio','bump_mag','bump_width','offset_precision'});
-writetable(learning_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\learning_data.csv')
-
-
+%save data to plot in R
+remapping_index = [remapping_index_initial,remapping_index_final];
+remapping_index_data = table(remapping_index',block',fly_number','VariableNames',{'remapping_index','block','fly'});
+writetable(remapping_index_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\remapping_index.csv')
 
 %% Plot the diff between heading and bar offset precision in the last quarter vs normal gain par values
 
@@ -839,6 +860,27 @@ saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\InvertedGain-Experi
 % Save data for statistical analysis in R
 learning_data_diff = table(heading_bar_offset_precision_diff_final_quarter_thresh',mean_NG_bump_mag_thresh',mean_NG_bump_width_thresh',NG_offset_precision','VariableNames',{'offset_diff','bump_mag','bump_width','offset_precision'});
 writetable(learning_data_diff,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\learning_data_diff.csv')
+
+
+%% Compute remapping index as the difference divided the sum of heading/bar offset precision
+
+figure('Position',[100 100 1400 600]),
+subplot(1,3,1)
+plot(remapping_index_final,mean_NG_bump_mag_thresh,'ko')
+xlabel('Final heading - bar offset precision');
+ylabel('Bump magnitude in the preceding block')
+ylim([0.5 3]);
+
+subplot(1,3,2)
+plot(remapping_index_final,mean_NG_bump_width_thresh,'ko')
+xlabel('Final heading - bar offset precision');
+ylabel('Bump width in the preceding block')
+ylim([1.5 2.5]);
+
+subplot(1,3,3)
+plot(remapping_index_final,NG_offset_precision,'ko')
+xlabel('Final heading - bar offset precision');
+ylabel('Offset precision in the preceding block')
 
 %% 
 clear all; close all;

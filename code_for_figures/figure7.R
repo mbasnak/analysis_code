@@ -2,14 +2,13 @@
 
 #load useful libraries
 library(nlme)
-library(lmer)
 library(multcomp)
 library(ggplot2)
 library(tidyverse)
 library(cowplot)
 library(rCAT)
-
-
+library(patchwork)
+library(spatstat)
 
 # 2 examples around cue jumps
 
@@ -93,9 +92,6 @@ ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig7", f
 
 
 
-# behavior around jumps
-
-
 # relationship between bump and behavior PI
 all_PI_data <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/all_PI_data.csv")
 
@@ -122,3 +118,85 @@ ggplot(all_PI_data, aes(bump.PI,heading.PI))+
 
 ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig7", file="heading_vs_bump_PI.svg",device = 'svg', width=8, height=8)
 
+
+#assess if points are randomly distributed or aggregated, using the clark evans method
+point_data <- ppp(x = all_PI_data$bump.PI,y=all_PI_data$heading.PI,window=owin(c(-1,1),c(-1,1)))
+clarkevans.test(point_data)
+
+
+
+# code to make full figure for paper --------------------------------------
+
+#bump PI
+p1 <- sorted_bump_PI %>% 
+  pivot_longer(everything(), names_to = "fly", values_to = "PI") %>%
+  mutate(fly = str_remove(fly, "fly") %>% as.numeric()) %>% 
+  ggplot(aes(x=fly, y=PI, group=fly)) + 
+  geom_hline(yintercept = 0, lty=2) + 
+  gghalves::geom_half_violin(scale = "width", trim=TRUE, adjust=1.0, fill="#FF9F9B") +
+  geom_point(size=1.5) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=16),
+        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  scale_x_continuous(breaks=1:14) +
+  stat_summary(aes(group=fly), fun.y = mean, color="black", geom="crossbar", width=0.5, lwd=0.5) +
+  xlab("Fly #") + ylab("HD cell preference index")
+
+#heading PI
+p2 <- sorted_heading_PI %>% 
+  pivot_longer(everything(), names_to = "fly", values_to = "PI") %>%
+  mutate(fly = str_remove(fly, "fly") %>% as.numeric()) %>% 
+  ggplot(aes(x=fly, y=PI, group=fly)) + 
+  geom_hline(yintercept = 0, lty=2) + 
+  gghalves::geom_half_violin(scale = "width", trim=TRUE, adjust=1.0, fill="#FF9F9B") +
+  geom_point(size=1.5) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=16),
+        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  scale_x_continuous(breaks=1:14) +
+  stat_summary(aes(group=fly), fun.y = mean, color="black", geom="crossbar", width=0.5, lwd=0.5) +
+  xlab("Fly #") + ylab("Behavioral preference index")
+
+#bump PI vs initial offset ratio
+p3 <- ggplot(offset_ratio_ordered_data2,aes(offset_ratio, pref_ind)) + 
+  geom_line(aes(offset_ratio, pref_ind, group = fly),color = 'gray70',size=1) +
+  geom_point() +
+  geom_smooth(method='lm', se = FALSE, color = 'red')  +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=16),
+        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  labs(x = "Wind encoding reliability / \n Bar encoding reliability", y='HD cell preference index') +
+  ylim(-1,1)
+
+# relationship between bump and behavior PI
+p4 <- ggplot(all_PI_data, aes(bump.PI,heading.PI))+
+  geom_hline(yintercept = 0, color="gray0", lwd=1.5) +
+  geom_vline(xintercept = 0, color="gray0", lwd=1.5) +
+  geom_point(size=2)+ 
+  scale_x_continuous(expand=expansion(add=0))+
+  scale_y_continuous(expand=expansion(add=0)) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=16),
+        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_line(size=1.5),
+        axis.line.y = element_line(size=1.5)) +
+  annotate("rect", xmin=-1, xmax=0, ymin=0, ymax=-1, fill="yellow", alpha=0.2) +
+  annotate("rect", xmin=-1, xmax=0, ymin=0, ymax=1, fill="red", alpha=0.2) +
+  annotate("rect", xmin=0, xmax=1, ymin=0, ymax=-1, fill="green", alpha=0.2) +
+  annotate("rect", xmin=0, xmax=1, ymin=0, ymax=1, fill="blue", alpha=0.2) +
+  annotate(geom = 'segment', y = Inf, yend = Inf, color = 'gray0', x = -Inf, xend = Inf, size = 2.3) +
+  annotate(geom = 'segment', y = -Inf, yend = Inf, color = 'gray0', x = Inf, xend = Inf, size = 2.3) +
+  labs(x = 'HD cell preference index') +
+  labs(y = 'Behavioral preference index')
+
+row_1 <- p1 + p3 + plot_layout(widths = c(1.5,1))
+row_2 <- p2 + p4 + plot_layout(widths = c(1.5,1))
+full_plot <- row_1/row_2
+full_plot + plot_annotation(tag_levels = list(c('B','C','D','E')))
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig7", file="bottom_fig_7.svg",device = 'svg', width=14, height=12)

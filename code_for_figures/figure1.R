@@ -2,7 +2,6 @@
 
 #load useful libraries
 library(nlme)
-library(lme4)
 library(multcomp)
 library(ggplot2)
 library(tidyverse)
@@ -59,6 +58,21 @@ ggplot() +
 
 ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig1", file="offset_precision_cl.svg",device = 'svg', width=6, height=4)
 
+#different representation
+ggplot() + 
+  geom_violin(grouped_offset_precision_data, mapping = aes(contrast, mean_offset_precision)) +
+  stat_summary(grouped_offset_precision_data, mapping = aes(contrast, mean_offset_precision),fun.y=mean, geom="crossbar", size=1, , width=0.2, color="black") +
+  geom_line(grouped_offset_precision_data, mapping = aes(contrast, mean_offset_precision, group = Fly),color = 'gray30',size=0.5) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=18),
+        axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
+        axis.text.x = element_text(vjust=.8, hjust=0.8),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  geom_point(grouped_offset_precision_data, mapping = aes(contrast, mean_offset_precision),color='gray30') +
+  scale_x_discrete(labels=scales::wrap_format(10)) +
+  labs(x="", y="HD encoding reliability")+
+  ylim(c(0,1))
 
 
 #bump pars in cue brightness experiment
@@ -126,6 +140,42 @@ p
 ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig1", file="bump_pars_brightness_no_mvt.svg",device = 'svg', width=8, height=4)
 
 
+## different representation
+p1 <- ggplot() + 
+  geom_violin(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_mag)) +
+  stat_summary(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_mag),fun.y=mean, geom="crossbar", size=1, , width=0.2, color="black") +
+  geom_line(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_mag, group = Fly),color = 'gray30',size=0.5) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=18),
+        axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
+        axis.text.x = element_text(vjust=.8, hjust=0.8),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  geom_point(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_mag),color='gray30') +
+  scale_x_discrete(labels=scales::wrap_format(10)) +
+  labs(x="", y="Bump amplitude (DF/F)") 
+
+
+p2 <- ggplot() + 
+  geom_violin(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_width)) +
+  stat_summary(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_width),fun.y=mean, geom="crossbar", size=1, , width=0.2, color="black") +
+  geom_line(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_width, group = Fly),color = 'gray30',size=0.5) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=18),
+        axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
+        axis.text.x = element_text(vjust=.8, hjust=0.8),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  geom_point(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_width),color='gray30') +
+  scale_x_discrete(labels=scales::wrap_format(10)) +
+  labs(x="", y="Bump width (deg)") 
+
+p <- p1 + p2
+p
+
+
+
+
 #model comparison (without including movement)
 mdl_BM <- lmer(BumpMagnitude ~ ContrastLevel + (1|Fly), bump_pars_data)
 summary(mdl_BM)
@@ -156,9 +206,17 @@ dff_data <- dff_data %>% mutate(time = 1:n()) %>%
   pivot_longer(cols = -time)
 
 p1 <- ggplot(dff_data,aes(time, name, fill=value)) +
-  geom_tile() +
+  geom_raster() +
   scale_fill_gradient(low = "white", high = "black") +
-   theme_void() + theme(legend.position="none")  +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=14),
+        #axis.text = element_text(size=12), axis.ticks.length.x = unit(0.5, "cm"),
+        axis.line.x = element_blank(),
+        axis.text.x=element_blank(), #remove x axis labels
+        axis.text.y=element_blank(), #remove y axis labels
+        axis.ticks.x=element_blank(), #remove x axis ticks,
+        axis.ticks.y=element_blank(), #remove x axis ticks,
+        axis.line.y = element_line(size=1)) +
   labs(x="", y="EPG activity (DF/F)") 
 
 visual_stim <- as.data.frame(cbind(example_fly$visual_stim_to_plot,example_fly$x_out_heading))
@@ -171,7 +229,7 @@ offset <- as.data.frame(cbind(example_fly$offset_to_plot,example_fly$x_out_offse
 colnames(offset) <- c('offset','time')
 
 p2 <- ggplot() +
-  geom_path(data=visual_stim,aes(time,visual_stim),color="gold4") +
+  geom_path(data=visual_stim,aes(time,visual_stim),color="chartreuse3") +
   geom_path(data=phase,aes(time, phase), color="mediumpurple") +
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=14),
@@ -203,3 +261,102 @@ p <- p1/p2/p3
 p
 
 ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig1", file="example_fly.svg",device = 'svg', width=10, height=4)
+
+
+
+
+# combined plots for figure -----------------------------------------------
+
+#example fly
+p1 <- ggplot(dff_data,aes(time, name, fill=value)) +
+  geom_raster() +
+  scale_fill_gradient(low = "white", high = "black") +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=12),
+        #axis.text = element_text(size=12), axis.ticks.length.x = unit(0.5, "cm"),
+        axis.line.x = element_blank(),
+        axis.text.x=element_blank(), #remove x axis labels
+        axis.text.y=element_blank(), #remove y axis labels
+        axis.ticks.x=element_blank(), #remove x axis ticks,
+        axis.ticks.y=element_blank(), #remove x axis ticks,
+        axis.line.y = element_line(size=1),
+        axis.title.y=element_text(angle=0)) +
+  labs(x="", y="EPG activity (\u0394F/F)") 
+
+p2 <- ggplot() +
+  geom_path(data=visual_stim,aes(time,visual_stim),color="chartreuse3") +
+  geom_path(data=phase,aes(time, phase), color="mediumpurple") +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=12),
+        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.5, "cm"),
+        axis.line.x = element_blank(),
+        axis.text.x=element_blank(), #remove x axis labels
+        axis.ticks.x=element_blank(), #remove x axis ticks
+        axis.line.y = element_line(size=1),
+        axis.title.y=element_text(angle=0)) +
+  labs(x="", y="Angular pos (deg)") 
+
+p3 <- ggplot() +
+  geom_path(data = offset_no_contrast,aes(time,offset),color = 'gray0') +
+  geom_path(data = offset_low_contrast,aes(time,offset),color = 'blue') +
+  geom_path(data = offset_high_contrast,aes(time,offset),color = 'dodgerblue') +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=12),
+        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.5, "cm"),
+        axis.line.x = element_blank(),
+        axis.text.x=element_blank(), #remove x axis labels
+        axis.ticks.x=element_blank(), #remove x axis ticks,
+        axis.line.y = element_line(size=1),
+        axis.title.y=element_text(angle=0)) +
+  labs(x="", y="Offset (deg)")
+
+
+
+#HD encoding reliability
+p4 <- ggplot() + 
+  geom_line(grouped_offset_precision_data, mapping = aes(contrast, mean_offset_precision, group = Fly),color = 'gray50',size=0.5) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=16),
+        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  geom_line(data = mean_and_sd_offset_precision,aes(contrast,mean_offset_precision,group = 1),color = 'gray0',size=1.5) +
+  geom_errorbar(data=mean_and_sd_offset_precision, mapping=aes(x=contrast, ymin=mean_offset_precision + sd_offset_precision/sqrt(n), ymax=mean_offset_precision - sd_offset_precision/sqrt(n)), width=0, size=1.5, color="gray0") +
+  scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
+                   labels=scales::wrap_format(10)) +
+  labs(x="", y="HD encoding reliability")+
+  ylim(c(0,1))
+
+#Bump parameters
+p5 <- ggplot() + 
+  geom_line(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_mag, group = Fly),color = 'gray50',size=0.5) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=16),
+        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  geom_line(data = mean_and_sd_bump_pars_data,aes(ContrastLevel,mean_bump_mag,group = 1),color = '#14BDFA',size=1.5) +
+  geom_errorbar(data=mean_and_sd_bump_pars_data, mapping=aes(x=ContrastLevel, ymin=mean_bump_mag + sd_bump_mag/sqrt(n), ymax=mean_bump_mag - sd_bump_mag/sqrt(n)), width=0, size=1.5, color="#14BDFA") +
+  scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
+                   labels=scales::wrap_format(10)) +
+  labs(x="", y="Bump amplitude (\u0394F/F)") 
+
+p6 <- ggplot() + 
+  geom_line(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_width, group = Fly),color = 'gray50',size=0.5) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=16),
+        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  geom_line(data = mean_and_sd_bump_pars_data,aes(ContrastLevel,mean_bump_width,group = 1),color = '#FAAF0F',size=1.5) +
+  geom_errorbar(data=mean_and_sd_bump_pars_data, mapping=aes(x=ContrastLevel, ymin=mean_bump_width + sd_bump_width/sqrt(n), ymax=mean_bump_width - sd_bump_width/sqrt(n)), width=0, size=1.5, color="#FAAF0F") +
+  scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
+                   labels=scales::wrap_format(10)) +
+  labs(x="", y="Bump width (deg)") 
+
+row_1 <- (p1/ plot_spacer() / p2 / plot_spacer() / p3)
+row_2 <- (p4 + p6 + p5) 
+full_plot <- row_1 / row_2 + plot_layout(heights = c(4,-2.5,4,-2.5,4,12))
+row_2 + plot_annotation(tag_levels = list(c('E','F','G')))
+
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig1", file="bottom_part.svg",device = 'svg', width=12, height=4)

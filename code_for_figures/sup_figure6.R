@@ -161,3 +161,55 @@ p
 
 ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig6", file="bump_pars_per_block.svg",device = 'svg', width=8, height=6)
 
+
+
+
+# code to plot full figure ------------------------------------------------
+
+p1 <- ggplot() + 
+  geom_line(offset_precision_data, mapping = aes(block_type, offset_precision, group = fly),color = 'gray50',size=0.5) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=16),
+        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.text.x = element_text(angle = 30, vjust=.8, hjust=0.8),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  geom_line(data = mean_and_sd_offset_precision,aes(block_type,mean_offset_precision,group = 1),color = 'gray0',size=2) +
+  geom_errorbar(data=mean_and_sd_offset_precision, mapping=aes(x=block_type, ymin=mean_offset_precision + sd_offset_precision/sqrt(n), ymax=mean_offset_precision - sd_offset_precision/sqrt(n)), width=0, size=2, color="gray0") +
+  scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
+                   labels=scales::wrap_format(10)) +
+  labs(x="", y="HD encoding reliability")+
+  ylim(c(0,1))
+
+p2 <- ggplot() + 
+  geom_line(bump_width_data, mapping = aes(block_type, bump_width, group = fly),color = 'gray50',size=0.5) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=16),
+        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.text.x = element_text(angle = 30, vjust=.8, hjust=0.8),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  geom_line(data = mean_and_sd_bump_width,aes(block_type,mean_bump_width,group = 1),color = '#FAAF0F',size=2) +
+  geom_errorbar(data=mean_and_sd_bump_width, mapping=aes(x=block_type, ymin=mean_bump_width + sd_bump_width/sqrt(n), ymax=mean_bump_width - sd_bump_width/sqrt(n)), width=0, size=2, color='#FAAF0F') +
+  scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
+                   labels=scales::wrap_format(10)) +
+  labs(x="", y="Bump width (deg)")
+
+p3 <- ggplot() + 
+  geom_line(bump_mag_data, mapping = aes(block_type, bump_mag, group = fly),color = 'gray50',size=0.5) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=16),
+        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.text.x = element_text(angle = 30, vjust=.8, hjust=0.8),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  geom_line(data = mean_and_sd_bump_mag,aes(block_type,mean_bump_mag,group = 1),color = '#14BDFA',size=2) +
+  geom_errorbar(data=mean_and_sd_bump_mag, mapping=aes(x=block_type, ymin=mean_bump_mag + sd_bump_mag/sqrt(n), ymax=mean_bump_mag - sd_bump_mag/sqrt(n)), width=0, size=2, color='#14BDFA') +
+  scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
+                   labels=scales::wrap_format(10)) +
+  labs(x="", y="Bump amplitude (DF/F)")
+
+full_plot <- p1 + p2 + p3
+full_plot + plot_annotation(tag_levels = 'A')
+
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig6", file="full_fig.svg",device = 'svg', width=14, height=6)

@@ -1,0 +1,819 @@
+%code to plot example flies for the different panels
+
+%% Example fly for figure 1
+
+clear all; close all;
+load('Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp25\data\Experimental\two_ND_filters_3_contrasts\20201027_60D05_7f\analysis\continuous_analysis_sid_1_tid_0.mat');
+
+%identify changes in contrast
+change_y_panels = abs(diff(continuous_data.fr_y_ds));
+changeContrast = find(abs(diff(continuous_data.fr_y_ds))>1);
+
+%Plot
+% Plot the heatmap of EPG activity
+figure('Position',[0 0 1800 500]),
+subplot(3,1,1)
+dff_matrix = continuous_data.dff_matrix(changeContrast(1):changeContrast(4),1:41)';
+imagesc(flip(dff_matrix))
+colormap(flipud(gray))
+set(gca,'YTickLabel',[]);
+%ylabel('EPG activity in the PB','fontsize',12);
+set(gca,'XTickLabel',[]);
+set(gca,'xtick',[])
+set(gca,'ytick',[])
+
+% Plot the heading and the EPG phase
+subplot(3,1,2)
+%Get heading to plot
+visual_stim = wrapTo180(continuous_data.visual_stim_pos(changeContrast(1):changeContrast(4)));
+%Remove wrapped lines to plot
+[x_out_heading,visual_stim_to_plot] = removeWrappedLines(continuous_data.time(changeContrast(1):changeContrast(4)),visual_stim);
+plot(x_out_heading,visual_stim_to_plot,'LineWidth',1.5,'color',[0.4940 0.1840 0.5560])
+hold on
+phase = wrapTo180(rad2deg(continuous_data.bump_pos(changeContrast(1):changeContrast(4))'));
+[x_out_phase,phase_to_plot] = removeWrappedLines(continuous_data.time(changeContrast(1):changeContrast(4)),phase);
+plot(x_out_phase,phase_to_plot,'color',[0.4660 0.6740 0.1880],'LineWidth',1.5)
+ylim([-180, 180]);
+if ~isnan(x_out_phase(end))
+    xlim([x_out_phase(1),x_out_phase(end)]);
+else
+    xlim([x_out_phase(1),x_out_phase(end-1)]);
+end
+%ylabel('Angular pos (deg)','fontsize',12);
+set(gca,'XTickLabel',[]);
+set(gca,'XTick',[]);
+ax = gca;
+ax.FontSize = 14;
+
+subplot(3,1,3)
+offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos(changeContrast(1):changeContrast(4))',deg2rad(visual_stim))));
+[x_out_offset,offset_to_plot] = removeWrappedLines(continuous_data.time(changeContrast(1):changeContrast(4)),offset);
+x_out_offset = x_out_offset - x_out_offset(1);
+plot(x_out_offset,offset_to_plot,'k','LineWidth',1.5)
+hold on
+xline(200,'r','linestyle','--','linewidth',2)
+xline(400,'r','linestyle','--','linewidth',2)
+ylim([-180 180]);
+%ylabel('HD encoding (deg)','fontsize',12);
+xlabel('Time (sec)','fontsize',16);
+if ~isnan(x_out_offset(end))
+    xlim([x_out_offset(1) x_out_offset(end)]);
+else
+    xlim([x_out_offset(1) x_out_offset(end-1)]);
+end
+ax = gca;
+ax.FontSize = 14;
+
+
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig1\example_fly_fig1.svg')
+save('Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp25\data\Experimental\two_ND_filters_3_contrasts\example_fly_fig1.mat','dff_matrix','visual_stim_to_plot','phase_to_plot','offset_to_plot','x_out_offset','x_out_phase','x_out_heading');
+
+%% Example of gof fit for figure 1 (darkness and low contrast, high R2)
+
+clear all; close all;
+
+path = 'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp25\data\Experimental\two_ND_filters_3_contrasts\20201027_60D05_7f';
+sid = 1;
+
+tid = 0; %I only ever run 1 trial per session
+
+global slash;
+if isunix() == 1 %if running in Linux or mac
+    slash = '/'; %define the slash this way
+else %if running in windows
+    slash = '\'; %define the other way
+end
+set(0,'DefaultTextInterpreter','none');
+
+% Load the imaging data
+
+%Move to the folder of interest
+cd(path)
+
+%Load the roi data 
+load(['2p' slash 'ROI' slash 'ROI_midline_sid_' num2str(sid) '_tid_' num2str(tid) '.mat']);
+%Load the registered imaging stack
+load(['2p' slash 'sid_' num2str(sid) '_tid_' num2str(tid) slash 'rigid_sid_' num2str(sid) '_tid_' num2str(tid) '_Chan_1_sessionFile.mat']);
+
+% Get the summed GCaMP7f data
+%add the data across the z layers making up each volume, to obtain 1 PB image per timepoint
+summedData = squeeze(sum(regProduct,3));
+
+% Get midline coordinates and PB mask
+%1) Find the row corresponding to the midline
+for row = 1:length(roi)
+    if contains(roi(row).name,'mid')
+        roi_mid = row;
+    end
+end
+
+%2) Pull up the coordinates that make up the midline along the PB
+midline_coordinates = [roi(roi_mid).xi,roi(roi_mid).yi];
+
+%3) Get the 'vector lengths' for each section of the line, to know how much
+%distance of the PB they represent
+midline_segment_lengths = zeros(length(midline_coordinates)-1,1);
+for segment = 1:length(midline_coordinates)-1
+    midline_segment_lengths(segment) = sqrt( (midline_coordinates(segment+1,1)-midline_coordinates(segment,1))^2 + (midline_coordinates(segment+1,2)-midline_coordinates(segment,2))^2 );
+end
+midline_distances = cumsum(midline_segment_lengths);
+
+%4) Pull up the locations for all the px in the PB mask
+PB_mask = zeros(size(regProduct,1),size(regProduct,2));
+for row = 1:length(roi)
+    if row~=roi_mid
+        PB_mask = PB_mask + roi(row).BW;
+    end
+end
+PB_mask(PB_mask>1) = 1;
+PB_coverage = logical(PB_mask);
+
+% Get the normal line across each small segment of the PB midline
+
+midV = cell(1,length(midline_coordinates)-1);
+normal1 = cell(1,length(midline_coordinates)-1);
+normal2 = cell(1,length(midline_coordinates)-1);
+point1 = cell(1,length(midline_coordinates)-1);
+point2 = cell(1,length(midline_coordinates)-1);
+
+for segment = 1:length(midline_coordinates)-1
+    
+    y_part = [midline_coordinates(segment,1),midline_coordinates(segment,2)];
+    x_part = [midline_coordinates(segment+1,1),midline_coordinates(segment+1,2)];
+    V = y_part - x_part;
+    midV{segment} = x_part + 0.5 * V;
+    normal1{segment} = [ V(2), -V(1)];
+    normal2{segment} = [-V(2),  V(1)];
+    
+    point1{segment} = [midV{segment}(1), midV{segment}(2)];
+    point2{segment} = [midV{segment}(1) + normal1{segment}(1), midV{segment}(2) + normal1{segment}(2)];
+end
+
+% Assign fluorescence across the PB to the corresponding closest point in the midline
+
+%Initialize variables
+midline_ff = zeros(length(midline_coordinates)-1,size(summedData,3)); %start empty midline brightness vector
+PB_Image = cell(1,size(summedData,3));
+
+%For each timepoint
+for timepoint = 1:size(summedData,3)
+    
+    PB_Image{timepoint} = summedData(:,:,timepoint);
+    PB_Image{timepoint}(PB_coverage == 0) = 0;
+    
+    %For each of those locations, find the distance to each normal in the
+    %midline
+    for row = 1:size(PB_coverage,1)
+        for column = 1:size(PB_coverage,2)
+            if PB_coverage(row,column) == 1
+                %for every normal to the midline
+                for norm_line = 1:length(normal1)
+                    % Get the distance to that normal
+                    dist_to_midline(norm_line) = GetPointLineDistance(column,row,point1{norm_line}(1),point1{norm_line}(2),point2{norm_line}(1),point2{norm_line}(2));
+                end
+                %find the minimum distance
+                [~, Imin] = min(dist_to_midline);
+                %add intensity value of that pixel to that point in the midline
+                midline_ff(Imin,timepoint) = midline_ff(Imin,timepoint) + PB_Image{timepoint}(row,column);
+            end
+        end
+    end
+        
+end
+
+% Get baseline and compute DF/F
+
+%1) Get the baseline fluorescence
+baseline_f = zeros(1,length(midline_coordinates)-1);
+
+for segment = 1:length(midline_coordinates)-1
+    
+    sorted_f = sort(midline_ff(segment,:));
+    %Get baseline as the tenth percentile
+    baseline_f(segment) = prctile(sorted_f,10);  
+    
+end
+
+%2) Compute df/f
+dff = (midline_ff'-baseline_f)./baseline_f;
+
+dff_data = dff;
+
+angular_midline_distances = midline_distances*(2*pi + 2*pi*(7/8))/max(midline_distances);
+%put back on circle
+angular_midline_distances_2pi = mod(angular_midline_distances,2*pi);
+
+%2) Create the fit function
+fo = fitoptions('Method','NonlinearLeastSquares',...
+    'Lower',[0,-inf,0,-inf],... % [a,c,k,u]
+    'StartPoint',[1,0,1,0]);
+
+ft = fittype('a*exp(k*cos(x-u))+c','options',fo);
+%
+for timepoint = [5518:100:7344]
+    
+    %4) Fit the data
+    data_to_fit = dff_data(timepoint,:);
+    [model_data, gof] = fit(angular_midline_distances_2pi,data_to_fit',ft,...
+        'MaxIter',20000,'MaxFunEvals',20000);
+    adj_rs(timepoint) = gof.adjrsquare;
+    
+    %5) Get the coefficient values.
+    coeff_names = coeffnames(ft);
+    coefficientValues = coeffvalues(model_data);
+    a = coefficientValues(strcmp(coeff_names,'a'));
+    k = coefficientValues(strcmp(coeff_names,'k'));
+    u = coefficientValues(strcmp(coeff_names,'u'));
+    c = coefficientValues(strcmp(coeff_names,'c'));
+    
+    %6) Get bump parameters
+    bump_pos(timepoint) = mod(u,2*pi);
+    bump_mag(timepoint) = a * ( exp(k) - exp(-k) );
+    bump_width(timepoint) = rad2deg(2 * abs( acos( 1/k * log( 1/2 *( exp(k) + exp(-k) )))));
+    %The above math gives you back the bump width in radians. You need a
+    %factor conversion to change to EB wedges or tiles
+     
+    
+    %7) Uncomment to plot the original data and the fit
+    figure,
+    subplot(2,1,1)
+    plot(angular_midline_distances,dff_data(timepoint,:)')
+    hold on
+    plot(angular_midline_distances,feval(model_data,angular_midline_distances))
+    %add the bump position estimate
+    plot(bump_pos(timepoint),feval(model_data,bump_pos(timepoint)),'ro')
+    xlabel('Angular distance (radians)');
+    ylabel('DF/F');
+    title(['Frame #',num2str(timepoint),' AdjR2 =',num2str(gof.adjrsquare)]);
+    legend('data','fit');
+    %Add the bump parameters
+    subplot(2,1,2)
+    text(0,0.5,['Bump magnitude = ',num2str(bump_mag(timepoint))]);
+    hold on
+    text(0.5,0.5,['Bump width = ',num2str(bump_width(timepoint))]);
+    text(0.25,0,['Bump pos = ',num2str(u)]); axis off
+    
+%     data = dff(timepoint,:);
+%     fit_data = feval(model_data,angular_midline_distances);
+%     example_data_fit = table(angular_midline_distances,data',fit_data,'VariableNames',{'distance','data','fit'});
+%     writetable(example_data_fit,['Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp25\data\Experimental\two_ND_filters_3_contrasts\example_data_fit_',num2str(timepoint),'.csv'])
+
+end
+
+
+
+%% Example fly for figure 2
+
+clear all; close all;
+
+load('Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\20210219_60D05_7f_fly3\analysis\continuous_analysis_sid_1_tid_0.mat');
+
+figure('Position',[50 50 1800 900]),
+subplot(5,1,1)
+dff_matrix = continuous_data.dff_matrix';
+imagesc(flip(dff_matrix))
+colormap(flipud(gray))
+set(gca,'YTickLabel',[]);
+set(gca,'XTickLabel',[]);
+set(gca,'xtick',[])
+set(gca,'ytick',[])
+
+% Plot the heading and the EPG phase
+subplot(6,1,2)
+%Get heading to plot
+visual_stim = wrapTo180(continuous_data.visual_stim_pos);
+%Remove wrapped lines to plot
+[x_out_heading,visual_stim_to_plot] = removeWrappedLines(continuous_data.time,visual_stim);
+plot(x_out_heading,visual_stim_to_plot,'LineWidth',1.5,'color',[0.4940 0.1840 0.5560])
+hold on
+phase = wrapTo180(rad2deg(continuous_data.bump_pos)');
+[x_out_phase,phase_to_plot] = removeWrappedLines(continuous_data.time,phase);
+plot(x_out_phase,phase_to_plot,'color',[0.4660 0.6740 0.1880],'LineWidth',1.5)
+ylim([-180, 180]);
+if ~isnan(x_out_phase(end))
+    xlim([x_out_phase(1),x_out_phase(end)]);
+else
+    xlim([x_out_phase(1),x_out_phase(end-1)]);
+end
+set(gca,'XTickLabel',[]);
+set(gca,'XTick',[]);
+ax = gca;
+ax.FontSize = 14;
+
+
+subplot(6,1,3)
+offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',deg2rad(visual_stim))));
+[x_out_offset,offset_to_plot] = removeWrappedLines(continuous_data.time,offset);
+x_out_offset = x_out_offset - x_out_offset(1);
+plot(x_out_offset,offset_to_plot,'k','LineWidth',1.5)
+ylim([-180 180]);
+if ~isnan(x_out_offset(end))
+    xlim([x_out_offset(1) x_out_offset(end)]);
+else
+    xlim([x_out_offset(1) x_out_offset(end-1)]);
+end
+ax = gca;
+ax.FontSize = 14;
+
+%rotational speed
+yaw_speed = abs(continuous_data.vel_yaw_ds);
+rolling_rot_speed = movmean(yaw_speed,92);
+subplot(6,1,4)
+plot(continuous_data.time,rolling_rot_speed,'k','LineWidth',1.5)
+xlim([1 continuous_data.time(end)]);
+set(gca,'XTick',[]);
+ax = gca;
+ax.FontSize = 14;
+            
+%bump width
+subplot(6,1,5)
+rolling_bump_width = movmean(continuous_data.bump_width,92);
+plot(continuous_data.time,rolling_bump_width,'k','LineWidth',1.5)
+ylim([1 3]);
+xlim([1 continuous_data.time(end)]);
+set(gca,'XTick',[]);
+ax = gca;
+ax.FontSize = 14;
+
+%bump mag
+subplot(6,1,6)
+rolling_bump_mag = movmean(continuous_data.bump_magnitude,92);
+plot(continuous_data.time,rolling_bump_mag,'k','LineWidth',1.5)
+ylim([0 2.5]);
+xlabel('Time (sec)','fontsize',16);
+xlim([1 continuous_data.time(end)]);
+ax = gca;
+ax.FontSize = 14;
+
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig2\example_fly_fig1.svg')
+
+%% Example flies for figure 4
+
+clear all; close all;
+
+%fly 1, high offset precision
+load('Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp25\data\Experimental\two_ND_filters_3_contrasts\20201020_60D05_7f\analysis\continuous_analysis_sid_1_tid_0.mat');
+
+%identify changes in contrast
+change_y_panels = abs(diff(continuous_data.fr_y_ds));
+changeContrast = find(abs(diff(continuous_data.fr_y_ds))>1);
+
+%Plot
+% Plot the heatmap of EPG activity
+figure('Position',[0 0 1800 500]),
+subplot(3,1,1)
+dff_matrix = continuous_data.dff_matrix(changeContrast(2):changeContrast(3),:)';
+imagesc(flip(dff_matrix))
+colormap(flipud(gray))
+set(gca,'YTickLabel',[]);
+set(gca,'XTickLabel',[]);
+set(gca,'xtick',[])
+
+% Plot the heading and the EPG phase
+subplot(3,1,2)
+%Get heading to plot
+visual_stim = wrapTo180(continuous_data.visual_stim_pos(changeContrast(2):changeContrast(3)));
+%Remove wrapped lines to plot
+[x_out_heading,visual_stim_to_plot] = removeWrappedLines(continuous_data.time(changeContrast(2):changeContrast(3)),visual_stim);
+plot(x_out_heading,visual_stim_to_plot,'LineWidth',1.5,'color',[0.4940 0.1840 0.5560])
+hold on
+phase = wrapTo180(rad2deg(continuous_data.bump_pos(changeContrast(2):changeContrast(3))'));
+[x_out_phase,phase_to_plot] = removeWrappedLines(continuous_data.time(changeContrast(2):changeContrast(3)),phase);
+plot(x_out_phase,phase_to_plot,'color',[0.4660 0.6740 0.1880],'LineWidth',1.5)
+ylim([-180, 180]);
+if ~isnan(x_out_phase(end))
+    xlim([x_out_phase(1),x_out_phase(end)]);
+else
+    xlim([x_out_phase(1),x_out_phase(end-1)]);
+end
+set(gca,'XTickLabel',[]);
+set(gca,'XTick',[]);
+ax = gca;
+ax.FontSize = 14;
+
+% Plot the offset
+subplot(3,1,3)
+offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos(changeContrast(2):changeContrast(3))',deg2rad(visual_stim))));
+[x_out_offset,offset_to_plot] = removeWrappedLines(continuous_data.time(changeContrast(2):changeContrast(3)),offset);
+x_out_offset = x_out_offset - x_out_offset(1);
+plot(x_out_offset,offset_to_plot,'LineWidth',1.5,'color','k')
+ylim([-180 180]);
+if ~isnan(x_out_offset(end))
+    xlim([x_out_offset(1) x_out_offset(end)]);
+else
+    xlim([x_out_offset(1) x_out_offset(end-1)]);
+end
+set(gca,'XTickLabel',[]);
+set(gca,'XTick',[]);
+ax = gca;
+ax.FontSize = 14;
+
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig4\example_fly1.svg')
+
+offset_precision = circ_r(deg2rad(offset));
+
+
+
+
+clear all; close all;
+
+%fly 2, low offset precision
+load('Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp25\data\Experimental\two_ND_filters_3_contrasts\20201130_60D05_7f\analysis\continuous_analysis_sid_2_tid_0.mat');
+
+%identify changes in contrast
+change_y_panels = abs(diff(continuous_data.fr_y_ds));
+changeContrast = find(abs(diff(continuous_data.fr_y_ds))>1);
+
+%Plot
+% Plot the heatmap of EPG activity
+figure('Position',[0 0 1800 500]),
+subplot(3,1,1)
+dff_matrix = continuous_data.dff_matrix(changeContrast(2):changeContrast(3),:)';
+imagesc(flip(dff_matrix))
+colormap(flipud(gray))
+set(gca,'YTickLabel',[]);
+set(gca,'XTickLabel',[]);
+set(gca,'xtick',[])
+set(gca,'ytick',[])
+
+% Plot the heading and the EPG phase
+subplot(3,1,2)
+%Get heading to plot
+visual_stim = wrapTo180(continuous_data.visual_stim_pos(changeContrast(2):changeContrast(3)));
+%Remove wrapped lines to plot
+[x_out_heading,visual_stim_to_plot] = removeWrappedLines(continuous_data.time(changeContrast(2):changeContrast(3)),visual_stim);
+plot(x_out_heading,visual_stim_to_plot,'LineWidth',1.5,'color',[0.4940 0.1840 0.5560])
+hold on
+phase = wrapTo180(rad2deg(continuous_data.bump_pos(changeContrast(2):changeContrast(3))'));
+[x_out_phase,phase_to_plot] = removeWrappedLines(continuous_data.time(changeContrast(2):changeContrast(3)),phase);
+plot(x_out_phase,phase_to_plot,'color',[0.4660 0.6740 0.1880],'LineWidth',1.5)
+ylim([-180, 180]);
+if ~isnan(x_out_phase(end))
+    xlim([x_out_phase(1),x_out_phase(end)]);
+else
+    xlim([x_out_phase(1),x_out_phase(end-1)]);
+end
+set(gca,'XTickLabel',[]);
+set(gca,'XTick',[]);
+ax = gca;
+ax.FontSize = 14;
+
+% Plot the offset
+subplot(3,1,3)
+offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos(changeContrast(2):changeContrast(3))',deg2rad(visual_stim))));
+[x_out_offset,offset_to_plot] = removeWrappedLines(continuous_data.time(changeContrast(2):changeContrast(3)),offset);
+x_out_offset = x_out_offset - x_out_offset(1);
+plot(x_out_offset,offset_to_plot,'k','LineWidth',1.5)
+ylim([-180 180]);
+xlabel('Time (sec)','fontsize',16);
+if ~isnan(x_out_offset(end))
+    xlim([x_out_offset(1) x_out_offset(end)]);
+else
+    xlim([x_out_offset(1) x_out_offset(end-1)]);
+end
+ax = gca;
+ax.FontSize = 14;
+
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig4\example_fly2.svg')
+
+offset_precision = circ_r(deg2rad(offset));
+
+
+
+%% Example flies for figure 5
+
+clear all; close all;
+
+%fly 1, remapping strategy
+load('Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\20210129_60D05_7f\analysis\continuous_analysis_sid_1_tid_0.mat');
+
+gain_changes = [1837,9183];
+
+% % Plot the heatmap of EPG activity
+% figure('Position',[100 100 1400 800]),
+% subplot(4,1,1)
+% %I'm flipping the dff matrix for it to make sense along with the fly's
+% %heading
+% imagesc(flip(continuous_data.dff_matrix'))
+% colormap(flipud(gray))
+% hold on
+% %add the changes in stim
+% for change = 1:length(gain_changes)
+%     line([gain_changes(change) gain_changes(change)], [0 size(continuous_data.dff_matrix,2)], 'LineWidth', 2, 'color', [0, 0.5, 0]);
+% end
+% ylabel('EPG activity (DF/F)','fontsize',12);
+% set(gca,'XTickLabel',[]);
+% legend('Change in stimulus');
+
+% % Plot the bar position, the fly heading and the EPG phase
+% subplot(4,1,2)
+% %Get heading position to plot
+% heading = wrapTo180(-continuous_data.heading_deg);
+% [x_out_heading, heading_to_plot] = removeWrappedLines(continuous_data.time,heading);
+% plot(x_out_heading,heading_to_plot,'color',[0.6 0.3 0.8],'LineWidth',1.5)
+% hold on
+% phase = wrapTo180(rad2deg(continuous_data.bump_pos'));
+% [x_out_phase, phase_to_plot] = removeWrappedLines(continuous_data.time,phase);
+% plot(x_out_phase,phase_to_plot,'color',[0.9 0.3 0.4],'LineWidth',1.5)
+% bar_position = wrapTo180(continuous_data.visual_stim_pos);
+% [x_out_bar, bar_pos_to_plot] = removeWrappedLines(continuous_data.time,bar_position);
+% plot(x_out_bar,bar_pos_to_plot,'color',[0.2 0.6 0.7],'LineWidth',1.5)
+% %add the changes in stim
+% for change = 1:length(gain_changes)
+%     line([continuous_data.time(gain_changes(change)) continuous_data.time(gain_changes(change))], [-180 180], 'LineWidth', 2, 'color',  [0, 0.5, 0]);
+% end
+% ylim([-180, 180]);
+% xlim([0,continuous_data.time(end)]);
+% ylabel('Angular pos (deg)','fontsize',12);
+% set(gca,'XTickLabel',[]);
+% 
+% % Plot the heading offset
+% subplot(4,1,3)
+% heading_offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',-continuous_data.heading)));
+% [x_out_heading_offset, heading_offset_to_plot] = removeWrappedLines(continuous_data.time,heading_offset);
+% plot(x_out_heading_offset,heading_offset_to_plot,'.','color','k')
+% %Add the changes in stim
+% for change = 1:length(gain_changes)
+%     line([continuous_data.time(gain_changes(change)) continuous_data.time(gain_changes(change))], [-180 180], 'LineWidth', 2, 'color',  [0, 0.5, 0]);
+% end
+% ylim([-180 180]);
+% set(gca,'XTickLabel',[]);
+% ylabel('Heading encoding (deg)','fontsize',12);
+% 
+% % Plot the bar offset
+% subplot(4,1,4)
+% bar_offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',deg2rad(continuous_data.visual_stim_pos))));
+% [x_out_offset, offset_to_plot] = removeWrappedLines(continuous_data.time,bar_offset);
+% plot(x_out_offset,offset_to_plot,'.','color','k')
+% %Add the changes in stim
+% for change = 1:length(gain_changes)
+%     line([continuous_data.time(gain_changes(change)) continuous_data.time(gain_changes(change))], [-180 180], 'LineWidth', 2, 'color', [0,0.5,0]);
+% end
+% ylim([-180 180]);
+% ylabel('Bar encoding (deg)','fontsize',12);
+
+
+%Focus on the last part of the IG, for more clarity
+
+% Plot the heatmap of EPG activity
+figure('Position',[100 100 1800 600]),
+subplot(4,1,1)
+%I'm flipping the dff matrix for it to make sense along with the fly's
+%heading
+imagesc(flip(continuous_data.dff_matrix'))
+colormap(flipud(gray))
+set(gca,'XTick',[]);
+set(gca,'ytick',[])
+xlim([gain_changes(2)-floor(400*9.18),gain_changes(2)-floor(100*9.18)]);
+
+% Plot the bar position, the fly heading and the EPG phase
+subplot(4,1,2)
+%Get heading position to plot
+heading = wrapTo180(-continuous_data.heading_deg(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)));
+[x_out_heading, heading_to_plot] = removeWrappedLines(continuous_data.time(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)),heading);
+plot(x_out_heading,heading_to_plot,'color',[0.8500 0.3250 0.0980],'LineWidth',1.5)
+hold on
+phase = wrapTo180(rad2deg(continuous_data.bump_pos(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18))'));
+[x_out_phase, phase_to_plot] = removeWrappedLines(continuous_data.time(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)),phase);
+plot(x_out_phase,phase_to_plot,'color',[0.4660 0.6740 0.1880],'LineWidth',1.5)
+bar_position = wrapTo180(continuous_data.visual_stim_pos(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)));
+[x_out_bar, bar_pos_to_plot] = removeWrappedLines(continuous_data.time(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)),bar_position);
+plot(x_out_bar,bar_pos_to_plot,'color',[0.4940 0.1840 0.5560],'LineWidth',1.5)
+ylim([-180, 180]);
+set(gca,'XTick',[]);
+xlim([x_out_phase(1), x_out_phase(end)]);
+ax = gca;
+ax.FontSize = 14;
+
+% Plot the heading offset
+subplot(4,1,3)
+heading_offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18))',-continuous_data.heading(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)))));
+[x_out_heading_offset, heading_offset_to_plot] = removeWrappedLines(continuous_data.time(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)),heading_offset);
+plot(x_out_heading_offset,heading_offset_to_plot,'.','color','k')
+ylim([-180 180]);
+set(gca,'XTick',[]);
+xlim([x_out_heading_offset(1), x_out_heading_offset(end)]);
+ax = gca;
+ax.FontSize = 14;
+
+% Plot the bar offset
+subplot(4,1,4)
+bar_offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18))',deg2rad(continuous_data.visual_stim_pos(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18))))));
+[x_out_offset, offset_to_plot] = removeWrappedLines(continuous_data.time(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)),bar_offset);
+x_out_offset = x_out_offset - x_out_offset(1);
+plot(x_out_offset,offset_to_plot,'.','color','k')
+ylim([-180 180]);
+xlim([x_out_offset(1) x_out_offset(end)]);
+set(gca,'XTick',[]);
+ax = gca;
+ax.FontSize = 14;
+
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig5\example_fly1.svg')
+
+
+
+
+
+
+
+clear all; close all;
+
+%fly 2, ignoring internal cues
+load('Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\20210204_60D05_7f\analysis\continuous_analysis_sid_1_tid_0.mat');
+
+gain_changes = [1837,9183];
+
+% Plot the heatmap of EPG activity
+figure('Position',[100 100 1800 600]),
+subplot(4,1,1)
+%I'm flipping the dff matrix for it to make sense along with the fly's
+%heading
+imagesc(flip(continuous_data.dff_matrix'))
+colormap(flipud(gray))
+set(gca,'XTick',[]);
+set(gca,'ytick',[])
+xlim([gain_changes(2)-floor(400*9.18),gain_changes(2)-floor(100*9.18)]);
+
+% Plot the bar position, the fly heading and the EPG phase
+subplot(4,1,2)
+%Get heading position to plot
+heading = wrapTo180(-continuous_data.heading_deg(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)));
+[x_out_heading, heading_to_plot] = removeWrappedLines(continuous_data.time(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)),heading);
+plot(x_out_heading,heading_to_plot,'color',[0.8500 0.3250 0.0980],'LineWidth',1.5)
+hold on
+phase = wrapTo180(rad2deg(continuous_data.bump_pos(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18))'));
+[x_out_phase, phase_to_plot] = removeWrappedLines(continuous_data.time(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)),phase);
+plot(x_out_phase,phase_to_plot,'color',[0.4660 0.6740 0.1880],'LineWidth',1.5)
+bar_position = wrapTo180(continuous_data.visual_stim_pos(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)));
+[x_out_bar, bar_pos_to_plot] = removeWrappedLines(continuous_data.time(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)),bar_position);
+plot(x_out_bar,bar_pos_to_plot,'color',[0.4940 0.1840 0.5560],'LineWidth',1.5)
+ylim([-180, 180]);
+set(gca,'XTick',[]);
+xlim([x_out_phase(1), x_out_phase(end)]);
+ax = gca;
+ax.FontSize = 14;
+
+% Plot the heading offset
+subplot(4,1,3)
+heading_offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18))',-continuous_data.heading(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)))));
+[x_out_heading_offset, heading_offset_to_plot] = removeWrappedLines(continuous_data.time(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)),heading_offset);
+plot(x_out_heading_offset,heading_offset_to_plot,'.','color','k')
+ylim([-180 180]);
+set(gca,'XTick',[]);
+xlim([x_out_heading_offset(1), x_out_heading_offset(end)]);
+ax = gca;
+ax.FontSize = 14;
+
+% Plot the bar offset
+subplot(4,1,4)
+bar_offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18))',deg2rad(continuous_data.visual_stim_pos(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18))))));
+[x_out_offset, offset_to_plot] = removeWrappedLines(continuous_data.time(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)),bar_offset);
+x_out_offset = x_out_offset - x_out_offset(1);
+plot(x_out_offset,offset_to_plot,'.','color','k')
+ylim([-180 180]);
+xlim([x_out_offset(1) x_out_offset(end)]);
+xlabel('Time (sec)','fontsize',16);
+ax = gca;
+ax.FontSize = 14;
+
+
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig5\example_fly2.svg')
+
+
+%% Example flies for figure 7
+
+%fly 1: prefers the bar
+clear all; close all;
+load('Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\20211229_60D05_7f\analysis\continuous_analysis_sid_3_tid_0.mat');
+
+real_bar_jump_frame = floor(2088.7*length(continuous_data.dff_matrix)/continuous_data.time(end));
+
+%Conversion factors
+sec_to_frames = length(continuous_data.dff_matrix)/continuous_data.time(end);
+frames_to_sec = continuous_data.time(end)/length(continuous_data.dff_matrix);
+
+
+time_zero = continuous_data.time(real_bar_jump_frame);
+time = continuous_data.time-time_zero;
+
+figure('Position',[100 100 1600 500]),
+subplot(3,1,1)
+imagesc(flip(continuous_data.dff_matrix(real_bar_jump_frame-10*sec_to_frames:real_bar_jump_frame+10*sec_to_frames,:)'))
+colormap(flipud(gray))
+hold on
+plotting_length = real_bar_jump_frame+10*sec_to_frames-real_bar_jump_frame+10*sec_to_frames;
+plot([plotting_length/2+.5 plotting_length/2+.5],[1 size(continuous_data.dff_matrix,2)],'r','linestyle','--','linewidth',2)
+set(gca,'xtick',[])
+set(gca,'ytick',[])
+
+subplot(3,1,2)
+time_to_plot = time(real_bar_jump_frame-10*sec_to_frames:real_bar_jump_frame+10*sec_to_frames);
+bump_pos = wrapTo180(rad2deg(continuous_data.bump_pos));
+bar_pos = wrapTo180(continuous_data.visual_stim_pos);
+motor_pos = wrapTo180(rad2deg(continuous_data.motor_pos));
+phase_to_plot = bump_pos(real_bar_jump_frame-10*sec_to_frames:real_bar_jump_frame+10*sec_to_frames);
+[x_out_time,bump_pos_to_plot] = removeWrappedLines(time_to_plot,phase_to_plot');
+plot(x_out_time,bump_pos_to_plot,'linewidth',2,'color',[0.4660 0.6740 0.1880])
+hold on
+bar_to_plot = bar_pos(real_bar_jump_frame-10*sec_to_frames:real_bar_jump_frame+10*sec_to_frames);
+[x_out_time,bar_pos_to_plot] = removeWrappedLines(time_to_plot,bar_to_plot);
+plot(x_out_time,bar_pos_to_plot,'linewidth',2,'color',[0.4940 0.1840 0.5560])
+wind_to_plot = motor_pos(real_bar_jump_frame-10*sec_to_frames:real_bar_jump_frame+10*sec_to_frames);
+[x_out_time,wind_pos_to_plot] = removeWrappedLines(time_to_plot,wind_to_plot');
+plot(x_out_time,wind_pos_to_plot,'linewidth',2)
+xline(time(real_bar_jump_frame),'k','linestyle','--','linewidth',2)
+ylim([-180 180]);
+xlim([time(real_bar_jump_frame-floor(10*sec_to_frames)) time(real_bar_jump_frame+floor(10*sec_to_frames))]);
+set(gca,'xtick',[]);
+ax = gca;
+ax.FontSize = 14;
+
+subplot(3,1,3)
+%offset with respect to bar
+bar_offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',deg2rad(continuous_data.visual_stim_pos))));
+%offst with respect to wind
+wind_offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos,deg2rad(motor_pos))));
+bar_offset_to_plot = bar_offset(real_bar_jump_frame-10*sec_to_frames:real_bar_jump_frame+10*sec_to_frames);
+[x_out_time,bar_off_to_plot] = removeWrappedLines(time_to_plot,bar_offset_to_plot);
+plot(x_out_time,bar_off_to_plot,'linewidth',2,'color',[0.4940 0.1840 0.5560])
+hold on
+wind_offset_to_plot = wind_offset(real_bar_jump_frame-10*sec_to_frames:real_bar_jump_frame+10*sec_to_frames);
+[x_out_time,wind_off_to_plot] = removeWrappedLines(time_to_plot,wind_offset_to_plot');
+plot(x_out_time,wind_off_to_plot,'linewidth',2,'color',[0.9290 0.6940 0.1250])
+xlim([time(real_bar_jump_frame-floor(10*sec_to_frames)) time(real_bar_jump_frame+floor(10*sec_to_frames))]);
+xline(time(real_bar_jump_frame),'k','linestyle','--','linewidth',2)
+ylim([-180 180]);
+ax = gca;
+ax.FontSize = 14;
+set(gca,'xtick',[])
+
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig7\example_fly1.svg')
+
+
+
+%fly 2: prefers the wind
+clear all; close all;
+load('Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\20211230_60D05_7f\analysis\continuous_analysis_sid_1_tid_0.mat');
+
+real_bar_jump_frame = floor(2388.7*length(continuous_data.dff_matrix)/continuous_data.time(end));
+
+%Conversion factors
+sec_to_frames = length(continuous_data.dff_matrix)/continuous_data.time(end);
+frames_to_sec = continuous_data.time(end)/length(continuous_data.dff_matrix);
+
+
+time_zero = continuous_data.time(real_bar_jump_frame);
+time = continuous_data.time-time_zero;
+
+figure('Position',[100 100 1600 500]),
+subplot(3,1,1)
+imagesc(flip(continuous_data.dff_matrix(real_bar_jump_frame-10*sec_to_frames:real_bar_jump_frame+10*sec_to_frames,:)'))
+colormap(flipud(gray))
+hold on
+plotting_length = real_bar_jump_frame+10*sec_to_frames-real_bar_jump_frame+10*sec_to_frames;
+plot([plotting_length/2+.5 plotting_length/2+.5],[1 size(continuous_data.dff_matrix,2)],'r','linestyle','--','linewidth',2)
+set(gca,'xtick',[])
+set(gca,'ytick',[])
+
+subplot(3,1,2)
+time_to_plot = time(real_bar_jump_frame-10*sec_to_frames:real_bar_jump_frame+10*sec_to_frames);
+bump_pos = wrapTo180(rad2deg(continuous_data.bump_pos));
+bar_pos = wrapTo180(continuous_data.visual_stim_pos);
+motor_pos = wrapTo180(rad2deg(continuous_data.motor_pos));
+phase_to_plot = bump_pos(real_bar_jump_frame-10*sec_to_frames:real_bar_jump_frame+10*sec_to_frames);
+[x_out_time,bump_pos_to_plot] = removeWrappedLines(time_to_plot,phase_to_plot');
+plot(x_out_time,bump_pos_to_plot,'linewidth',2,'color',[0.4660 0.6740 0.1880])
+hold on
+bar_to_plot = bar_pos(real_bar_jump_frame-10*sec_to_frames:real_bar_jump_frame+10*sec_to_frames);
+[x_out_time,bar_pos_to_plot] = removeWrappedLines(time_to_plot,bar_to_plot);
+plot(x_out_time,bar_pos_to_plot,'linewidth',2,'color',[0.4940 0.1840 0.5560])
+wind_to_plot = motor_pos(real_bar_jump_frame-10*sec_to_frames:real_bar_jump_frame+10*sec_to_frames);
+[x_out_time,wind_pos_to_plot] = removeWrappedLines(time_to_plot,wind_to_plot');
+plot(x_out_time,wind_pos_to_plot,'linewidth',2)
+xline(time(real_bar_jump_frame),'k','linestyle','--','linewidth',2)
+ylim([-180 180]);
+xlim([time(real_bar_jump_frame-floor(10*sec_to_frames)) time(real_bar_jump_frame+floor(10*sec_to_frames))]);
+set(gca,'xtick',[]);
+ax = gca;
+ax.FontSize = 14;
+
+subplot(3,1,3)
+%offset with respect to bar
+bar_offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',deg2rad(continuous_data.visual_stim_pos))));
+%offst with respect to wind
+wind_offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos,deg2rad(motor_pos))));
+bar_offset_to_plot = bar_offset(real_bar_jump_frame-10*sec_to_frames:real_bar_jump_frame+10*sec_to_frames);
+[x_out_time,bar_off_to_plot] = removeWrappedLines(time_to_plot,bar_offset_to_plot);
+plot(x_out_time,bar_off_to_plot,'linewidth',2,'color',[0.4940 0.1840 0.5560])
+hold on
+wind_offset_to_plot = wind_offset(real_bar_jump_frame-10*sec_to_frames:real_bar_jump_frame+10*sec_to_frames);
+[x_out_time,wind_off_to_plot] = removeWrappedLines(time_to_plot,wind_offset_to_plot');
+plot(x_out_time,wind_off_to_plot,'linewidth',2,'color',[0.9290 0.6940 0.1250])
+xlim([time(real_bar_jump_frame-floor(10*sec_to_frames)) time(real_bar_jump_frame+floor(10*sec_to_frames))]);
+xline(time(real_bar_jump_frame),'k','linestyle','--','linewidth',2)
+ylim([-180 180]);
+ax = gca;
+ax.FontSize = 14;
+xlabel('Time (sec)','fontsize',16);
+
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig7\example_fly2.svg')
