@@ -46,8 +46,8 @@ for folder = 1:length(folderNames)
         bump_width_fly = [];
         heading_precision_fly = [];
         for window = 1:length(window_sizes)
-            offset_precision_fly(:,window) = matlab.tall.movingWindow(fcn_precision,window_sizes(window),offset(moving));
-            heading_precision_fly(:,window) = matlab.tall.movingWindow(fcn_precision,window_sizes(window),continuous_data.heading(moving));
+            offset_precision_fly(:,window) = matlab.tall.movingWindow(fcn_precision,window_sizes(window),offset(moving & gof));
+            heading_precision_fly(:,window) = matlab.tall.movingWindow(fcn_precision,window_sizes(window),continuous_data.heading(moving & gof));
             bump_mag_fly(:,window) = movmean(continuous_data.bump_magnitude(moving & gof),window_sizes);
             bump_width_fly(:,window) = movmean(continuous_data.bump_width(moving & gof),window_sizes);
         end
@@ -74,7 +74,7 @@ last_fly = fly_num(1);
 folderNames2 = dir('Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data');
 
 for folder = 1:length(folderNames2)
-    if (contains(folderNames2(folder).name,'60D05')==1)
+    if (contains(folderNames2(folder).name,'60D05')==1 & contains(folderNames2(folder).name, '20220415_60D05_7f')==0)
         
         path = [folderNames2(folder).folder,'\',folderNames2(folder).name];
         %get the sessions info
@@ -95,8 +95,8 @@ for folder = 1:length(folderNames2)
         bump_width_fly = [];
         heading_precision_fly = [];
         for window = 1:length(window_sizes)
-            offset_precision_fly(:,window) = matlab.tall.movingWindow(fcn_precision,window_sizes(window),offset(moving));
-            heading_precision_fly(:,window) = matlab.tall.movingWindow(fcn_precision,window_sizes(window),continuous_data.heading(moving));
+            offset_precision_fly(:,window) = matlab.tall.movingWindow(fcn_precision,window_sizes(window),offset(moving & gof));
+            heading_precision_fly(:,window) = matlab.tall.movingWindow(fcn_precision,window_sizes(window),continuous_data.heading(moving & gof));
             bump_mag_fly(:,window) = movmean(continuous_data.bump_magnitude(moving & gof),window_sizes);
             bump_width_fly(:,window) = movmean(continuous_data.bump_width(moving & gof),window_sizes);
         end
@@ -121,9 +121,12 @@ end
 %% Save speed and bump pars data for analysis in r
 
 bump_pars_evo_data_bar_trial = table(bump_mag,bump_width,bump_pars_time,total_mvt',rot_speed',fly_num','VariableNames',{'bump_mag','bump_width','time','total_mvt','rot_speed','fly'});
-precision_evo_data_bar_trial = table(offset_precision,heading_precision,precision_time,fly_num_precision','VariableNames',{'offset_precision','heading_precision','time','fly'});
+%precision_evo_data_bar_trial = table(offset_precision,heading_precision,precision_time,fly_num_precision','VariableNames',{'offset_precision','heading_precision','time','fly'});
+all_data_bar_trial = table(offset_precision,heading_precision,bump_mag,bump_width,bump_pars_time,fly_num','VariableNames',{'offset_precision','heading_precision','bump_mag','bump_width','time','fly'});
 writetable(bump_pars_evo_data_bar_trial,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp25\data\Experimental\two_ND_filters_3_contrasts\bump_pars_evo_data_bar_trial.csv')
-writetable(precision_evo_data_bar_trial,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp25\data\Experimental\two_ND_filters_3_contrasts\precision_evo_data_bar_trial.csv')
+%writetable(precision_evo_data_bar_trial,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp25\data\Experimental\two_ND_filters_3_contrasts\precision_evo_data_bar_trial.csv')
+writetable(all_data_bar_trial,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp25\data\Experimental\two_ND_filters_3_contrasts\all_data_bar_trial.csv')
+
 
 %% Clear space
 

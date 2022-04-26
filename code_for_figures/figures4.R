@@ -126,7 +126,7 @@ p2 <- ggplot(initial_low_contrast, aes(offset_precision,mean_bump_mag)) +
         axis.line.x = element_line(size=1),
         axis.line.y = element_line(size=1)) +
   scale_x_continuous(name="HD encoding reliability", limits=c(0, 1)) +
-  scale_y_continuous(name="Bump amplitude (DF/F)", limits=c(0, 3)) 
+  scale_y_continuous(name="Bump amplitude (\u0394F/F)", limits=c(0, 3)) 
 
 p <- p1 + p2
 p + plot_annotation(tag_levels = list(c('B','C')))

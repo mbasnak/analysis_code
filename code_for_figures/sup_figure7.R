@@ -2,12 +2,12 @@
 
 #load useful libraries
 library(nlme)
-library(lmer)
 library(multcomp)
 library(ggplot2)
 library(tidyverse)
 library(cowplot)
 library(rCAT)
+library(patchwork)
 
 
 #stickiness index
@@ -147,9 +147,62 @@ ggplot(bump_width_ratio_ordered_data,aes(bump_width_ratio, pref_ind)) +
   ylim(-1,1)
 
 
+## Bump PI divided by cue type
+sorted_bump_PI <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/sorted_bump_PI.csv",header = FALSE)
+names(sorted_bump_PI) <- paste0("fly", 1:ncol(sorted_bump_PI))
+sorted_bar_PI <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/sorted_bar_PI.csv",header = FALSE)
+names(sorted_bar_PI) <- paste0("fly", 1:ncol(sorted_bar_PI))
+sorted_wind_PI <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/sorted_wind_PI.csv",header = FALSE)
+names(sorted_wind_PI) <- paste0("fly", 1:ncol(sorted_wind_PI))
+
+
+sorted_bump_PI <- sorted_bump_PI %>% 
+  pivot_longer(everything(), names_to = "fly", values_to = "PI") %>%
+  mutate(fly = str_remove(fly, "fly") %>% as.numeric())
+
+sorted_bar_PI <- sorted_bar_PI %>% 
+  pivot_longer(everything(), names_to = "fly", values_to = "PI") %>%
+  mutate(fly = str_remove(fly, "fly") %>% as.numeric())
+
+sorted_wind_PI <- sorted_wind_PI %>% 
+  pivot_longer(everything(), names_to = "fly", values_to = "PI") %>%
+  mutate(fly = str_remove(fly, "fly") %>% as.numeric())
+
+
+ggplot(sorted_bump_PI,aes(x=fly, y=PI, group=fly)) + 
+  geom_hline(yintercept = 0, lty=2) + 
+  gghalves::geom_half_violin(scale = "width", trim=TRUE, adjust=1.0, fill="white") +
+  geom_point(data = sorted_bar_PI, aes(x=fly, y=PI), size=3, color= 'chocolate2') +
+  geom_point(data = sorted_wind_PI, aes(x=fly, y=PI), size=3, color= 'gray30', shape=17) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=22),
+        axis.text = element_text(size=20), axis.ticks.length.x = unit(0.5, "cm"),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  scale_x_continuous(breaks=1:14) +
+  stat_summary(aes(group=fly), fun.y = mean, color="black", geom="crossbar", width=0.5, lwd=0.5) +
+  xlab("Fly #") + ylab("Bump preference index")
+
+
+
+
 # code to plot the full figure for the paper ------------------------------
 
-p1 <- SI %>% 
+p1 <- ggplot(sorted_bump_PI,aes(x=fly, y=PI, group=fly)) + 
+  geom_hline(yintercept = 0, lty=2) + 
+  gghalves::geom_half_violin(scale = "width", trim=TRUE, adjust=1.0, fill="white") +
+  geom_point(data = sorted_bar_PI, aes(x=fly, y=PI), size=3, color= 'chocolate2') +
+  geom_point(data = sorted_wind_PI, aes(x=fly, y=PI), size=3, color= 'gray30', shape=17) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=22),
+        axis.text = element_text(size=20), axis.ticks.length.x = unit(0.5, "cm"),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  scale_x_continuous(breaks=1:14) +
+  stat_summary(aes(group=fly), fun.y = mean, color="black", geom="crossbar", width=0.5, lwd=0.5) +
+  xlab("Fly #") + ylab("HD cell preference index")
+
+p2 <- SI %>% 
   pivot_longer(everything(), names_to = "fly", values_to = "PI") %>%
   mutate(fly = str_remove(fly, "fly") %>% as.numeric()) %>% 
   ggplot(aes(x=fly, y=PI, group=fly)) + 
@@ -166,7 +219,7 @@ p1 <- SI %>%
   xlab("Fly #") + ylab("Stickiness index")
 
 
-p2 <- rot_speed_aj %>% 
+p3 <- rot_speed_aj %>% 
   mutate(time_bin = cut(time,
                         breaks = seq(1052,1153, 1),
                         right = TRUE)) %>%
@@ -194,7 +247,7 @@ p2 <- rot_speed_aj %>%
   labs(y = 'Rotational speed (deg/s)', x='Time', color = '',fill = '')+ 
   coord_cartesian(ylim=c(0,50))
 
-p3 <- rot_speed_aj %>% 
+p4 <- rot_speed_aj %>% 
   mutate(time_bin = cut(time,
                         breaks = seq(1052,1153, 1),
                         right = TRUE)) %>%
@@ -222,7 +275,7 @@ p3 <- rot_speed_aj %>%
   labs(y = '', x='Time', color = '',fill = '')+ 
   coord_cartesian(ylim=c(0,50))
 
-p4 <- ggplot(bump_width_ratio_ordered_data,aes(bump_width_ratio, pref_ind)) + 
+p5 <- ggplot(bump_width_ratio_ordered_data,aes(bump_width_ratio, pref_ind)) + 
   geom_line(aes(bump_width_ratio, pref_ind, group = fly),color = 'gray70') +
   geom_point() +
   geom_smooth(method='lm', se = FALSE, color = 'red')  +
@@ -234,7 +287,7 @@ p4 <- ggplot(bump_width_ratio_ordered_data,aes(bump_width_ratio, pref_ind)) +
   labs(x = "Wind bump width/ \n Bar bump width", y='HD cell preference index') +
   ylim(-1,1)
 
-p5 <- ggplot(bump_mag_ratio_ordered_data,aes(bump_mag_ratio, pref_ind)) + 
+p6 <- ggplot(bump_mag_ratio_ordered_data,aes(bump_mag_ratio, pref_ind)) + 
   geom_line(aes(bump_mag_ratio, pref_ind, group = fly),color = 'gray70') +
   geom_point() +
   geom_smooth(method='lm', se = FALSE, color = 'red')  +
@@ -246,8 +299,9 @@ p5 <- ggplot(bump_mag_ratio_ordered_data,aes(bump_mag_ratio, pref_ind)) +
   labs(x = "Wind bump amplitude/ \n Bar bump amplitude", y='HD cell preference index') +
   ylim(-1,1)
 
-row_2 <- p2 + p3
-row_3 <- p4 + p5
-full_plot <- p1 / row_2 / row_3
+row_1 <- p1 + p2
+row_2 <- p3 + p4
+row_3 <- p5 + p6
+full_plot <- row_1 / row_2 / row_3
 full_plot + plot_annotation(tag_levels = 'A')
 ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig7", file="full_fig.svg",device = 'svg', width=12, height=16)

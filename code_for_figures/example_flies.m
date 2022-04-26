@@ -12,7 +12,7 @@ changeContrast = find(abs(diff(continuous_data.fr_y_ds))>1);
 %Plot
 % Plot the heatmap of EPG activity
 figure('Position',[0 0 1800 500]),
-subplot(3,1,1)
+ax(1) = subplot(3,1,1);
 dff_matrix = continuous_data.dff_matrix(changeContrast(1):changeContrast(4),1:41)';
 imagesc(flip(dff_matrix))
 colormap(flipud(gray))
@@ -22,8 +22,12 @@ set(gca,'XTickLabel',[]);
 set(gca,'xtick',[])
 set(gca,'ytick',[])
 
+colormap(ax(1),flipud(gray));
+pos = get(subplot(3,1,1),'Position');
+h = colorbar('Position', [pos(1)+pos(3)+0.01  pos(2)  pos(3)/60  pos(4)]);
+
 % Plot the heading and the EPG phase
-subplot(3,1,2)
+ax(2) = subplot(3,1,2)
 %Get heading to plot
 visual_stim = wrapTo180(continuous_data.visual_stim_pos(changeContrast(1):changeContrast(4)));
 %Remove wrapped lines to plot
@@ -45,7 +49,7 @@ set(gca,'XTick',[]);
 ax = gca;
 ax.FontSize = 14;
 
-subplot(3,1,3)
+ax(3) = subplot(3,1,3)
 offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos(changeContrast(1):changeContrast(4))',deg2rad(visual_stim))));
 [x_out_offset,offset_to_plot] = removeWrappedLines(continuous_data.time(changeContrast(1):changeContrast(4)),offset);
 x_out_offset = x_out_offset - x_out_offset(1);
@@ -266,20 +270,25 @@ end
 
 clear all; close all;
 
-load('Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\20210219_60D05_7f_fly3\analysis\continuous_analysis_sid_1_tid_0.mat');
+load('Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp25\data\Experimental\two_ND_filters_3_contrasts\20201019_60D05_7f\analysis\continuous_analysis_sid_0_tid_0.mat');
 
 figure('Position',[50 50 1800 900]),
-subplot(5,1,1)
+ax(1) = subplot(6,1,1);
 dff_matrix = continuous_data.dff_matrix';
 imagesc(flip(dff_matrix))
 colormap(flipud(gray))
+xlim([floor(450*9.18) floor(900*9.18)]);
 set(gca,'YTickLabel',[]);
 set(gca,'XTickLabel',[]);
 set(gca,'xtick',[])
 set(gca,'ytick',[])
 
+colormap(ax(1),flipud(gray));
+pos = get(subplot(6,1,1),'Position');
+h = colorbar('Position', [pos(1)+pos(3)+0.01  pos(2)  pos(3)/60  pos(4)]);
+
 % Plot the heading and the EPG phase
-subplot(6,1,2)
+ax(2) = subplot(6,1,2);
 %Get heading to plot
 visual_stim = wrapTo180(continuous_data.visual_stim_pos);
 %Remove wrapped lines to plot
@@ -290,62 +299,60 @@ phase = wrapTo180(rad2deg(continuous_data.bump_pos)');
 [x_out_phase,phase_to_plot] = removeWrappedLines(continuous_data.time,phase);
 plot(x_out_phase,phase_to_plot,'color',[0.4660 0.6740 0.1880],'LineWidth',1.5)
 ylim([-180, 180]);
-if ~isnan(x_out_phase(end))
-    xlim([x_out_phase(1),x_out_phase(end)]);
-else
-    xlim([x_out_phase(1),x_out_phase(end-1)]);
-end
+xlim([450 900]);
 set(gca,'XTickLabel',[]);
 set(gca,'XTick',[]);
 ax = gca;
 ax.FontSize = 14;
 
 
-subplot(6,1,3)
+ax(3) = subplot(6,1,3);
 offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',deg2rad(visual_stim))));
 [x_out_offset,offset_to_plot] = removeWrappedLines(continuous_data.time,offset);
 x_out_offset = x_out_offset - x_out_offset(1);
 plot(x_out_offset,offset_to_plot,'k','LineWidth',1.5)
+set(gca,'XTick',[]);
 ylim([-180 180]);
-if ~isnan(x_out_offset(end))
-    xlim([x_out_offset(1) x_out_offset(end)]);
-else
-    xlim([x_out_offset(1) x_out_offset(end-1)]);
-end
+xlim([450 900]);
 ax = gca;
 ax.FontSize = 14;
 
 %rotational speed
+% unwrapped_heading = unwrap(continuous_data.heading);
+% smoothed_heading = smoothdata(unwrapped_heading,'rlowess',50); 
+% yaw_vel = diff(rad2deg(smoothed_heading));
+% yaw_speed = abs(yaw_vel);
 yaw_speed = abs(continuous_data.vel_yaw_ds);
 rolling_rot_speed = movmean(yaw_speed,92);
-subplot(6,1,4)
+
+ax(4) = subplot(6,1,4);
 plot(continuous_data.time,rolling_rot_speed,'k','LineWidth',1.5)
-xlim([1 continuous_data.time(end)]);
+xlim([450 900]);
 set(gca,'XTick',[]);
 ax = gca;
 ax.FontSize = 14;
             
 %bump width
-subplot(6,1,5)
+ax(5) = subplot(6,1,5);
 rolling_bump_width = movmean(continuous_data.bump_width,92);
-plot(continuous_data.time,rolling_bump_width,'k','LineWidth',1.5)
-ylim([1 3]);
-xlim([1 continuous_data.time(end)]);
+plot(continuous_data.time,rad2deg(rolling_bump_width),'k','LineWidth',1.5)
+ylim([60 180]);
+xlim([450 900]);
 set(gca,'XTick',[]);
 ax = gca;
 ax.FontSize = 14;
 
 %bump mag
-subplot(6,1,6)
+ax(6) = subplot(6,1,6);
 rolling_bump_mag = movmean(continuous_data.bump_magnitude,92);
 plot(continuous_data.time,rolling_bump_mag,'k','LineWidth',1.5)
-ylim([0 2.5]);
+ylim([0 1.5]);
 xlabel('Time (sec)','fontsize',16);
-xlim([1 continuous_data.time(end)]);
+xlim([450 900]);
 ax = gca;
 ax.FontSize = 14;
 
-saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig2\example_fly_fig1.svg')
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig2\example_fly.svg')
 
 %% Example flies for figure 4
 
@@ -361,7 +368,7 @@ changeContrast = find(abs(diff(continuous_data.fr_y_ds))>1);
 %Plot
 % Plot the heatmap of EPG activity
 figure('Position',[0 0 1800 500]),
-subplot(3,1,1)
+ax(1) = subplot(3,1,1);
 dff_matrix = continuous_data.dff_matrix(changeContrast(2):changeContrast(3),:)';
 imagesc(flip(dff_matrix))
 colormap(flipud(gray))
@@ -369,8 +376,12 @@ set(gca,'YTickLabel',[]);
 set(gca,'XTickLabel',[]);
 set(gca,'xtick',[])
 
+colormap(ax(1),flipud(gray));
+pos = get(subplot(3,1,1),'Position');
+h = colorbar('Position', [pos(1)+pos(3)+0.01  pos(2)  pos(3)/60  pos(4)]);
+
 % Plot the heading and the EPG phase
-subplot(3,1,2)
+ax(2) = subplot(3,1,2)
 %Get heading to plot
 visual_stim = wrapTo180(continuous_data.visual_stim_pos(changeContrast(2):changeContrast(3)));
 %Remove wrapped lines to plot
@@ -392,7 +403,7 @@ ax = gca;
 ax.FontSize = 14;
 
 % Plot the offset
-subplot(3,1,3)
+ax(3) = subplot(3,1,3)
 offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos(changeContrast(2):changeContrast(3))',deg2rad(visual_stim))));
 [x_out_offset,offset_to_plot] = removeWrappedLines(continuous_data.time(changeContrast(2):changeContrast(3)),offset);
 x_out_offset = x_out_offset - x_out_offset(1);
@@ -427,7 +438,7 @@ changeContrast = find(abs(diff(continuous_data.fr_y_ds))>1);
 %Plot
 % Plot the heatmap of EPG activity
 figure('Position',[0 0 1800 500]),
-subplot(3,1,1)
+ax(1) = subplot(3,1,1);
 dff_matrix = continuous_data.dff_matrix(changeContrast(2):changeContrast(3),:)';
 imagesc(flip(dff_matrix))
 colormap(flipud(gray))
@@ -436,8 +447,12 @@ set(gca,'XTickLabel',[]);
 set(gca,'xtick',[])
 set(gca,'ytick',[])
 
+colormap(ax(1),flipud(gray));
+pos = get(subplot(3,1,1),'Position');
+h = colorbar('Position', [pos(1)+pos(3)+0.01  pos(2)  pos(3)/60  pos(4)]);
+
 % Plot the heading and the EPG phase
-subplot(3,1,2)
+ax(2) = subplot(3,1,2);
 %Get heading to plot
 visual_stim = wrapTo180(continuous_data.visual_stim_pos(changeContrast(2):changeContrast(3)));
 %Remove wrapped lines to plot
@@ -459,7 +474,7 @@ ax = gca;
 ax.FontSize = 14;
 
 % Plot the offset
-subplot(3,1,3)
+ax(3) = subplot(3,1,3);
 offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos(changeContrast(2):changeContrast(3))',deg2rad(visual_stim))));
 [x_out_offset,offset_to_plot] = removeWrappedLines(continuous_data.time(changeContrast(2):changeContrast(3)),offset);
 x_out_offset = x_out_offset - x_out_offset(1);
@@ -489,75 +504,9 @@ load('Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\20210129_60D05_7f\ana
 
 gain_changes = [1837,9183];
 
-% % Plot the heatmap of EPG activity
-% figure('Position',[100 100 1400 800]),
-% subplot(4,1,1)
-% %I'm flipping the dff matrix for it to make sense along with the fly's
-% %heading
-% imagesc(flip(continuous_data.dff_matrix'))
-% colormap(flipud(gray))
-% hold on
-% %add the changes in stim
-% for change = 1:length(gain_changes)
-%     line([gain_changes(change) gain_changes(change)], [0 size(continuous_data.dff_matrix,2)], 'LineWidth', 2, 'color', [0, 0.5, 0]);
-% end
-% ylabel('EPG activity (DF/F)','fontsize',12);
-% set(gca,'XTickLabel',[]);
-% legend('Change in stimulus');
-
-% % Plot the bar position, the fly heading and the EPG phase
-% subplot(4,1,2)
-% %Get heading position to plot
-% heading = wrapTo180(-continuous_data.heading_deg);
-% [x_out_heading, heading_to_plot] = removeWrappedLines(continuous_data.time,heading);
-% plot(x_out_heading,heading_to_plot,'color',[0.6 0.3 0.8],'LineWidth',1.5)
-% hold on
-% phase = wrapTo180(rad2deg(continuous_data.bump_pos'));
-% [x_out_phase, phase_to_plot] = removeWrappedLines(continuous_data.time,phase);
-% plot(x_out_phase,phase_to_plot,'color',[0.9 0.3 0.4],'LineWidth',1.5)
-% bar_position = wrapTo180(continuous_data.visual_stim_pos);
-% [x_out_bar, bar_pos_to_plot] = removeWrappedLines(continuous_data.time,bar_position);
-% plot(x_out_bar,bar_pos_to_plot,'color',[0.2 0.6 0.7],'LineWidth',1.5)
-% %add the changes in stim
-% for change = 1:length(gain_changes)
-%     line([continuous_data.time(gain_changes(change)) continuous_data.time(gain_changes(change))], [-180 180], 'LineWidth', 2, 'color',  [0, 0.5, 0]);
-% end
-% ylim([-180, 180]);
-% xlim([0,continuous_data.time(end)]);
-% ylabel('Angular pos (deg)','fontsize',12);
-% set(gca,'XTickLabel',[]);
-% 
-% % Plot the heading offset
-% subplot(4,1,3)
-% heading_offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',-continuous_data.heading)));
-% [x_out_heading_offset, heading_offset_to_plot] = removeWrappedLines(continuous_data.time,heading_offset);
-% plot(x_out_heading_offset,heading_offset_to_plot,'.','color','k')
-% %Add the changes in stim
-% for change = 1:length(gain_changes)
-%     line([continuous_data.time(gain_changes(change)) continuous_data.time(gain_changes(change))], [-180 180], 'LineWidth', 2, 'color',  [0, 0.5, 0]);
-% end
-% ylim([-180 180]);
-% set(gca,'XTickLabel',[]);
-% ylabel('Heading encoding (deg)','fontsize',12);
-% 
-% % Plot the bar offset
-% subplot(4,1,4)
-% bar_offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',deg2rad(continuous_data.visual_stim_pos))));
-% [x_out_offset, offset_to_plot] = removeWrappedLines(continuous_data.time,bar_offset);
-% plot(x_out_offset,offset_to_plot,'.','color','k')
-% %Add the changes in stim
-% for change = 1:length(gain_changes)
-%     line([continuous_data.time(gain_changes(change)) continuous_data.time(gain_changes(change))], [-180 180], 'LineWidth', 2, 'color', [0,0.5,0]);
-% end
-% ylim([-180 180]);
-% ylabel('Bar encoding (deg)','fontsize',12);
-
-
-%Focus on the last part of the IG, for more clarity
-
 % Plot the heatmap of EPG activity
 figure('Position',[100 100 1800 600]),
-subplot(4,1,1)
+ax(1) = subplot(4,1,1);
 %I'm flipping the dff matrix for it to make sense along with the fly's
 %heading
 imagesc(flip(continuous_data.dff_matrix'))
@@ -566,8 +515,12 @@ set(gca,'XTick',[]);
 set(gca,'ytick',[])
 xlim([gain_changes(2)-floor(400*9.18),gain_changes(2)-floor(100*9.18)]);
 
+colormap(ax(1),flipud(gray));
+pos = get(subplot(4,1,1),'Position');
+h = colorbar('Position', [pos(1)+pos(3)+0.01  pos(2)  pos(3)/60  pos(4)]);
+
 % Plot the bar position, the fly heading and the EPG phase
-subplot(4,1,2)
+ax(2) = subplot(4,1,2);
 %Get heading position to plot
 heading = wrapTo180(-continuous_data.heading_deg(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)));
 [x_out_heading, heading_to_plot] = removeWrappedLines(continuous_data.time(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)),heading);
@@ -586,7 +539,7 @@ ax = gca;
 ax.FontSize = 14;
 
 % Plot the heading offset
-subplot(4,1,3)
+ax(4) = subplot(4,1,3);
 heading_offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18))',-continuous_data.heading(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)))));
 [x_out_heading_offset, heading_offset_to_plot] = removeWrappedLines(continuous_data.time(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)),heading_offset);
 plot(x_out_heading_offset,heading_offset_to_plot,'.','color','k')
@@ -597,7 +550,7 @@ ax = gca;
 ax.FontSize = 14;
 
 % Plot the bar offset
-subplot(4,1,4)
+ax(4) = subplot(4,1,4);
 bar_offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18))',deg2rad(continuous_data.visual_stim_pos(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18))))));
 [x_out_offset, offset_to_plot] = removeWrappedLines(continuous_data.time(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)),bar_offset);
 x_out_offset = x_out_offset - x_out_offset(1);
@@ -625,7 +578,7 @@ gain_changes = [1837,9183];
 
 % Plot the heatmap of EPG activity
 figure('Position',[100 100 1800 600]),
-subplot(4,1,1)
+ax(1) = subplot(4,1,1);
 %I'm flipping the dff matrix for it to make sense along with the fly's
 %heading
 imagesc(flip(continuous_data.dff_matrix'))
@@ -634,8 +587,12 @@ set(gca,'XTick',[]);
 set(gca,'ytick',[])
 xlim([gain_changes(2)-floor(400*9.18),gain_changes(2)-floor(100*9.18)]);
 
+colormap(ax(1),flipud(gray));
+pos = get(subplot(4,1,1),'Position');
+h = colorbar('Position', [pos(1)+pos(3)+0.01  pos(2)  pos(3)/60  pos(4)]);
+
 % Plot the bar position, the fly heading and the EPG phase
-subplot(4,1,2)
+ax(2) = subplot(4,1,2);
 %Get heading position to plot
 heading = wrapTo180(-continuous_data.heading_deg(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)));
 [x_out_heading, heading_to_plot] = removeWrappedLines(continuous_data.time(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)),heading);
@@ -654,7 +611,7 @@ ax = gca;
 ax.FontSize = 14;
 
 % Plot the heading offset
-subplot(4,1,3)
+ax(3) = subplot(4,1,3);
 heading_offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18))',-continuous_data.heading(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)))));
 [x_out_heading_offset, heading_offset_to_plot] = removeWrappedLines(continuous_data.time(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)),heading_offset);
 plot(x_out_heading_offset,heading_offset_to_plot,'.','color','k')
@@ -665,7 +622,7 @@ ax = gca;
 ax.FontSize = 14;
 
 % Plot the bar offset
-subplot(4,1,4)
+ax(4) = subplot(4,1,4);
 bar_offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18))',deg2rad(continuous_data.visual_stim_pos(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18))))));
 [x_out_offset, offset_to_plot] = removeWrappedLines(continuous_data.time(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)),bar_offset);
 x_out_offset = x_out_offset - x_out_offset(1);
@@ -697,7 +654,7 @@ time_zero = continuous_data.time(real_bar_jump_frame);
 time = continuous_data.time-time_zero;
 
 figure('Position',[100 100 1600 500]),
-subplot(3,1,1)
+ax(1) = subplot(3,1,1);
 imagesc(flip(continuous_data.dff_matrix(real_bar_jump_frame-10*sec_to_frames:real_bar_jump_frame+10*sec_to_frames,:)'))
 colormap(flipud(gray))
 hold on
@@ -706,7 +663,11 @@ plot([plotting_length/2+.5 plotting_length/2+.5],[1 size(continuous_data.dff_mat
 set(gca,'xtick',[])
 set(gca,'ytick',[])
 
-subplot(3,1,2)
+colormap(ax(1),flipud(gray));
+pos = get(subplot(3,1,1),'Position');
+h = colorbar('Position', [pos(1)+pos(3)+0.01  pos(2)  pos(3)/60  pos(4)]);
+
+ax(2) = subplot(3,1,2);
 time_to_plot = time(real_bar_jump_frame-10*sec_to_frames:real_bar_jump_frame+10*sec_to_frames);
 bump_pos = wrapTo180(rad2deg(continuous_data.bump_pos));
 bar_pos = wrapTo180(continuous_data.visual_stim_pos);
@@ -728,7 +689,7 @@ set(gca,'xtick',[]);
 ax = gca;
 ax.FontSize = 14;
 
-subplot(3,1,3)
+ax(3) = subplot(3,1,3);
 %offset with respect to bar
 bar_offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',deg2rad(continuous_data.visual_stim_pos))));
 %offst with respect to wind
@@ -766,7 +727,7 @@ time_zero = continuous_data.time(real_bar_jump_frame);
 time = continuous_data.time-time_zero;
 
 figure('Position',[100 100 1600 500]),
-subplot(3,1,1)
+ax(1) = subplot(3,1,1);
 imagesc(flip(continuous_data.dff_matrix(real_bar_jump_frame-10*sec_to_frames:real_bar_jump_frame+10*sec_to_frames,:)'))
 colormap(flipud(gray))
 hold on
@@ -775,7 +736,11 @@ plot([plotting_length/2+.5 plotting_length/2+.5],[1 size(continuous_data.dff_mat
 set(gca,'xtick',[])
 set(gca,'ytick',[])
 
-subplot(3,1,2)
+colormap(ax(1),flipud(gray));
+pos = get(subplot(3,1,1),'Position');
+h = colorbar('Position', [pos(1)+pos(3)+0.01  pos(2)  pos(3)/60  pos(4)]);
+
+ax(2) = subplot(3,1,2);
 time_to_plot = time(real_bar_jump_frame-10*sec_to_frames:real_bar_jump_frame+10*sec_to_frames);
 bump_pos = wrapTo180(rad2deg(continuous_data.bump_pos));
 bar_pos = wrapTo180(continuous_data.visual_stim_pos);
@@ -797,7 +762,7 @@ set(gca,'xtick',[]);
 ax = gca;
 ax.FontSize = 14;
 
-subplot(3,1,3)
+ax(3) = subplot(3,1,3);
 %offset with respect to bar
 bar_offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',deg2rad(continuous_data.visual_stim_pos))));
 %offst with respect to wind

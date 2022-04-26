@@ -1091,6 +1091,26 @@ saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\CueJump-Experiment\
 sorted_heading_PI = heading_PI(:,mean_sorting_order);
 writematrix(sorted_heading_PI,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_heading_PI.csv')
 
+%% Divide PI data based on the configuration for each fly
+
+wind_PI = zeros(4,length(PI));
+bar_PI = zeros(4,length(PI));
+
+for fly = 1:length(PI)
+    if configuration(fly) == 1
+        bar_PI(:,fly) = PI([1,3,5,7],fly);
+        wind_PI(:,fly) = PI([2,4,6,8],fly);
+    else
+        wind_PI(:,fly) = PI([1,3,5,7],fly);
+        bar_PI(:,fly) = PI([2,4,6,8],fly);
+    end
+end
+
+%save data for stats
+sorted_bar_PI = bar_PI(:,mean_sorting_order);
+sorted_wind_PI = wind_PI(:,mean_sorting_order);
+writematrix(sorted_bar_PI,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_bar_PI.csv')
+writematrix(sorted_wind_PI,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_wind_PI.csv')
 
 %% Stickiness index
 

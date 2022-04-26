@@ -262,7 +262,7 @@ mean_and_sd_bump_pars_bar_trials <- mean_bump_pars_bar_trials %>%
             n = n())
 #2) plot
 p1 <- ggplot() + 
-  geom_line(mean_bump_pars_bar_trials, mapping = aes(movement, bump_mag, group = fly),color = 'gray50',size=0.5) +
+  geom_line(mean_bump_pars_bar_trials, mapping = aes(movement, bump_mag, group = fly),color = 'gray70',size=0.5) +
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=18),
         axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
@@ -274,7 +274,7 @@ p1 <- ggplot() +
   labs(x="", y="Bump magnitude (DF/F)") 
 
 p2 <- ggplot() + 
-  geom_line(mean_bump_pars_bar_trials, mapping = aes(movement, bump_width, group = fly),color = 'gray50',size=0.5) +
+  geom_line(mean_bump_pars_bar_trials, mapping = aes(movement, bump_width, group = fly),color = 'gray70',size=0.5) +
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=18),
         axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
@@ -388,27 +388,27 @@ p3 <- bump_pars_rot_speed %>%
 #Bump parameters and movement transition
 p4 <- ggplot() + 
   geom_violin(mean_bump_pars_bar_trials, mapping = aes(movement, bump_mag)) +
-  geom_line(mean_bump_pars_bar_trials, mapping = aes(movement, bump_mag, group = fly),color = 'gray50',size=0.5) +
+  geom_line(mean_bump_pars_bar_trials, mapping = aes(movement, bump_mag, group = fly),color = 'gray70',size=0.5) +
   stat_summary(mean_bump_pars_bar_trials, mapping = aes(movement, bump_mag),fun.y=mean, geom="crossbar", size=1, , width=0.4, color="black") +
   theme(panel.background = element_rect(fill=NA),
         text = element_text(size=14),axis.text = element_text(size = 12),
         axis.text.x = element_text(angle = 30, vjust=.8, hjust=0.8),
         axis.line.x = element_line(size=1),
         axis.line.y = element_line(size=1)) +
-  geom_point(mean_bump_pars_bar_trials, mapping = aes(movement, bump_mag),color='gray50') +
+  geom_point(mean_bump_pars_bar_trials, mapping = aes(movement, bump_mag),color='gray70') +
   scale_x_discrete(labels=scales::wrap_format(10)) +
   labs(x="", y="Bump amplitude (\u0394F/F)") 
 
 p5 <- ggplot() + 
   geom_violin(mean_bump_pars_bar_trials, mapping = aes(movement, bump_width)) +
-  geom_line(mean_bump_pars_bar_trials, mapping = aes(movement, bump_width, group = fly),color = 'gray50',size=0.5) +
+  geom_line(mean_bump_pars_bar_trials, mapping = aes(movement, bump_width, group = fly),color = 'gray70',size=0.5) +
   stat_summary(mean_bump_pars_bar_trials, mapping = aes(movement, bump_width),fun.y=mean, geom="crossbar", size=1, , width=0.4, color="black") +
   theme(panel.background = element_rect(fill=NA),
         text = element_text(size=14),axis.text = element_text(size = 12),
         axis.text.x = element_text(angle = 30, vjust=.8, hjust=0.8),
         axis.line.x = element_line(size=1),
         axis.line.y = element_line(size=1)) +
-  geom_point(mean_bump_pars_bar_trials, mapping = aes(movement, bump_width),color='gray50') +
+  geom_point(mean_bump_pars_bar_trials, mapping = aes(movement, bump_width),color='gray70') +
   scale_x_discrete(labels=scales::wrap_format(10)) +
   labs(x="", y="Bump width (deg)") 
 

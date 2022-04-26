@@ -7,6 +7,7 @@ library(ggplot2)
 library(tidyverse)
 library(cowplot)
 library(rCAT)
+library(patchwork)
 
 #more granular plot for offset precision vs block type
 offset_precision_data <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability//offset_precision_data.csv", header = FALSE)
@@ -29,8 +30,8 @@ offset_precision_data <-
               block_type == "final_first_cue" ~ "Final first cue",
               block_type == "initial_second_cue" ~ "Initial second cue",
               block_type == "final_second_cue" ~ "Final second cue",
-              block_type == "cue_combination" ~ "Cue combination"), 
-    levels = c("Initial first cue","Initial second cue", "Cue combination", "Final first cue","Final second cue"))
+              block_type == "cue_combination" ~ "Two-cue"), 
+    levels = c("Initial first cue","Initial second cue", "Two-cue", "Final first cue","Final second cue"))
   )
 
 #get mean and sd
@@ -98,8 +99,8 @@ bump_mag_data <-
               block_type == "final_first_cue" ~ "Final first cue",
               block_type == "initial_second_cue" ~ "Initial second cue",
               block_type == "final_second_cue" ~ "Final second cue",
-              block_type == "cue_combination" ~ "Cue combination"), 
-    levels = c("Initial first cue","Initial second cue", "Cue combination", "Final first cue","Final second cue"))
+              block_type == "cue_combination" ~ "Two-cue"), 
+    levels = c("Initial first cue","Initial second cue", "Two-cue", "Final first cue","Final second cue"))
   )
 
 bump_width_data <-
@@ -109,8 +110,8 @@ bump_width_data <-
               block_type == "final_first_cue" ~ "Final first cue",
               block_type == "initial_second_cue" ~ "Initial second cue",
               block_type == "final_second_cue" ~ "Final second cue",
-              block_type == "cue_combination" ~ "Cue combination"), 
-    levels = c("Initial first cue","Initial second cue", "Cue combination", "Final first cue","Final second cue"))
+              block_type == "cue_combination" ~ "Two-cue"), 
+    levels = c("Initial first cue","Initial second cue", "Two-cue", "Final first cue","Final second cue"))
   )
 
 #get mean and sd
@@ -163,6 +164,53 @@ ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig6"
 
 
 
+## similarity between the two-block offset and the two different types of single cue
+#load data
+cue_type_data <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability/cue_type_data.csv", header = FALSE)
+colnames(cue_type_data) <- c('visual_cue','wind')
+
+#run wilcoxon test
+wilcox.test(cue_type_data$visual_cue,cue_type_data$wind, paired = TRUE, alternative = "two.sided")
+
+#add fly as factor
+cue_type_data$fly <- seq(1,dim(cue_type_data)[1])
+
+#reshape to plot
+cue_type_data <- cue_type_data %>% 
+  pivot_longer(cols = c(visual_cue,wind), names_to = "type", values_to = "similarity")
+
+cue_type_data <-
+  cue_type_data %>% 
+  mutate(type = factor(
+    case_when(type == "visual_cue" ~ "Visual cue",
+              type == "wind" ~ "Wind"), 
+    levels = c("Visual cue","Wind"))
+  )
+
+#get mean and sd
+mean_and_sd_similarity <- cue_type_data %>%
+  group_by(type) %>% 
+  summarise(sd_similarity = sd(similarity),
+            mean_similarity = mean(similarity),
+            n = n())
+#plot
+ggplot() + 
+  geom_line(cue_type_data, mapping = aes(type, similarity, group = fly),color = 'gray70',size=0.5) +
+  stat_summary(cue_type_data, mapping = aes(type, similarity),fun.y=mean, geom="crossbar", size=1, , width=0.4, color="black") +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=10),
+        axis.text = element_text(size=7), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.text.x = element_text(vjust=.8, hjust=0.8),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  geom_point(cue_type_data, mapping = aes(type, similarity),color='gray50') +
+  scale_x_discrete(labels=scales::wrap_format(10)) +
+  labs(x="", y="Similarity between two-cue \n and single cue HD encoding (deg)")+
+  ylim(c(0,180))
+
+
+
+
 
 # code to plot full figure ------------------------------------------------
 
@@ -209,7 +257,23 @@ p3 <- ggplot() +
                    labels=scales::wrap_format(10)) +
   labs(x="", y="Bump amplitude (DF/F)")
 
-full_plot <- p1 + p2 + p3
+p4 <- ggplot() + 
+  geom_line(cue_type_data, mapping = aes(type, similarity, group = fly),color = 'gray70',size=0.5) +
+  stat_summary(cue_type_data, mapping = aes(type, similarity),fun.y=mean, geom="crossbar", size=1, , width=0.4, color="black") +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=16),
+        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.text.x = element_text(vjust=.8, hjust=0.8),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  geom_point(cue_type_data, mapping = aes(type, similarity),color='gray50') +
+  scale_x_discrete(labels=scales::wrap_format(10)) +
+  labs(x="", y="Similarity between two-cue \n and single cue HD encoding (deg)")+
+  ylim(c(0,180))
+
+row_1 <- p1 + p2 + p3
+row_2 <- p4 + plot_spacer() + plot_spacer()
+full_plot <- row_1/row_2
 full_plot + plot_annotation(tag_levels = 'A')
 
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig6", file="full_fig.svg",device = 'svg', width=14, height=6)
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig6", file="full_fig.svg",device = 'svg', width=14, height=12)

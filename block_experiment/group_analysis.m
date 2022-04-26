@@ -376,7 +376,7 @@ saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Block-Experiment\si
 single_cue_cc_sim_1 = 180 - abs(single_cue_cc_diff_1);
 single_cue_cc_sim_2 = 180 - abs(single_cue_cc_diff_2);
 
-%As line plot
+%plot
 figure('Position',[100 100 1000 800]),
 plot([single_cue_cc_sim_1;single_cue_cc_sim_2],'-o','color',[0.6 0.6 0.6],'MarkerFaceColor',[0.6 0.6 0.6])
 hold on
@@ -411,6 +411,35 @@ a = get(gca,'YTickLabel');
 set(gca,'YTickLabel',a,'fontsize',18);
 yticks([0:30:180]);
 yticklabels({'0','30','60','90','120','150','180'});
+
+%% Repeat similarity analysis by cue type instead of by order
+
+for fly = 1:length(data)
+    if configuration(fly) == 1
+        single_cue_cc_sim_bar(fly) = 180 - abs(rad2deg(circ_dist(offset_mean(fly,3),offset_mean(fly,1))));
+        single_cue_cc_sim_wind(fly) = 180 - abs(rad2deg(circ_dist(offset_mean(fly,3),offset_mean(fly,2))));
+    else
+        single_cue_cc_sim_bar(fly) = 180 - abs(rad2deg(circ_dist(offset_mean(fly,3),offset_mean(fly,2))));
+        single_cue_cc_sim_wind(fly) = 180 - abs(rad2deg(circ_dist(offset_mean(fly,3),offset_mean(fly,1))));
+    end
+end
+
+figure('Position',[100 100 1000 800]),
+plot([single_cue_cc_sim_bar;single_cue_cc_sim_wind],'-o','color',[0.6 0.6 0.6],'MarkerFaceColor',[0.6 0.6 0.6])
+hold on
+errorbar([1 2],[mean(single_cue_cc_sim_bar);mean(single_cue_cc_sim_wind)],[std(single_cue_cc_sim_bar)/sqrt(length(single_cue_cc_sim_bar));std(single_cue_cc_sim_wind)/sqrt(length(single_cue_cc_sim_wind))],'-ko','LineWidth',3,'MarkerFaceColor','k','MarkerSize',8)
+xlim([0 3]);
+xticks([1 2]);
+xticklabels({'Visual cue','Wind'});
+ylabel({'Similarity between cue combination and';'single cue offset (deg)'},'fontsize',20);
+a = get(gca,'YTickLabel');
+set(gca,'YTickLabel',a,'fontsize',18);
+yticks([0:30:180]);
+yticklabels({'0','30','60','90','120','150','180'});
+
+%save data for statistical analysis
+cue_type_data = [abs(single_cue_cc_sim_bar)',abs(single_cue_cc_sim_wind)'];
+writematrix(cue_type_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp35\data\high_reliability\cue_type_data.csv');
 
 %% Cue plasticity vs size of conflict
 

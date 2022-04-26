@@ -15,10 +15,10 @@ offset_precision_data <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp
 offset_precision_data <-
   offset_precision_data %>% 
   mutate(contrast = factor(
-    case_when(contrast == "Darkness" ~ "No contrast",
+    case_when(contrast == "Darkness" ~ "Zero contrast",
               contrast == "Low contrast" ~ "Low contrast",
               contrast == "High contrast" ~ "High contrast"), 
-    levels = c("No contrast", "Low contrast", "High contrast"))
+    levels = c("Zero contrast", "Low contrast", "High contrast"))
   )
 
 
@@ -58,21 +58,6 @@ ggplot() +
 
 ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig1", file="offset_precision_cl.svg",device = 'svg', width=6, height=4)
 
-#different representation
-ggplot() + 
-  geom_violin(grouped_offset_precision_data, mapping = aes(contrast, mean_offset_precision)) +
-  stat_summary(grouped_offset_precision_data, mapping = aes(contrast, mean_offset_precision),fun.y=mean, geom="crossbar", size=1, , width=0.2, color="black") +
-  geom_line(grouped_offset_precision_data, mapping = aes(contrast, mean_offset_precision, group = Fly),color = 'gray30',size=0.5) +
-  theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=18),
-        axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
-        axis.text.x = element_text(vjust=.8, hjust=0.8),
-        axis.line.x = element_line(size=1),
-        axis.line.y = element_line(size=1)) +
-  geom_point(grouped_offset_precision_data, mapping = aes(contrast, mean_offset_precision),color='gray30') +
-  scale_x_discrete(labels=scales::wrap_format(10)) +
-  labs(x="", y="HD encoding reliability")+
-  ylim(c(0,1))
 
 
 #bump pars in cue brightness experiment
@@ -82,10 +67,10 @@ bump_pars_data <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp25/data
 bump_pars_data <-
   bump_pars_data %>% 
   mutate(ContrastLevel = factor(
-    case_when(ContrastLevel == 1L ~ "No contrast",
+    case_when(ContrastLevel == 1L ~ "Zero contrast",
               ContrastLevel == 2L ~ "Low contrast",
               ContrastLevel == 3L ~ "High contrast"), 
-    levels = c("No contrast", "Low contrast", "High contrast"))
+    levels = c("Zero contrast", "Low contrast", "High contrast"))
   )
 
 
@@ -138,40 +123,6 @@ p2 <- ggplot() +
 p <- plot_grid(p1, p2)
 p
 ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig1", file="bump_pars_brightness_no_mvt.svg",device = 'svg', width=8, height=4)
-
-
-## different representation
-p1 <- ggplot() + 
-  geom_violin(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_mag)) +
-  stat_summary(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_mag),fun.y=mean, geom="crossbar", size=1, , width=0.2, color="black") +
-  geom_line(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_mag, group = Fly),color = 'gray30',size=0.5) +
-  theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=18),
-        axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
-        axis.text.x = element_text(vjust=.8, hjust=0.8),
-        axis.line.x = element_line(size=1),
-        axis.line.y = element_line(size=1)) +
-  geom_point(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_mag),color='gray30') +
-  scale_x_discrete(labels=scales::wrap_format(10)) +
-  labs(x="", y="Bump amplitude (DF/F)") 
-
-
-p2 <- ggplot() + 
-  geom_violin(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_width)) +
-  stat_summary(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_width),fun.y=mean, geom="crossbar", size=1, , width=0.2, color="black") +
-  geom_line(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_width, group = Fly),color = 'gray30',size=0.5) +
-  theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=18),
-        axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
-        axis.text.x = element_text(vjust=.8, hjust=0.8),
-        axis.line.x = element_line(size=1),
-        axis.line.y = element_line(size=1)) +
-  geom_point(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_width),color='gray30') +
-  scale_x_discrete(labels=scales::wrap_format(10)) +
-  labs(x="", y="Bump width (deg)") 
-
-p <- p1 + p2
-p
 
 
 
@@ -267,60 +218,16 @@ ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig1", f
 
 # combined plots for figure -----------------------------------------------
 
-#example fly
-p1 <- ggplot(dff_data,aes(time, name, fill=value)) +
-  geom_raster() +
-  scale_fill_gradient(low = "white", high = "black") +
-  theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=12),
-        #axis.text = element_text(size=12), axis.ticks.length.x = unit(0.5, "cm"),
-        axis.line.x = element_blank(),
-        axis.text.x=element_blank(), #remove x axis labels
-        axis.text.y=element_blank(), #remove y axis labels
-        axis.ticks.x=element_blank(), #remove x axis ticks,
-        axis.ticks.y=element_blank(), #remove x axis ticks,
-        axis.line.y = element_line(size=1),
-        axis.title.y=element_text(angle=0)) +
-  labs(x="", y="EPG activity (\u0394F/F)") 
-
-p2 <- ggplot() +
-  geom_path(data=visual_stim,aes(time,visual_stim),color="chartreuse3") +
-  geom_path(data=phase,aes(time, phase), color="mediumpurple") +
-  theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=12),
-        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.5, "cm"),
-        axis.line.x = element_blank(),
-        axis.text.x=element_blank(), #remove x axis labels
-        axis.ticks.x=element_blank(), #remove x axis ticks
-        axis.line.y = element_line(size=1),
-        axis.title.y=element_text(angle=0)) +
-  labs(x="", y="Angular pos (deg)") 
-
-p3 <- ggplot() +
-  geom_path(data = offset_no_contrast,aes(time,offset),color = 'gray0') +
-  geom_path(data = offset_low_contrast,aes(time,offset),color = 'blue') +
-  geom_path(data = offset_high_contrast,aes(time,offset),color = 'dodgerblue') +
-  theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=12),
-        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.5, "cm"),
-        axis.line.x = element_blank(),
-        axis.text.x=element_blank(), #remove x axis labels
-        axis.ticks.x=element_blank(), #remove x axis ticks,
-        axis.line.y = element_line(size=1),
-        axis.title.y=element_text(angle=0)) +
-  labs(x="", y="Offset (deg)")
-
-
 
 #HD encoding reliability
-p4 <- ggplot() + 
-  geom_line(grouped_offset_precision_data, mapping = aes(contrast, mean_offset_precision, group = Fly),color = 'gray50',size=0.5) +
+p1 <- ggplot() + 
+  geom_line(grouped_offset_precision_data, mapping = aes(contrast, mean_offset_precision, group = Fly),color = 'gray70',size=0.5) +
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=16),
         axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
         axis.line.x = element_line(size=1),
         axis.line.y = element_line(size=1)) +
-  geom_line(data = mean_and_sd_offset_precision,aes(contrast,mean_offset_precision,group = 1),color = 'gray0',size=1.5) +
+  geom_line(data = mean_and_sd_offset_precision,aes(contrast,mean_offset_precision,group = 1),color = 'gray0',size=2) +
   geom_errorbar(data=mean_and_sd_offset_precision, mapping=aes(x=contrast, ymin=mean_offset_precision + sd_offset_precision/sqrt(n), ymax=mean_offset_precision - sd_offset_precision/sqrt(n)), width=0, size=1.5, color="gray0") +
   scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
                    labels=scales::wrap_format(10)) +
@@ -328,35 +235,103 @@ p4 <- ggplot() +
   ylim(c(0,1))
 
 #Bump parameters
-p5 <- ggplot() + 
-  geom_line(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_mag, group = Fly),color = 'gray50',size=0.5) +
+p3 <- ggplot() + 
+  geom_line(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_mag, group = Fly),color = 'gray70',size=0.5) +
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=16),
         axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
         axis.line.x = element_line(size=1),
         axis.line.y = element_line(size=1)) +
-  geom_line(data = mean_and_sd_bump_pars_data,aes(ContrastLevel,mean_bump_mag,group = 1),color = '#14BDFA',size=1.5) +
+  geom_line(data = mean_and_sd_bump_pars_data,aes(ContrastLevel,mean_bump_mag,group = 1),color = '#14BDFA',size=2) +
   geom_errorbar(data=mean_and_sd_bump_pars_data, mapping=aes(x=ContrastLevel, ymin=mean_bump_mag + sd_bump_mag/sqrt(n), ymax=mean_bump_mag - sd_bump_mag/sqrt(n)), width=0, size=1.5, color="#14BDFA") +
   scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
                    labels=scales::wrap_format(10)) +
   labs(x="", y="Bump amplitude (\u0394F/F)") 
 
-p6 <- ggplot() + 
-  geom_line(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_width, group = Fly),color = 'gray50',size=0.5) +
+p2 <- ggplot() + 
+  geom_line(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_width, group = Fly),color = 'gray70',size=0.5) +
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=16),
         axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
         axis.line.x = element_line(size=1),
         axis.line.y = element_line(size=1)) +
-  geom_line(data = mean_and_sd_bump_pars_data,aes(ContrastLevel,mean_bump_width,group = 1),color = '#FAAF0F',size=1.5) +
+  geom_line(data = mean_and_sd_bump_pars_data,aes(ContrastLevel,mean_bump_width,group = 1),color = '#FAAF0F',size=2) +
   geom_errorbar(data=mean_and_sd_bump_pars_data, mapping=aes(x=ContrastLevel, ymin=mean_bump_width + sd_bump_width/sqrt(n), ymax=mean_bump_width - sd_bump_width/sqrt(n)), width=0, size=1.5, color="#FAAF0F") +
   scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
                    labels=scales::wrap_format(10)) +
   labs(x="", y="Bump width (deg)") 
 
-row_1 <- (p1/ plot_spacer() / p2 / plot_spacer() / p3)
-row_2 <- (p4 + p6 + p5) 
-full_plot <- row_1 / row_2 + plot_layout(heights = c(4,-2.5,4,-2.5,4,12))
-row_2 + plot_annotation(tag_levels = list(c('E','F','G')))
 
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig1", file="bottom_part.svg",device = 'svg', width=12, height=4)
+row_1 <- (p1+p2+p3) 
+
+example_fit_1 <-read.csv('Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp25/data/Experimental/two_ND_filters_3_contrasts/example_data_fit_2536.csv')
+example_fit_1$distance <- rad2deg(example_fit_1$distance)
+
+p4 <- ggplot(example_fit_1,aes(distance,data)) +
+  geom_line(size = 1.5) +
+  geom_line(data = example_fit_1,aes(distance,fit),size = 1.5, color = 'red3') +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=16),
+        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.5, "cm"),
+        axis.line.x = element_blank(),
+        axis.text.x=element_blank(), #remove x axis labels
+        axis.ticks.x=element_blank(), #remove x axis ticks
+        axis.line.y = element_line(size=1)) +
+  labs(x="", y="(\u0394F/F)") +
+  ylim(c(-0.5,3))
+
+example_fit_2 <-read.csv('Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp25/data/Experimental/two_ND_filters_3_contrasts/example_data_fit_3336.csv')
+example_fit_2$distance <- rad2deg(example_fit_2$distance)
+
+p5 <- ggplot(example_fit_2,aes(distance,data)) +
+  geom_line(size = 1.5) +
+  geom_line(data = example_fit_2,aes(distance,fit),size = 1.5, color = 'red3') +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=16),
+        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.5, "cm"),
+        axis.line.x = element_blank(),
+        axis.text.x=element_blank(), #remove x axis labels
+        axis.ticks.x=element_blank(), #remove x axis ticks
+        axis.line.y = element_line(size=1)) +
+  labs(x="", y="") +
+  ylim(c(-0.5,3))
+
+
+example_fit_1 <-read.csv('Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp25/data/Experimental/two_ND_filters_3_contrasts/example_data_fit_5918.csv')
+example_fit_1$distance <- rad2deg(example_fit_1$distance)
+
+p6 <- ggplot(example_fit_1,aes(distance,data)) +
+  geom_line(size = 1.5) +
+  geom_line(data = example_fit_1,aes(distance,fit),size = 1.5, color = 'red3') +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=16),
+        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.y = element_line(size=1),
+        axis.line.x = element_line(size=1)) +
+  labs(x="Angular distance (deg)", y="(\u0394F/F)") +
+  ylim(c(-0.5,3))
+
+
+example_fit_2 <-read.csv('Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp25/data/Experimental/two_ND_filters_3_contrasts/example_data_fit_6118.csv')
+example_fit_2$distance <- rad2deg(example_fit_2$distance)
+
+p7 <- ggplot(example_fit_2,aes(distance,data)) +
+  geom_line(size = 1.5) +
+  geom_line(data = example_fit_2,aes(distance,fit),size = 1.5, color = 'red3') +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=16),
+        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.y = element_line(size=1),
+        axis.line.x = element_line(size=1)) +
+  labs(x="Angular distance (deg)", y="") +
+  ylim(c(-0.5,3))
+
+
+r1 <- p4 + p5
+r2 <- p6 + p7
+row_2 <- r1/r2
+
+full_plot <- row_1/row_2
+full_plot + plot_annotation(tag_levels = list(c('E','F','G','H','','',''))) + plot_layout(heights=c(1,2))
+
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig1", file="bottom_part.svg",device = 'svg', width=12, height=10)

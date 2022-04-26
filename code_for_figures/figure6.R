@@ -383,7 +383,7 @@ ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig6", f
 #HD encoding reliability bar vs wind
 p1 <- ggplot() + 
   #geom_violin(initial_offset_precision_data, mapping = aes(block_type, offset_precision)) +
-  geom_line(initial_offset_precision_data, mapping = aes(block_type, offset_precision, group = fly_num),color = 'gray50',size=0.5) +
+  geom_line(initial_offset_precision_data, mapping = aes(block_type, offset_precision, group = fly_num),color = 'gray70',size=0.5) +
   stat_summary(initial_offset_precision_data, mapping = aes(block_type, offset_precision),fun.y=mean, geom="crossbar", size=1, , width=0.4, color="black") +
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=10),
@@ -391,7 +391,7 @@ p1 <- ggplot() +
         axis.text.x = element_text(vjust=.8, hjust=0.8),
         axis.line.x = element_line(size=1),
         axis.line.y = element_line(size=1)) +
-  geom_point(initial_offset_precision_data, mapping = aes(block_type, offset_precision),color='gray50') +
+  geom_point(initial_offset_precision_data, mapping = aes(block_type, offset_precision),color='gray70') +
   scale_x_discrete(labels=scales::wrap_format(10)) +
   labs(x="", y="HD encoding reliability")+
   ylim(c(0,1))
@@ -399,7 +399,7 @@ p1 <- ggplot() +
 #bump mag bar vs wind
 p2 <- ggplot() + 
   #geom_violin(initial_bump_pars_data, mapping = aes(block_type, bump_mag)) +
-  geom_line(initial_bump_pars_data, mapping = aes(block_type, bump_mag, group = fly_num),color = 'gray50',size=0.5) +
+  geom_line(initial_bump_pars_data, mapping = aes(block_type, bump_mag, group = fly_num),color = 'gray70',size=0.5) +
   stat_summary(initial_bump_pars_data, mapping = aes(block_type, bump_mag),fun.y=mean, geom="crossbar", size=1, , width=0.4, color="black") +
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=10),
@@ -407,14 +407,14 @@ p2 <- ggplot() +
         axis.text.x = element_text(vjust=.8, hjust=0.8),
         axis.line.x = element_line(size=1),
         axis.line.y = element_line(size=1)) +
-  geom_point(initial_bump_pars_data, mapping = aes(block_type, bump_mag),color='gray50') +
+  geom_point(initial_bump_pars_data, mapping = aes(block_type, bump_mag),color='gray70') +
   scale_x_discrete(labels=scales::wrap_format(10)) +
   labs(x="", y="Bump amplitude (\u0394F/F)")
 
 #bump width bar vs wind
 p3 <- ggplot() + 
   #geom_violin(initial_bump_pars_data, mapping = aes(block_type, bump_width)) +
-  geom_line(initial_bump_pars_data, mapping = aes(block_type, bump_width, group = fly_num),color = 'gray50',size=0.5) +
+  geom_line(initial_bump_pars_data, mapping = aes(block_type, bump_width, group = fly_num),color = 'gray70',size=0.5) +
   stat_summary(initial_bump_pars_data, mapping = aes(block_type, bump_width),fun.y=mean, geom="crossbar", size=1, , width=0.4, color="black") +
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=10),
@@ -422,13 +422,13 @@ p3 <- ggplot() +
         axis.text.x = element_text(vjust=.8, hjust=0.8),
         axis.line.x = element_line(size=1),
         axis.line.y = element_line(size=1)) +
-  geom_point(initial_bump_pars_data, mapping = aes(block_type, bump_width),color='gray50') +
+  geom_point(initial_bump_pars_data, mapping = aes(block_type, bump_width),color='gray70') +
   scale_x_discrete(labels=scales::wrap_format(10)) +
   labs(x="", y="Bump width (deg)")
 
 #offset precision vs block type
 p4 <- ggplot() + 
-  geom_line(offset_precision_data_3_blocks, mapping = aes(block_type, offset_precision, group = fly),color = 'gray50',size=0.5) +
+  geom_line(offset_precision_data_3_blocks, mapping = aes(block_type, offset_precision, group = fly),color = 'gray70',size=0.5) +
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=10),
         axis.text = element_text(size=7), axis.ticks.length.x = unit(0.1, "cm"),
@@ -444,7 +444,7 @@ p4 <- ggplot() +
 
 #Bump pars per block
 p5 <- ggplot() + 
-  geom_line(bump_mag_data_3_blocks, mapping = aes(block_type, bump_mag, group = fly),color = 'gray50',size=0.5) +
+  geom_line(bump_mag_data_3_blocks, mapping = aes(block_type, bump_mag, group = fly),color = 'gray70',size=0.5) +
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=10),
         axis.text = element_text(size=7), axis.ticks.length.x = unit(0.1, "cm"),
@@ -458,7 +458,7 @@ p5 <- ggplot() +
   labs(x="", y="Bump amplitude (\u0394F/F)")
 
 p6 <- ggplot() + 
-  geom_line(bump_width_data_3_blocks, mapping = aes(block_type, bump_width, group = fly),color = 'gray50',size=0.5) +
+  geom_line(bump_width_data_3_blocks, mapping = aes(block_type, bump_width, group = fly),color = 'gray70',size=0.5) +
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=10),
         axis.text = element_text(size=7), axis.ticks.length.x = unit(0.1, "cm"),
@@ -474,7 +474,7 @@ p6 <- ggplot() +
 #cue similarity
 p7 <- ggplot() + 
   #geom_violin(cue_order_data, mapping = aes(order, similarity)) +
-  geom_line(cue_order_data, mapping = aes(order, similarity, group = fly),color = 'gray50',size=0.5) +
+  geom_line(cue_order_data, mapping = aes(order, similarity, group = fly),color = 'gray70',size=0.5) +
   stat_summary(cue_order_data, mapping = aes(order, similarity),fun.y=mean, geom="crossbar", size=1, , width=0.4, color="black") +
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=10),

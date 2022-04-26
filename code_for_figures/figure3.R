@@ -252,7 +252,7 @@ p2 <- ggplot(test1,aes(time, offset_precision,group=fly,color=factor(fly)))+
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
         text = element_text(size=16),axis.text = element_text(size = 12))+
-  geom_line()+
+  geom_line(lwd=1)+
   labs(x = '', y='', color = '',fill = '')+ 
   scale_x_continuous(breaks=c(250,500,750,1000),labels=c("250","500","750","1000")) +
   coord_cartesian(ylim=c(0.15,1))
@@ -295,7 +295,7 @@ p4 <- ggplot(test2,aes(time, bump_width,group=fly,color=factor(fly)))+
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
         text = element_text(size=16),axis.text = element_text(size = 12))+
-  geom_line()+
+  geom_line(lwd=1)+
   labs(x = '', y='', color = '',fill = '')+ 
   scale_x_continuous(breaks=c(250,500,750,1000),labels=c("250","500","750","1000")) +
   coord_cartesian(ylim=c(80,135))
@@ -338,7 +338,7 @@ p6 <- ggplot(test2,aes(time, bump_mag,group=fly,color=factor(fly)))+
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
         text = element_text(size=16),axis.text = element_text(size = 12))+
-  geom_line()+
+  geom_line(lwd=1)+
   labs(x = '', y='', color = '',fill = '')+ 
   scale_x_continuous(breaks=c(250,500,750,1000),labels=c("250","500","750","1000")) +
   coord_cartesian(ylim=c(1.25,2.5))
@@ -381,7 +381,7 @@ p8 <- ggplot(test1,aes(time, heading_precision,group=fly,color=factor(fly)))+
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
         text = element_text(size=16),axis.text = element_text(size = 12))+
-  geom_line()+
+  geom_line(lwd=1)+
   labs(x = 'Time (sec)', y='', color = '',fill = '')+ 
   scale_x_continuous(breaks=c(250,500,750,1000),labels=c("250","500","750","1000")) +
   coord_cartesian(ylim=c(0.1,0.9))

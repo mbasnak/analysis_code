@@ -227,7 +227,7 @@ hb_offset_diff_evo  %>%
 
 #empty trial comparison HD encoding reliability
 p1 <- ggplot() + 
-  geom_line(empty_trial_comparison_offset_data, mapping = aes(trial, offset_precision, group = Fly),color = 'gray50',size=0.5) +
+  geom_line(empty_trial_comparison_offset_data, mapping = aes(trial, offset_precision, group = Fly),color = 'gray70',size=0.5) +
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=16),
         axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
@@ -243,7 +243,7 @@ p1 <- ggplot() +
 
 #empty trial comparison of consistency of behavioral orientation
 p2 <- ggplot() + 
-  geom_line(empty_trial_comparison_heading_data, mapping = aes(trial, heading_precision, group = Fly),color = 'gray50',size=0.5) +
+  geom_line(empty_trial_comparison_heading_data, mapping = aes(trial, heading_precision, group = Fly),color = 'gray70',size=0.5) +
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=16),
         axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
@@ -260,14 +260,14 @@ p2 <- ggplot() +
 #remapping index evolution
 p3 <- ggplot() + 
   #geom_violin(hb_offset_diff_evo, mapping = aes(block, offset_diff)) +
-  geom_line(hb_offset_diff_evo, mapping = aes(block, offset_diff, group = fly),color = 'gray50',size=0.5) +
+  geom_line(hb_offset_diff_evo, mapping = aes(block, offset_diff, group = fly),color = 'gray70',size=0.5) +
   stat_summary(hb_offset_diff_evo, mapping = aes(block, offset_diff),fun.y=mean, geom="crossbar", size=1, , width=0.4, color="black") +
   theme(panel.background = element_rect(fill=NA),
         text = element_text(size=16),axis.text = element_text(size = 12),
         axis.text.x = element_text(vjust=.8, hjust=0.8),
         axis.line.x = element_line(size=1),
         axis.line.y = element_line(size=1)) +
-  geom_point(hb_offset_diff_evo, mapping = aes(block, offset_diff),color='gray50') +
+  geom_point(hb_offset_diff_evo, mapping = aes(block, offset_diff),color='gray70') +
   scale_x_discrete(labels=scales::wrap_format(10)) +
   labs(x="", y="Remapping index")+
   ylim(c(-0.8,0.8))
@@ -281,7 +281,7 @@ p4 <- ggplot(learning_data_diff,aes(offset_diff,bump_mag)) +
         axis.line.x = element_line(size=1),
         axis.line.y = element_line(size=1)) +
   scale_x_continuous(name="Remapping index") +
-  scale_y_continuous(name="Bump amplitude (DF/F)", limits=c(0.5,2.5)) 
+  scale_y_continuous(name="Bump amplitude (\u0394F/F)", limits=c(0.5,2.5)) 
 
 p5 <- ggplot(learning_data_diff,aes(offset_diff,bump_width)) +
   geom_point(size = 2.5)+
