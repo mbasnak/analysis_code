@@ -101,7 +101,7 @@ ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig7"
 bump_pars_ratio_data <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/bump_pars_ratio_data2.csv")
 
 bump_mag_ratio_ordered_data <- bump_pars_ratio_data %>%
-  select(bm_ratio=initial_bm_ratio_1, starts_with("pref_")) %>%
+  dplyr::select(bm_ratio=initial_bm_ratio_1, starts_with("pref_")) %>%
   mutate(fly = 1:14) %>%
   pivot_longer(cols = starts_with("pref"))
 bump_mag_ratio_ordered_data <- subset(bump_mag_ratio_ordered_data, select = -c(name))
@@ -125,7 +125,7 @@ ggplot(bump_mag_ratio_ordered_data,aes(bump_mag_ratio, pref_ind)) +
 
 
 bump_width_ratio_ordered_data <- bump_pars_ratio_data %>%
-  select(bw_ratio=initial_bw_ratio_1, starts_with("pref_")) %>%
+  dplyr::select(bw_ratio=initial_bw_ratio_1, starts_with("pref_")) %>%
   mutate(fly = 1:14) %>%
   pivot_longer(cols = starts_with("pref"))
 bump_width_ratio_ordered_data <- subset(bump_width_ratio_ordered_data, select = -c(name))
@@ -184,6 +184,33 @@ ggplot(sorted_bump_PI,aes(x=fly, y=PI, group=fly)) +
   xlab("Fly #") + ylab("Bump preference index")
 
 
+## Initial offset precision comparison between both cues
+
+initial_offset_precision_data <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/initial_offset_precision_data.csv")
+
+
+initial_offset_precision_data <-
+  initial_offset_precision_data %>% 
+  mutate(block = factor(
+    case_when(block == 1 ~ "Visual cue",
+              block == 2 ~ "Wind"), 
+    levels = c("Visual cue","Wind"))
+  )
+
+ggplot() + 
+  geom_line(initial_offset_precision_data, mapping = aes(block,initial_offset_precision, group = fly),color = 'gray70',size=0.5) +
+  stat_summary(initial_offset_precision_data, mapping = aes(block,initial_offset_precision),fun.y=mean, geom="crossbar", size=1, , width=0.4, color="black") +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=16),
+        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.text.x = element_text(vjust=.8, hjust=0.8),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  geom_point(initial_offset_precision_data, mapping = aes(block,initial_offset_precision),color='gray50') +
+  scale_x_discrete(labels=scales::wrap_format(10)) +
+  labs(x="", y="Initial HD encoding reliability")+
+  ylim(c(0,1))
+
 
 
 # code to plot the full figure for the paper ------------------------------
@@ -194,8 +221,8 @@ p1 <- ggplot(sorted_bump_PI,aes(x=fly, y=PI, group=fly)) +
   geom_point(data = sorted_bar_PI, aes(x=fly, y=PI), size=3, color= 'chocolate2') +
   geom_point(data = sorted_wind_PI, aes(x=fly, y=PI), size=3, color= 'gray30', shape=17) +
   theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=22),
-        axis.text = element_text(size=20), axis.ticks.length.x = unit(0.5, "cm"),
+        text=element_text(size=16),
+        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
         axis.line.x = element_line(size=1),
         axis.line.y = element_line(size=1)) +
   scale_x_continuous(breaks=1:14) +
@@ -219,7 +246,21 @@ p2 <- SI %>%
   xlab("Fly #") + ylab("Stickiness index")
 
 
-p3 <- rot_speed_aj %>% 
+p3 <- ggplot() + 
+  geom_line(initial_offset_precision_data, mapping = aes(block,initial_offset_precision, group = fly),color = 'gray70',size=0.5) +
+  stat_summary(initial_offset_precision_data, mapping = aes(block,initial_offset_precision),fun.y=mean, geom="crossbar", size=1, , width=0.4, color="black") +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=16),
+        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.text.x = element_text(vjust=.8, hjust=0.8),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  geom_point(initial_offset_precision_data, mapping = aes(block,initial_offset_precision),color='gray50') +
+  scale_x_discrete(labels=scales::wrap_format(10)) +
+  labs(x="", y="Initial HD encoding reliability")+
+  ylim(c(0,1))
+
+p4 <- rot_speed_aj %>% 
   mutate(time_bin = cut(time,
                         breaks = seq(1052,1153, 1),
                         right = TRUE)) %>%
@@ -247,7 +288,7 @@ p3 <- rot_speed_aj %>%
   labs(y = 'Rotational speed (deg/s)', x='Time', color = '',fill = '')+ 
   coord_cartesian(ylim=c(0,50))
 
-p4 <- rot_speed_aj %>% 
+p5 <- rot_speed_aj %>% 
   mutate(time_bin = cut(time,
                         breaks = seq(1052,1153, 1),
                         right = TRUE)) %>%
@@ -275,7 +316,7 @@ p4 <- rot_speed_aj %>%
   labs(y = '', x='Time', color = '',fill = '')+ 
   coord_cartesian(ylim=c(0,50))
 
-p5 <- ggplot(bump_width_ratio_ordered_data,aes(bump_width_ratio, pref_ind)) + 
+p6 <- ggplot(bump_width_ratio_ordered_data,aes(bump_width_ratio, pref_ind)) + 
   geom_line(aes(bump_width_ratio, pref_ind, group = fly),color = 'gray70') +
   geom_point() +
   geom_smooth(method='lm', se = FALSE, color = 'red')  +
@@ -287,7 +328,7 @@ p5 <- ggplot(bump_width_ratio_ordered_data,aes(bump_width_ratio, pref_ind)) +
   labs(x = "Wind bump width/ \n Bar bump width", y='HD cell preference index') +
   ylim(-1,1)
 
-p6 <- ggplot(bump_mag_ratio_ordered_data,aes(bump_mag_ratio, pref_ind)) + 
+p7 <- ggplot(bump_mag_ratio_ordered_data,aes(bump_mag_ratio, pref_ind)) + 
   geom_line(aes(bump_mag_ratio, pref_ind, group = fly),color = 'gray70') +
   geom_point() +
   geom_smooth(method='lm', se = FALSE, color = 'red')  +
@@ -300,8 +341,8 @@ p6 <- ggplot(bump_mag_ratio_ordered_data,aes(bump_mag_ratio, pref_ind)) +
   ylim(-1,1)
 
 row_1 <- p1 + p2
-row_2 <- p3 + p4
-row_3 <- p5 + p6
+row_2 <- p3 + p4 + p5
+row_3 <- p6 + p7
 full_plot <- row_1 / row_2 / row_3
 full_plot + plot_annotation(tag_levels = 'A')
 ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig7", file="full_fig.svg",device = 'svg', width=12, height=16)

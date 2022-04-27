@@ -4,6 +4,7 @@
 library(ggplot2)
 library(cowplot)
 library(rCAT)
+library(patchwork)
 
 
 ### For bar trials
@@ -222,3 +223,47 @@ ggplot() +
 
 ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig2", file="offset_precision_standing_moving_empty_trial.svg",device = 'svg', width=12, height=8)
 ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig2", file="offset_precision_standing_moving_empty_trial.png",device = 'png', width=12, height=8)
+
+
+## passive rotation of the stimulus around the fly
+passive_rotation_data <- read.csv('Z:/Wilson Lab/Mel/Experiments/Uncertainty/GCaMP_control/data/all_data.csv')
+passive_rotation_data$nanmean_bump_width_thresh <- rad2deg(passive_rotation_data$nanmean_bump_width_thresh)
+
+p1 <- ggplot(passive_rotation_data,aes(stim_vel,nanmean_offset_precision)) +
+  geom_line(aes(group=Fly),color = 'gray50',size=0.5) +
+  stat_summary(fun=mean, geom="line", size=1.5, color="black") +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=16),
+        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  labs(x="Stimulus angular speed (deg/s)", y="HD encoding reliability") 
+
+p2 <- ggplot(passive_rotation_data,aes(stim_vel,nanmean_bump_width_thresh)) +
+  geom_line(aes(group=Fly),color = 'gray50',size=0.5) +
+  stat_summary(fun=mean, geom="line", size=1.5, color="black") +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=16),
+        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  labs(x="Stimulus angular speed (deg/s)", y="Bump width (deg)") 
+
+p3 <- ggplot(passive_rotation_data,aes(stim_vel,nanmean_bump_mag_thresh)) +
+  geom_line(aes(group=Fly),color = 'gray50',size=0.5) +
+  stat_summary(fun=mean, geom="line", size=1.5, color="black") +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=16),
+        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  labs(x="Stimulus angular speed (deg/s)", y="Bump amplitude (\u0394F/F)") 
+
+p1 + p2 + p3
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig2", file="passive_rotation.svg",device = 'svg', width=12, height=8)
+
+
+#run statistics
+summary(lme(nanmean_offset_precision ~ stim_vel, random=~1|Fly, passive_rotation_data))
+summary(lme(nanmean_bump_width_thresh ~ stim_vel, random=~1|Fly, passive_rotation_data))
+summary(lme(nanmean_bump_mag_thresh ~ stim_vel, random=~1|Fly, passive_rotation_data))

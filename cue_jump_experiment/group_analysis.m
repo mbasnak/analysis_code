@@ -1189,6 +1189,11 @@ offset_ratio_data = table(repeated_offset_ratio',PI','VariableNames',{'initial_o
 offset_ratio_mean_data = table(initial_offset_ratio',pref_index,'VariableNames',{'initial_offset_ratio','pref_index'});
 writetable(offset_ratio_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\offset_ratio_data.csv')
 writetable(offset_ratio_mean_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\offset_ratio_mean_data.csv')
+initial_offset_precision = [initial_bar_offset_precision,initial_wind_offset_precision];
+block = [repelem(1,1,length(initial_bar_offset_precision)),repelem(2,1,length(initial_wind_offset_precision))];
+fly_num = [1:length(initial_bar_offset_precision),1:length(initial_wind_offset_precision)];
+initial_offset_precision_data = table(initial_offset_precision',block',fly_num','VariableNames',{'initial_offset_precision','block','fly'});
+writetable(initial_offset_precision_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\initial_offset_precision_data.csv')
 
 
 %% 3) repeat for behavioral preference index

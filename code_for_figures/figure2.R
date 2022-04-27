@@ -7,7 +7,8 @@ library(ggplot2)
 library(tidyverse)
 library(cowplot)
 library(rCAT)
-
+library(patchwork)
+library(rstatix)
 
 #1) Relationship between offset precision and rotational speed
 rot_speed_offset_precision <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp28/data/rot_speed_offset_precision.csv")
@@ -73,38 +74,6 @@ summary(lme(offset_precision ~ rot_speed,random=~1|fly,rot_speed_offset_precisio
 #with bar trial data
 
 bump_pars_rot_speed <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp28/data/all_movement_data_bar_trial.csv")
-
-
-fig2_theme <-  
-  list(
-    theme(legend.position=c(0.70, 0.15),
-          legend.background = element_rect(color=NA, fill=NA),
-          panel.background=element_rect(fill="white"),
-          axis.line = element_line(color="black", size=1),
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(), 
-          text = element_text(size=22),axis.text = element_text(size = 20)),
-    xlim(0,200),
-    coord_cartesian(ylim = c(-0.5,0.5))
-  )
-
-
-
-p1 <- ggplot(bump_pars_rot_speed, aes(rot_speed, zbump_width)) + 
-  fig2_theme +
-  geom_smooth(alpha=0.1) +
-  labs(x = 'Rotational speed (deg/s)', y="Zscored bump width", color = '',fill = '')
-
-p2 <- ggplot(bump_pars_rot_speed, aes(rot_speed, zbump_mag))+ 
-  fig2_theme+
-  geom_smooth(alpha=0.1)+ 
-  labs(x = 'Rotational speed (deg/s)', y='Zscored bump magnitude', color = '',fill = '')
-
-p <- plot_grid(p1, p2)
-p
-
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig2", file="zbump_pars_rot_speed_bar_trial.svg",device = 'svg', width=12, height=8)
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig2", file="zbump_pars_rot_speed_bar_trial.png",device = 'png', width=12, height=8)
 
 
 p1 <- bump_pars_rot_speed %>% 
@@ -418,7 +387,7 @@ p + plot_annotation(tag_levels = list(c('B','C','D','E','F')))
 ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig2", file="bottom_figure_2.svg",device = 'svg', width=12, height=10)
 
 
-# repeat figure with rolling winodw for all variables ---------------------
+# repeat figure with rolling window for all variables ---------------------
 
 #1) Relationship between offset precision and rotational speed
 rot_speed_offset_precision <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp28/data/rot_speed_offset_precision.csv")
