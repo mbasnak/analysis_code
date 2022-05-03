@@ -228,7 +228,7 @@ for timepoint = 1:length(random_points)
     plot(angular_midline_distances,feval(model_data,angular_midline_distances),'color',[.6 .2 .6],'linewidth',1.5)
     xlabel('Angular distance (radians)');
     ylabel('DF/F');
-    title(['R2 = ',num2str(round(gof.adjrsquare,2))]);
+    title(['R2 = ',num2str(gof.adjrsquare,2)]);
     legend('data','fit','location','best');     
     
     data = dff(random_points(timepoint),:);

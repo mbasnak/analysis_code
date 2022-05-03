@@ -266,7 +266,6 @@ xlim([0 x_out_heading(end)]);
 
 subplot(5,1,3)
 offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',-continuous_data.heading)));
-
 %store offset for later
 combined_offset_above_thresh = deg2rad(offset(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds>25));
 [~, offset_var_combined] = circ_std(combined_offset_above_thresh);

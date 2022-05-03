@@ -48,138 +48,37 @@ for folder = 1:length(folderNames)
         
         moving = continuous_data.total_mvt_ds > 25;
         gof = continuous_data.adj_rs > 0.5;
-        
-        mean_bump_mag_standing = [mean(continuous_data.bump_magnitude(~moving & gof)),mean_bump_mag_standing];       
-        mean_bump_mag_moving = [mean(continuous_data.bump_magnitude(moving & gof)),mean_bump_mag_moving];
-        mean_bump_mag_low_mvt = [mean(continuous_data.bump_magnitude(gof & continuous_data.total_mvt_ds > 25 & continuous_data.total_mvt_ds < 50)),mean_bump_mag_low_mvt];                        
-        mean_bump_width_standing = [mean(continuous_data.bump_width(~moving & gof)),mean_bump_width_standing];
-        mean_bump_width_moving = [mean(continuous_data.bump_width(moving & gof)),mean_bump_width_moving];
-        mean_bump_width_low_mvt = [mean(continuous_data.bump_width(gof & continuous_data.total_mvt_ds > 25 & continuous_data.total_mvt_ds < 50)),mean_bump_width_low_mvt];                
-        
-        offset = circ_dist(-continuous_data.heading,continuous_data.bump_pos');
-        offset_precision_standing = [offset_precision_standing,circ_r(offset(~moving))];
-        offset_precision_moving = [offset_precision_moving,circ_r(offset(moving))];
-        
-        bump_mag_moving = [continuous_data.bump_magnitude(moving & gof),bump_mag_moving];
-        zbump_mag_moving = [zscore(continuous_data.bump_magnitude(moving & gof)),zbump_mag_moving];
-        bump_width_moving = [continuous_data.bump_width(moving & gof),bump_width_moving];
-        zbump_width_moving = [zscore(continuous_data.bump_width(moving & gof)),zbump_width_moving];
-        rot_speed_moving = [abs(continuous_data.vel_yaw_ds(moving & gof)),rot_speed_moving];
-        for_vel_moving = [continuous_data.vel_for_ds(moving & gof);for_vel_moving];        
-        
-        fly_num = [repelem(folder,1,length(continuous_data.bump_width(moving & gof))),fly_num];
-                
-        %get averaged rot speed and offset precision
-%         unwrapped_heading = unwrap(continuous_data.heading(moving));
+         
+        offset = circ_dist(-continuous_data.heading,continuous_data.bump_pos'); 
+        rolling_offset_precision = [matlab.tall.movingWindow(fcn_precision,92,offset);rolling_offset_precision];  
+    
+        %get thresholded rolling rot speed and bump pars
+%         unwrapped_heading = unwrap(continuous_data.heading);
 %         smoothed_heading = smoothdata(unwrapped_heading,'rlowess',25);
 %         yaw_speed = abs(gradient(rad2deg(smoothed_heading)).* 25);
-        yaw_speed = abs(continuous_data.vel_yaw_ds(moving));
+%         rolling_rot_speed_thresh = [movmean(yaw_speed,92);rolling_rot_speed_thresh];
+        yaw_speed = abs(continuous_data.vel_yaw_ds);
         rolling_rot_speed = [movmean(yaw_speed,92),rolling_rot_speed];
-        rolling_offset_precision = [matlab.tall.movingWindow(fcn_precision,92,offset(moving));rolling_offset_precision];
-        
-        
-        %get thresholded rolling rot speed and bump pars
-        unwrapped_heading = unwrap(continuous_data.heading(moving & gof));
-        smoothed_heading = smoothdata(unwrapped_heading,'rlowess',25);
-        yaw_speed = abs(gradient(rad2deg(smoothed_heading)).* 25);
-        %yaw_speed = abs(continuous_data.vel_yaw_ds(moving & gof));
-        %rolling_rot_speed_thresh = [movmean(yaw_speed,92),rolling_rot_speed_thresh];
-        rolling_rot_speed_thresh = [movmean(yaw_speed,92);rolling_rot_speed_thresh];        
-        for_vel = continuous_data.vel_for_ds(moving & gof);
+        yaw_speed(~gof) = NaN;
+        rolling_rot_speed_thresh = [movmean(yaw_speed,92),rolling_rot_speed_thresh];
+        for_vel = continuous_data.vel_for_ds;
+        for_vel(~gof) = NaN;
         rolling_for_vel_thresh = [movmean(for_vel,92);rolling_for_vel_thresh];
-        bm = zscore(continuous_data.bump_magnitude(moving & gof));
+        bump_mag = continuous_data.bump_magnitude;
+        bump_mag(~gof) = NaN;
+        bm = (bump_mag - nanmean(bump_mag))/nanstd(bump_mag);
         rolling_bump_mag = [movmean(bm,92),rolling_bump_mag];
-        bw = zscore(continuous_data.bump_width(moving & gof));
-        rolling_bump_width = [movmean(bw,92),rolling_bump_width];
-        %fly_id = repmat({folderNames(folder).name},1,length(rolling_bump_width));
-        %fly_ID = [string(fly_id),fly_ID];
-        
-        fly_number = [repelem(folder,1,length(continuous_data.bump_width(moving))),fly_number];
-        
-%         figure,
-%         subplot(1,2,1)
-%         plot(movmean(yaw_speed,92),movmean(bw,92),'o')
-%         subplot(1,2,2)
-%         plot(movmean(yaw_speed,92),movmean(bm,92),'o')   
-%         suptitle([folderNames(folder).name,' fly = ',num2str(folder)])
+        bump_width = continuous_data.bump_width;
+        bump_width(~gof) = NaN;
+        bw = (bump_width - nanmean(bump_width))./nanstd(bump_width);
+        rolling_bump_width = [movmean(bw,92),rolling_bump_width];   
+        fly_num = [repelem(folder,1,length(continuous_data.bump_width)),fly_num];
+
 
     end
 end
 last_fly = fly_num(1);
 
-%Add trials from offset control
-folderNames2 = dir('Z:\Wilson Lab\Mel\Experiments\Uncertainty\Offset_control\data');
-
-for folder = 1:length(folderNames2)
-    if (contains(folderNames2(folder).name,'60D05')==1)
-        
-        path = [folderNames2(folder).folder,'\',folderNames2(folder).name];
-        %get the sessions info
-        load([path,'\analysis\session_info.mat'])
-        
-        %load the empty trial and inverted gain trial data
-        load([path,'\analysis\continuous_analysis_sid_',num2str(session_info.bar),'_tid_0.mat']);
-        
-        moving = continuous_data.total_mvt_ds > 25;
-        gof = continuous_data.adj_rs > 0.5;
-        
-        mean_bump_mag_standing = [mean(continuous_data.bump_magnitude(~moving & gof)),mean_bump_mag_standing];       
-        mean_bump_mag_moving = [mean(continuous_data.bump_magnitude(moving & gof)),mean_bump_mag_moving];
-        mean_bump_mag_low_mvt = [mean(continuous_data.bump_magnitude(gof & continuous_data.total_mvt_ds > 25 & continuous_data.total_mvt_ds < 50)),mean_bump_mag_low_mvt];                        
-        mean_bump_width_standing = [mean(continuous_data.bump_width(~moving & gof)),mean_bump_width_standing];
-        mean_bump_width_moving = [mean(continuous_data.bump_width(moving & gof)),mean_bump_width_moving];
-        mean_bump_width_low_mvt = [mean(continuous_data.bump_width(gof & continuous_data.total_mvt_ds > 25 & continuous_data.total_mvt_ds < 50)),mean_bump_width_low_mvt];                
-        
-        offset = circ_dist(-continuous_data.heading,continuous_data.bump_pos');
-        offset_precision_standing = [offset_precision_standing,circ_r(offset(~moving))];
-        offset_precision_moving = [offset_precision_moving,circ_r(offset(moving))];
-        
-        bump_mag_moving = [continuous_data.bump_magnitude(moving & gof),bump_mag_moving];
-        zbump_mag_moving = [zscore(continuous_data.bump_magnitude(moving & gof)),zbump_mag_moving];
-        bump_width_moving = [continuous_data.bump_width(moving & gof),bump_width_moving];
-        zbump_width_moving = [zscore(continuous_data.bump_width(moving & gof)),zbump_width_moving];
-        rot_speed_moving = [abs(continuous_data.vel_yaw_ds(moving & gof)),rot_speed_moving];
-        for_vel_moving = [continuous_data.vel_for_ds(moving & gof);for_vel_moving];
-        
-        fly_num = [repelem(folder+last_fly,1,length(continuous_data.bump_width(moving & gof))),fly_num];
-        
-        %get averaged rot speed and offset precision
-%         unwrapped_heading = unwrap(continuous_data.heading(moving));
-%         smoothed_heading = smoothdata(unwrapped_heading,'rlowess',25);
-%         yaw_speed = abs(gradient(rad2deg(smoothed_heading)).* 25);
-        yaw_speed = abs(continuous_data.vel_yaw_ds(moving));
-        rolling_rot_speed = [movmean(yaw_speed,92),rolling_rot_speed];
-        rolling_offset_precision = [matlab.tall.movingWindow(fcn_precision,92,offset(moving));rolling_offset_precision];
-        
-        %get thresholded rolling rot speed and bump pars
-        unwrapped_heading = unwrap(continuous_data.heading(moving & gof));
-        smoothed_heading = smoothdata(unwrapped_heading,'rlowess',25);
-        yaw_speed = abs(gradient(rad2deg(smoothed_heading)).* 25);
-        %yaw_speed = abs(continuous_data.vel_yaw_ds(moving & gof));
-        %rolling_rot_speed_thresh = [movmean(yaw_speed,92),rolling_rot_speed_thresh];
-        rolling_rot_speed_thresh = [movmean(yaw_speed,92);rolling_rot_speed_thresh];        
-        for_vel = continuous_data.vel_for_ds(moving & gof);
-        rolling_for_vel_thresh = [movmean(for_vel,92);rolling_for_vel_thresh];
-        bm = zscore(continuous_data.bump_magnitude(moving & gof));
-        rolling_bump_mag = [movmean(bm,92),rolling_bump_mag];
-        bw = zscore(continuous_data.bump_width(moving & gof));
-        rolling_bump_width = [movmean(bw,92),rolling_bump_width];
-        
-%         fly_id = repmat({folderNames(folder).name},1,length(rolling_bump_width));
-%         fly_ID = [string(fly_id),fly_ID];
-        
-        fly_number = [repelem(folder+last_fly,1,length(continuous_data.bump_width(moving))),fly_number];
-        
-%         figure,
-%         subplot(1,2,1)
-%         plot(movmean(yaw_speed,92),movmean(bw,92),'o')
-%         subplot(1,2,2)
-%         plot(movmean(yaw_speed,92),movmean(bm,92),'o')
-%         suptitle([folderNames2(folder).name,' fly = ',num2str(folder + last_fly)])
-        
-    end
-end
-last_fly = fly_num(1);
 
 %Add trials from inverted gain
 folderNames3 = dir('Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data');
@@ -196,163 +95,131 @@ for folder = 1:length(folderNames3)
         
         moving = continuous_data.total_mvt_ds > 25;
         gof = continuous_data.adj_rs > 0.5;
-        
-        mean_bump_mag_standing = [mean(continuous_data.bump_magnitude(~moving & gof)),mean_bump_mag_standing];       
-        mean_bump_mag_moving = [mean(continuous_data.bump_magnitude(moving & gof)),mean_bump_mag_moving];
-        mean_bump_mag_low_mvt = [mean(continuous_data.bump_magnitude(gof & continuous_data.total_mvt_ds > 25 & continuous_data.total_mvt_ds < 50)),mean_bump_mag_low_mvt];                        
-        mean_bump_width_standing = [mean(continuous_data.bump_width(~moving & gof)),mean_bump_width_standing];
-        mean_bump_width_moving = [mean(continuous_data.bump_width(moving & gof)),mean_bump_width_moving];
-        mean_bump_width_low_mvt = [mean(continuous_data.bump_width(gof & continuous_data.total_mvt_ds > 25 & continuous_data.total_mvt_ds < 50)),mean_bump_width_low_mvt];                
-        
-        offset = circ_dist(-continuous_data.heading,continuous_data.bump_pos');
-        offset_precision_standing = [offset_precision_standing,circ_r(offset(~moving))];
-        offset_precision_moving = [offset_precision_moving,circ_r(offset(moving))];
-        
-        bump_mag_moving = [continuous_data.bump_magnitude(moving & gof),bump_mag_moving];
-        zbump_mag_moving = [zscore(continuous_data.bump_magnitude(moving & gof)),zbump_mag_moving];
-        bump_width_moving = [continuous_data.bump_width(moving & gof),bump_width_moving];
-        zbump_width_moving = [zscore(continuous_data.bump_width(moving & gof)),zbump_width_moving];
-        rot_speed_moving = [abs(continuous_data.vel_yaw_ds(moving & gof)),rot_speed_moving];
-        for_vel_moving = [continuous_data.vel_for_ds(moving & gof);for_vel_moving];
-        
-        fly_num = [repelem(folder+last_fly,1,length(continuous_data.bump_width(moving & gof))),fly_num];
-        
-        %get averaged rot speed and offset precision
-%         unwrapped_heading = unwrap(continuous_data.heading(moving));
+         
+        offset = circ_dist(-continuous_data.heading,continuous_data.bump_pos'); 
+        rolling_offset_precision = [matlab.tall.movingWindow(fcn_precision,92,offset);rolling_offset_precision];  
+    
+        %get thresholded rolling rot speed and bump pars
+%         unwrapped_heading = unwrap(continuous_data.heading);
 %         smoothed_heading = smoothdata(unwrapped_heading,'rlowess',25);
 %         yaw_speed = abs(gradient(rad2deg(smoothed_heading)).* 25);
-        yaw_speed = abs(continuous_data.vel_yaw_ds(moving));
+%         rolling_rot_speed_thresh = [movmean(yaw_speed,92);rolling_rot_speed_thresh];
+        yaw_speed = abs(continuous_data.vel_yaw_ds);
         rolling_rot_speed = [movmean(yaw_speed,92),rolling_rot_speed];
-        rolling_offset_precision = [matlab.tall.movingWindow(fcn_precision,92,offset(moving));rolling_offset_precision];
-        
-        %get thresholded rolling rot speed and bump pars
-        unwrapped_heading = unwrap(continuous_data.heading(moving & gof));
-        smoothed_heading = smoothdata(unwrapped_heading,'rlowess',25);
-        yaw_speed = abs(gradient(rad2deg(smoothed_heading)).* 25);
-        %yaw_speed = abs(continuous_data.vel_yaw_ds(moving & gof));
-        %rolling_rot_speed_thresh = [movmean(yaw_speed,92),rolling_rot_speed_thresh];
-        rolling_rot_speed_thresh = [movmean(yaw_speed,92);rolling_rot_speed_thresh];        
-        for_vel = continuous_data.vel_for_ds(moving & gof);
+        yaw_speed(~gof) = NaN;
+        rolling_rot_speed_thresh = [movmean(yaw_speed,92),rolling_rot_speed_thresh];
+        for_vel = continuous_data.vel_for_ds;
+        for_vel(~gof) = NaN;
         rolling_for_vel_thresh = [movmean(for_vel,92);rolling_for_vel_thresh];
-        bm = zscore(continuous_data.bump_magnitude(moving & gof));
+        bump_mag = continuous_data.bump_magnitude;
+        bump_mag(~gof) = NaN;
+        bm = (bump_mag - nanmean(bump_mag))/nanstd(bump_mag);
         rolling_bump_mag = [movmean(bm,92),rolling_bump_mag];
-        bw = zscore(continuous_data.bump_width(moving & gof));
-        rolling_bump_width = [movmean(bw,92),rolling_bump_width];
-        
-        %fly_id = repmat({folderNames(folder).name},1,length(rolling_bump_width));
-        %fly_ID = [string(fly_id),fly_ID];
-        
-        fly_number = [repelem(folder+last_fly,1,length(continuous_data.bump_width(moving))),fly_number];
-        
-%         figure,
-%         subplot(1,2,1)
-%         plot(movmean(yaw_speed,92),movmean(bw,92),'o')
-%         subplot(1,2,2)
-%         plot(movmean(yaw_speed,92),movmean(bm,92),'o')
-%         suptitle([folderNames3(folder).name,' fly = ',num2str(folder + last_fly)])
+        bump_width = continuous_data.bump_width;
+        bump_width(~gof) = NaN;
+        bw = (bump_width - nanmean(bump_width))./nanstd(bump_width);
+        rolling_bump_width = [movmean(bw,92),rolling_bump_width];   
+        fly_num = [repelem(folder+last_fly,1,length(continuous_data.bump_width)),fly_num];
         
     end
 end
 
 %% Save speed and bump pars data for analysis in r
 
-% all_movement_data_bar_trial = table(bump_mag_moving',bump_width_moving',zbump_mag_moving',zbump_width_moving',rot_speed_moving',for_vel_moving,rolling_rot_speed_thresh',rolling_for_vel_thresh,rolling_bump_mag',rolling_bump_width',fly_num','VariableNames',{'bump_mag','bump_width','zbump_mag','zbump_width','rot_speed','for_vel','rolling_rot_speed','rolling_for_vel','rolling_bump_mag','rolling_bump_width','fly'});
-% writetable(all_movement_data_bar_trial,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\all_movement_data_bar_trial.csv')
-
-all_movement_data_bar_trial_smoothed = table(bump_mag_moving',bump_width_moving',zbump_mag_moving',zbump_width_moving',rot_speed_moving',rolling_rot_speed_thresh,rolling_for_vel_thresh,rolling_bump_mag',rolling_bump_width',fly_num','VariableNames',{'bump_mag','bump_width','zbump_mag','zbump_width','rot_speed','rolling_rot_speed','rolling_for_vel','rolling_bump_mag','rolling_bump_width','fly'});
-writetable(all_movement_data_bar_trial_smoothed,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\all_movement_data_bar_trial_smoothed.csv')
+all_movement_data_bar_trial = table(rolling_offset_precision,rolling_rot_speed_thresh',rolling_for_vel_thresh,rolling_bump_mag',rolling_bump_width',fly_num','VariableNames',{'offset_precision','rolling_rot_speed','rolling_for_vel','rolling_bump_mag','rolling_bump_width','fly'});
+writetable(all_movement_data_bar_trial,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\all_movement_data_bar_trial_including_rest_10_sec.csv')
 
 %% Save offset precision and rot speed data for analysis in r
 
-rot_speed_offset_precision = table(rolling_rot_speed,rolling_offset_precision,fly_number','VariableNames',{'rot_speed','offset_precision','fly'});
-writetable(rot_speed_offset_precision,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\rot_speed_offset_precision.csv')
-
-%% Plot offset precision comparison
-
-figure
-plot([offset_precision_standing;offset_precision_moving],'color',[.6 .6 .6])
-hold on
-plot(mean([offset_precision_standing;offset_precision_moving],2),'k','linewidth',2);
-xlim([0 3]);
-xticks([1:2]);
-xticklabels({'Standing','Moving'});
-ylim([0 1]);
-ylabel('Offset precision');
-
-saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\MovementPanel\offset_precision_comparison_bar_trial.svg');
-saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\MovementPanel\offset_precision_comparison_bar_trial.png');
-
-%stats
-ranksum(offset_precision_standing,offset_precision_moving)
-
-offset_precision_bar_trials = [offset_precision_standing,offset_precision_moving];
-movement = [repelem(0,1,length(offset_precision_standing)),repelem(1,1,length(offset_precision_moving))];
-Fly = [1:length(offset_precision_standing),1:length(offset_precision_moving)];
-offset_precision_data = table(offset_precision_bar_trials',movement',Fly','VariableNames',{'offset_precision','movement','fly'});
-writetable(offset_precision_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\offset_precision_bar_data.csv')
-
-%% Plot bump parameters comparison
-
-figure
-subplot(1,2,1)
-plot([mean_bump_mag_standing;mean_bump_mag_moving],'color',[.6 .6 .6])
-hold on
-plot(mean([mean_bump_mag_standing;mean_bump_mag_moving],2),'k','linewidth',2);
-xlim([0 3]);
-xticks([1:2]);
-xticklabels({'Standing','Moving'});
-ylim([.5 3]);
-ylabel('Bump magnitude');
-
-subplot(1,2,2)
-plot([mean_bump_width_standing;mean_bump_width_moving],'color',[.6 .6 .6])
-hold on
-plot(mean([mean_bump_width_standing;mean_bump_width_moving],2),'k','linewidth',2);
-xlim([0 3]);
-xticks([1:2]);
-xticklabels({'Standing','Moving'});
-ylim([.5 3]);
-ylabel('Bump width');
-
-saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\MovementPanel\bump_pars_comparison_bar_trial.svg');
-saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\MovementPanel\bump_pars_comparison_bar_trial.png');
-
-ranksum(mean_bump_mag_standing,mean_bump_mag_moving)
-ranksum(mean_bump_width_standing,mean_bump_width_moving)
-
-mean_bump_mag_bar_trials = [mean_bump_mag_standing,mean_bump_mag_moving];
-mean_bump_width_bar_trials = [mean_bump_width_standing,mean_bump_width_moving];
-bump_pars_data = table(mean_bump_mag_bar_trials',mean_bump_width_bar_trials',movement',Fly','VariableNames',{'bump_mag','bump_width','movement','fly'});
-writetable(bump_pars_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\mean_bump_pars_bar_data.csv')
-
-
-%% Plot bump parameters comparison transition to movement
-
-figure
-subplot(1,2,1)
-plot([mean_bump_mag_standing;mean_bump_mag_low_mvt],'color',[.6 .6 .6])
-hold on
-plot(mean([mean_bump_mag_standing;mean_bump_mag_low_mvt],2),'k','linewidth',2);
-xlim([0 3]);
-xticks([1:2]);
-xticklabels({'Standing still','Starting movement'});
-ylim([.5 3]);
-ylabel('Bump magnitude');
-
-subplot(1,2,2)
-plot([mean_bump_width_standing;mean_bump_width_low_mvt],'color',[.6 .6 .6])
-hold on
-plot(mean([mean_bump_width_standing;mean_bump_width_low_mvt],2),'k','linewidth',2);
-xlim([0 3]);
-xticks([1:2]);
-xticklabels({'Standing still','Starting movement'});
-ylim([.5 3]);
-ylabel('Bump width');
-
-ranksum(mean_bump_mag_standing,mean_bump_mag_low_mvt)
-ranksum(mean_bump_width_standing,mean_bump_width_low_mvt)
-
-mean_bump_mag_bar_trials = [mean_bump_mag_standing,mean_bump_mag_low_mvt];
-mean_bump_width_bar_trials = [mean_bump_width_standing,mean_bump_width_low_mvt];
-bump_pars_data = table(mean_bump_mag_bar_trials',mean_bump_width_bar_trials',movement',Fly','VariableNames',{'bump_mag','bump_width','movement','fly'});
-writetable(bump_pars_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\mean_bump_pars_bar_data_mvt_transition.csv')
+% rot_speed_offset_precision = table(rolling_rot_speed,rolling_offset_precision,fly_number','VariableNames',{'rot_speed','offset_precision','fly'});
+% writetable(rot_speed_offset_precision,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\rot_speed_offset_precision.csv')
+% % 
+% %% Plot offset precision comparison
+% 
+% figure
+% plot([offset_precision_standing;offset_precision_moving],'color',[.6 .6 .6])
+% hold on
+% plot(mean([offset_precision_standing;offset_precision_moving],2),'k','linewidth',2);
+% xlim([0 3]);
+% xticks([1:2]);
+% xticklabels({'Standing','Moving'});
+% ylim([0 1]);
+% ylabel('Offset precision');
+% 
+% saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\MovementPanel\offset_precision_comparison_bar_trial.svg');
+% saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\MovementPanel\offset_precision_comparison_bar_trial.png');
+% 
+% %stats
+% ranksum(offset_precision_standing,offset_precision_moving)
+% 
+% offset_precision_bar_trials = [offset_precision_standing,offset_precision_moving];
+% movement = [repelem(0,1,length(offset_precision_standing)),repelem(1,1,length(offset_precision_moving))];
+% Fly = [1:length(offset_precision_standing),1:length(offset_precision_moving)];
+% offset_precision_data = table(offset_precision_bar_trials',movement',Fly','VariableNames',{'offset_precision','movement','fly'});
+% writetable(offset_precision_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\offset_precision_bar_data.csv')
+% 
+% %% Plot bump parameters comparison
+% 
+% figure
+% subplot(1,2,1)
+% plot([mean_bump_mag_standing;mean_bump_mag_moving],'color',[.6 .6 .6])
+% hold on
+% plot(mean([mean_bump_mag_standing;mean_bump_mag_moving],2),'k','linewidth',2);
+% xlim([0 3]);
+% xticks([1:2]);
+% xticklabels({'Standing','Moving'});
+% ylim([.5 3]);
+% ylabel('Bump magnitude');
+% 
+% subplot(1,2,2)
+% plot([mean_bump_width_standing;mean_bump_width_moving],'color',[.6 .6 .6])
+% hold on
+% plot(mean([mean_bump_width_standing;mean_bump_width_moving],2),'k','linewidth',2);
+% xlim([0 3]);
+% xticks([1:2]);
+% xticklabels({'Standing','Moving'});
+% ylim([.5 3]);
+% ylabel('Bump width');
+% 
+% saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\MovementPanel\bump_pars_comparison_bar_trial.svg');
+% saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\MovementPanel\bump_pars_comparison_bar_trial.png');
+% 
+% ranksum(mean_bump_mag_standing,mean_bump_mag_moving)
+% ranksum(mean_bump_width_standing,mean_bump_width_moving)
+% 
+% mean_bump_mag_bar_trials = [mean_bump_mag_standing,mean_bump_mag_moving];
+% mean_bump_width_bar_trials = [mean_bump_width_standing,mean_bump_width_moving];
+% bump_pars_data = table(mean_bump_mag_bar_trials',mean_bump_width_bar_trials',movement',Fly','VariableNames',{'bump_mag','bump_width','movement','fly'});
+% writetable(bump_pars_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\mean_bump_pars_bar_data.csv')
+% 
+% 
+% %% Plot bump parameters comparison transition to movement
+% 
+% figure
+% subplot(1,2,1)
+% plot([mean_bump_mag_standing;mean_bump_mag_low_mvt],'color',[.6 .6 .6])
+% hold on
+% plot(mean([mean_bump_mag_standing;mean_bump_mag_low_mvt],2),'k','linewidth',2);
+% xlim([0 3]);
+% xticks([1:2]);
+% xticklabels({'Standing still','Starting movement'});
+% ylim([.5 3]);
+% ylabel('Bump magnitude');
+% 
+% subplot(1,2,2)
+% plot([mean_bump_width_standing;mean_bump_width_low_mvt],'color',[.6 .6 .6])
+% hold on
+% plot(mean([mean_bump_width_standing;mean_bump_width_low_mvt],2),'k','linewidth',2);
+% xlim([0 3]);
+% xticks([1:2]);
+% xticklabels({'Standing still','Starting movement'});
+% ylim([.5 3]);
+% ylabel('Bump width');
+% 
+% ranksum(mean_bump_mag_standing,mean_bump_mag_low_mvt)
+% ranksum(mean_bump_width_standing,mean_bump_width_low_mvt)
+% 
+% mean_bump_mag_bar_trials = [mean_bump_mag_standing,mean_bump_mag_low_mvt];
+% mean_bump_width_bar_trials = [mean_bump_width_standing,mean_bump_width_low_mvt];
+% bump_pars_data = table(mean_bump_mag_bar_trials',mean_bump_width_bar_trials',movement',Fly','VariableNames',{'bump_mag','bump_width','movement','fly'});
+% writetable(bump_pars_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\mean_bump_pars_bar_data_mvt_transition.csv')

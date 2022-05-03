@@ -5,7 +5,6 @@ library(nlme)
 library(multcomp)
 library(ggplot2)
 library(tidyverse)
-library(cowplot)
 library(rCAT)
 library(patchwork)
 
@@ -218,120 +217,144 @@ ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig1", f
 
 # combined plots for figure -----------------------------------------------
 
+#empty plot
+p0 <- ggplot() + 
+  geom_line(grouped_offset_precision_data, mapping = aes(contrast, mean_offset_precision, group = Fly),color = 'gray70',size=0.5) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=17),
+        axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_line(size=.5),
+        axis.line.y = element_line(size=.5)) +
+  geom_line(data = mean_and_sd_offset_precision,aes(contrast,mean_offset_precision,group = 1),color = 'gray0',size=2) +
+  #geom_errorbar(data=mean_and_sd_offset_precision, mapping=aes(x=contrast, ymin=mean_offset_precision + sd_offset_precision/sqrt(n), ymax=mean_offset_precision - sd_offset_precision/sqrt(n)), width=0, size=1.5, color="gray0") +
+  scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
+                   labels=scales::wrap_format(10)) +
+  ylim(c(0,1))
 
 #HD encoding reliability
 p1 <- ggplot() + 
   geom_line(grouped_offset_precision_data, mapping = aes(contrast, mean_offset_precision, group = Fly),color = 'gray70',size=0.5) +
   theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=16),
-        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
-        axis.line.x = element_line(size=1),
-        axis.line.y = element_line(size=1)) +
+        text=element_text(size=17),
+        axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_blank(),
+        axis.ticks.x=element_blank(), #remove x axis ticks
+        axis.line.y = element_line(size=.5)) +
   geom_line(data = mean_and_sd_offset_precision,aes(contrast,mean_offset_precision,group = 1),color = 'gray0',size=2) +
-  geom_errorbar(data=mean_and_sd_offset_precision, mapping=aes(x=contrast, ymin=mean_offset_precision + sd_offset_precision/sqrt(n), ymax=mean_offset_precision - sd_offset_precision/sqrt(n)), width=0, size=1.5, color="gray0") +
   scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
                    labels=scales::wrap_format(10)) +
-  labs(x="", y="HD encoding reliability")+
-  ylim(c(0,1))
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) + 
+  labs(x="", y="HD certainty")
 
-#Bump parameters
-p3 <- ggplot() + 
-  geom_line(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_mag, group = Fly),color = 'gray70',size=0.5) +
-  theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=16),
-        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
-        axis.line.x = element_line(size=1),
-        axis.line.y = element_line(size=1)) +
-  geom_line(data = mean_and_sd_bump_pars_data,aes(ContrastLevel,mean_bump_mag,group = 1),color = '#14BDFA',size=2) +
-  geom_errorbar(data=mean_and_sd_bump_pars_data, mapping=aes(x=ContrastLevel, ymin=mean_bump_mag + sd_bump_mag/sqrt(n), ymax=mean_bump_mag - sd_bump_mag/sqrt(n)), width=0, size=1.5, color="#14BDFA") +
-  scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
-                   labels=scales::wrap_format(10)) +
-  labs(x="", y="Bump amplitude (\u0394F/F)") 
+#Consistency of orientation behavior
+#group data for plots and analyses
+grouped_heading_precision_data <- offset_precision_data %>%
+  group_by(Fly,contrast) %>% 
+  summarise(mean_heading_precision = mean(heading_precision))
+
+#plot
+#1) get mean and sd
+mean_and_sd_heading_precision <- grouped_heading_precision_data %>%
+  group_by(contrast) %>% 
+  summarise(sd_heading_precision = sd(mean_heading_precision),
+            mean_heading_precision = mean(mean_heading_precision),
+            n = n())
 
 p2 <- ggplot() + 
-  geom_line(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_width, group = Fly),color = 'gray70',size=0.5) +
+  geom_line(grouped_heading_precision_data, mapping = aes(contrast, mean_heading_precision, group = Fly),color = 'gray70',size=0.5) +
   theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=16),
-        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
-        axis.line.x = element_line(size=1),
-        axis.line.y = element_line(size=1)) +
-  geom_line(data = mean_and_sd_bump_pars_data,aes(ContrastLevel,mean_bump_width,group = 1),color = '#FAAF0F',size=2) +
-  geom_errorbar(data=mean_and_sd_bump_pars_data, mapping=aes(x=ContrastLevel, ymin=mean_bump_width + sd_bump_width/sqrt(n), ymax=mean_bump_width - sd_bump_width/sqrt(n)), width=0, size=1.5, color="#FAAF0F") +
+        text=element_text(size=17),
+        axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_blank(),
+        axis.ticks.x=element_blank(), #remove x axis ticks,
+        axis.line.y = element_line(size=.5)) +
+  geom_line(data = mean_and_sd_heading_precision,aes(contrast,mean_heading_precision,group = 1),color = 'gray0',size=2) +
   scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
                    labels=scales::wrap_format(10)) +
-  labs(x="", y="Bump width (deg)") 
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) + 
+  labs(x="", y="Consistency of \n orientation behavior")
 
 
-row_1 <- (p1+p2+p3) 
+row_1 <-  p0|p1|p2
+r1<- row_1 + plot_layout(widths = c(2,1,1))
 
+#gof examples for high and low contrast
+
+#low contrast
 example_fit_1 <-read.csv('Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp25/data/Experimental/two_ND_filters_3_contrasts/example_data_fit_2536.csv')
 example_fit_1$distance <- rad2deg(example_fit_1$distance)
 
-p4 <- ggplot(example_fit_1,aes(distance,data)) +
+p3 <- ggplot(example_fit_1,aes(distance,data)) +
   geom_line(size = 1.5) +
   geom_line(data = example_fit_1,aes(distance,fit),size = 1.5, color = 'red3') +
   theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=16),
-        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.5, "cm"),
+        text=element_text(size=17),
+        axis.text = element_text(size=16), axis.ticks.length.x = unit(0.5, "cm"),
         axis.line.x = element_blank(),
-        axis.text.x=element_blank(), #remove x axis labels
-        axis.ticks.x=element_blank(), #remove x axis ticks
-        axis.line.y = element_line(size=1)) +
+        axis.text.x=element_blank(), 
+        axis.ticks.x=element_blank(), 
+        axis.line.y = element_line(size=.5)) +
   labs(x="", y="(\u0394F/F)") +
   ylim(c(-0.5,3))
 
-example_fit_2 <-read.csv('Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp25/data/Experimental/two_ND_filters_3_contrasts/example_data_fit_3336.csv')
+#high contrast
+example_fit_2 <-read.csv('Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp25/data/Experimental/two_ND_filters_3_contrasts/example_data_fit_5918.csv')
 example_fit_2$distance <- rad2deg(example_fit_2$distance)
 
-p5 <- ggplot(example_fit_2,aes(distance,data)) +
+p4 <- ggplot(example_fit_2,aes(distance,data)) +
   geom_line(size = 1.5) +
   geom_line(data = example_fit_2,aes(distance,fit),size = 1.5, color = 'red3') +
   theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=16),
-        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.5, "cm"),
+        text=element_text(size=17),
+        axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.y = element_line(size=.5),
+        axis.line.x = element_line(size=.5)) +
+  labs(x="Angular distance (°)", y="(\u0394F/F)") +
+  ylim(c(-0.5,3))
+
+
+#Bump parameters
+p5 <- ggplot() + 
+  geom_line(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_width, group = Fly),color = 'gray70',size=0.5) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=17),
+        axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
         axis.line.x = element_blank(),
-        axis.text.x=element_blank(), #remove x axis labels
-        axis.ticks.x=element_blank(), #remove x axis ticks
-        axis.line.y = element_line(size=1)) +
-  labs(x="", y="") +
-  ylim(c(-0.5,3))
+        axis.ticks.x=element_blank(),
+        axis.line.y = element_line(size=.5)) +
+  geom_line(data = mean_and_sd_bump_pars_data,aes(ContrastLevel,mean_bump_width,group = 1),color = 'gray0',size=2) +
+  scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
+                   labels=scales::wrap_format(10)) +
+  scale_y_continuous(expand = c(0, 0), limits = c(70,135)) + 
+  labs(x="", y="Bump width (°)")  
 
-
-example_fit_1 <-read.csv('Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp25/data/Experimental/two_ND_filters_3_contrasts/example_data_fit_5918.csv')
-example_fit_1$distance <- rad2deg(example_fit_1$distance)
-
-p6 <- ggplot(example_fit_1,aes(distance,data)) +
-  geom_line(size = 1.5) +
-  geom_line(data = example_fit_1,aes(distance,fit),size = 1.5, color = 'red3') +
+p6 <- ggplot() + 
+  geom_line(grouped_bump_pars_data, mapping = aes(ContrastLevel, mean_bump_mag, group = Fly),color = 'gray70',size=0.5) +
   theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=16),
-        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
-        axis.line.y = element_line(size=1),
-        axis.line.x = element_line(size=1)) +
-  labs(x="Angular distance (deg)", y="(\u0394F/F)") +
-  ylim(c(-0.5,3))
+        text=element_text(size=17),
+        axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.line.y = element_line(size=.5)) +
+  geom_line(data = mean_and_sd_bump_pars_data,aes(ContrastLevel,mean_bump_mag,group = 1),color = 'gray0',size=2) +
+  scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
+                   labels=scales::wrap_format(10)) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 2.7)) + 
+  labs(x="", y="Bump amplitude (\u0394F/F)") 
+
+c1 <- p3/p4
+row_2 <- c1|p5|p6
+r2 <- row_2 + plot_layout(widths = c(2,1,1))
 
 
-example_fit_2 <-read.csv('Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp25/data/Experimental/two_ND_filters_3_contrasts/example_data_fit_6118.csv')
-example_fit_2$distance <- rad2deg(example_fit_2$distance)
+full_plot <- r1/r2
+full_plot + plot_annotation(tag_levels = list(c('','E','F','G','','H','I'))) 
 
-p7 <- ggplot(example_fit_2,aes(distance,data)) +
-  geom_line(size = 1.5) +
-  geom_line(data = example_fit_2,aes(distance,fit),size = 1.5, color = 'red3') +
-  theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=16),
-        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
-        axis.line.y = element_line(size=1),
-        axis.line.x = element_line(size=1)) +
-  labs(x="Angular distance (deg)", y="") +
-  ylim(c(-0.5,3))
+col1 <- p0/c1
+col2 <- p1/p5
+col3 <- p2/p6
+full_plot <- col1|col2|col3 
+full_plot + plot_layout(widths = c(2,1,1)) + plot_annotation(tag_levels = list(c('','H','','F','I','G','J'))) 
 
 
-r1 <- p4 + p5
-r2 <- p6 + p7
-row_2 <- r1/r2
-
-full_plot <- row_1/row_2
-full_plot + plot_annotation(tag_levels = list(c('E','F','G','H','','',''))) + plot_layout(heights=c(1,2))
-
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig1", file="bottom_part.svg",device = 'svg', width=12, height=10)
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig1", file="bottom_part.svg",device = 'svg', width=14, height=10)

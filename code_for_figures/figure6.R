@@ -380,140 +380,86 @@ ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig6", f
 
 # code to plot full figure for paper --------------------------------------
 
-#HD encoding reliability bar vs wind
-p1 <- ggplot() + 
-  #geom_violin(initial_offset_precision_data, mapping = aes(block_type, offset_precision)) +
-  geom_line(initial_offset_precision_data, mapping = aes(block_type, offset_precision, group = fly_num),color = 'gray70',size=0.5) +
-  stat_summary(initial_offset_precision_data, mapping = aes(block_type, offset_precision),fun.y=mean, geom="crossbar", size=1, , width=0.4, color="black") +
-  theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=10),
-        axis.text = element_text(size=7), axis.ticks.length.x = unit(0.1, "cm"),
-        axis.text.x = element_text(vjust=.8, hjust=0.8),
-        axis.line.x = element_line(size=1),
-        axis.line.y = element_line(size=1)) +
-  geom_point(initial_offset_precision_data, mapping = aes(block_type, offset_precision),color='gray70') +
-  scale_x_discrete(labels=scales::wrap_format(10)) +
-  labs(x="", y="HD encoding reliability")+
-  ylim(c(0,1))
-
-#bump mag bar vs wind
-p2 <- ggplot() + 
-  #geom_violin(initial_bump_pars_data, mapping = aes(block_type, bump_mag)) +
-  geom_line(initial_bump_pars_data, mapping = aes(block_type, bump_mag, group = fly_num),color = 'gray70',size=0.5) +
-  stat_summary(initial_bump_pars_data, mapping = aes(block_type, bump_mag),fun.y=mean, geom="crossbar", size=1, , width=0.4, color="black") +
-  theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=10),
-        axis.text = element_text(size=7), axis.ticks.length.x = unit(0.1, "cm"),
-        axis.text.x = element_text(vjust=.8, hjust=0.8),
-        axis.line.x = element_line(size=1),
-        axis.line.y = element_line(size=1)) +
-  geom_point(initial_bump_pars_data, mapping = aes(block_type, bump_mag),color='gray70') +
-  scale_x_discrete(labels=scales::wrap_format(10)) +
-  labs(x="", y="Bump amplitude (\u0394F/F)")
-
-#bump width bar vs wind
-p3 <- ggplot() + 
-  #geom_violin(initial_bump_pars_data, mapping = aes(block_type, bump_width)) +
-  geom_line(initial_bump_pars_data, mapping = aes(block_type, bump_width, group = fly_num),color = 'gray70',size=0.5) +
-  stat_summary(initial_bump_pars_data, mapping = aes(block_type, bump_width),fun.y=mean, geom="crossbar", size=1, , width=0.4, color="black") +
-  theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=10),
-        axis.text = element_text(size=7), axis.ticks.length.x = unit(0.1, "cm"),
-        axis.text.x = element_text(vjust=.8, hjust=0.8),
-        axis.line.x = element_line(size=1),
-        axis.line.y = element_line(size=1)) +
-  geom_point(initial_bump_pars_data, mapping = aes(block_type, bump_width),color='gray70') +
-  scale_x_discrete(labels=scales::wrap_format(10)) +
-  labs(x="", y="Bump width (deg)")
-
 #offset precision vs block type
-p4 <- ggplot() + 
+p1 <- ggplot() + 
   geom_line(offset_precision_data_3_blocks, mapping = aes(block_type, offset_precision, group = fly),color = 'gray70',size=0.5) +
   theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=10),
-        axis.text = element_text(size=7), axis.ticks.length.x = unit(0.1, "cm"),
-        axis.text.x = element_text(vjust=.8, hjust=0.8),
-        axis.line.x = element_line(size=1),
-        axis.line.y = element_line(size=1)) +
+        text=element_text(size=17),
+        axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.line.y = element_line(size=.5)) +
   geom_line(data = mean_and_sd_offset_precision,aes(block_type,mean_offset_precision,group = 1),color = 'gray0',size=2) +
-  geom_errorbar(data=mean_and_sd_offset_precision, mapping=aes(x=block_type, ymin=mean_offset_precision + sd_offset_precision/sqrt(n), ymax=mean_offset_precision - sd_offset_precision/sqrt(n)), width=0, size=2, color="gray0") +
   scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
                    labels=scales::wrap_format(10)) +
-  labs(x="", y="HD encoding reliability")+
-  ylim(c(0,1))
+  labs(x="", y="HD certainty") +
+  scale_y_continuous(expand = c(0, 0), limits=c(0, 1))
 
-#Bump pars per block
-p5 <- ggplot() + 
-  geom_line(bump_mag_data_3_blocks, mapping = aes(block_type, bump_mag, group = fly),color = 'gray70',size=0.5) +
-  theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=10),
-        axis.text = element_text(size=7), axis.ticks.length.x = unit(0.1, "cm"),
-        axis.text.x = element_text(vjust=.8, hjust=0.8),
-        axis.line.x = element_line(size=1),
-        axis.line.y = element_line(size=1)) +
-  geom_line(data = mean_and_sd_bump_mag,aes(block_type,mean_bump_mag,group = 1),color = '#14BDFA',size=2) +
-  geom_errorbar(data=mean_and_sd_bump_mag, mapping=aes(x=block_type, ymin=mean_bump_mag + sd_bump_mag/sqrt(n), ymax=mean_bump_mag - sd_bump_mag/sqrt(n)), width=0, size=2,color = '#14BDFA') +
-  scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
-                   labels=scales::wrap_format(10)) +
-  labs(x="", y="Bump amplitude (\u0394F/F)")
-
-p6 <- ggplot() + 
+#Bump width per block
+p2 <- ggplot() + 
   geom_line(bump_width_data_3_blocks, mapping = aes(block_type, bump_width, group = fly),color = 'gray70',size=0.5) +
   theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=10),
-        axis.text = element_text(size=7), axis.ticks.length.x = unit(0.1, "cm"),
-        axis.text.x = element_text(vjust=.8, hjust=0.8),
-        axis.line.x = element_line(size=1),
-        axis.line.y = element_line(size=1)) +
-  geom_line(data = mean_and_sd_bump_width,aes(block_type,mean_bump_width,group = 1),color = '#FAAF0F',size=2) +
-  geom_errorbar(data=mean_and_sd_bump_width, mapping=aes(x=block_type, ymin=mean_bump_width + sd_bump_width/sqrt(n), ymax=mean_bump_width - sd_bump_width/sqrt(n)), width=0, size=2, color = '#FAAF0F') +
+        text=element_text(size=17),
+        axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.line.y = element_line(size=.5)) +
+  geom_line(data = mean_and_sd_bump_width,aes(block_type,mean_bump_width,group = 1),color = 'gray0',size=2) +
   scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
                    labels=scales::wrap_format(10)) +
-  labs(x="", y="Bump width (deg)")
+  labs(x="", y="Bump width (°)") +
+  scale_y_continuous(expand = c(0, 0), limits=c(70,135))
+
+#Bump mag per block
+p3 <- ggplot() + 
+  geom_line(bump_mag_data_3_blocks, mapping = aes(block_type, bump_mag, group = fly),color = 'gray70',size=0.5) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=17),
+        axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.line.y = element_line(size=.5)) +
+  geom_line(data = mean_and_sd_bump_mag,aes(block_type,mean_bump_mag,group = 1),color = 'gray0',size=2) +
+  scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
+                   labels=scales::wrap_format(10)) +
+  labs(x="", y="Bump amplitude (\u0394F/F)") +
+  scale_y_continuous(expand = c(0, 0), limits=c(0,2.7))
+
 
 #cue similarity
-p7 <- ggplot() + 
-  #geom_violin(cue_order_data, mapping = aes(order, similarity)) +
+p4 <- ggplot() + 
   geom_line(cue_order_data, mapping = aes(order, similarity, group = fly),color = 'gray70',size=0.5) +
   stat_summary(cue_order_data, mapping = aes(order, similarity),fun.y=mean, geom="crossbar", size=1, , width=0.4, color="black") +
   theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=10),
-        axis.text = element_text(size=7), axis.ticks.length.x = unit(0.1, "cm"),
-        axis.text.x = element_text(vjust=.8, hjust=0.8),
-        axis.line.x = element_line(size=1),
-        axis.line.y = element_line(size=1)) +
+        text=element_text(size=17),
+        axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.line.y = element_line(size=.5)) +
   geom_point(cue_order_data, mapping = aes(order, similarity),color='gray50') +
   scale_x_discrete(labels=scales::wrap_format(10)) +
-  labs(x="", y="Similarity between two-cue \n and single cue HD encoding (deg)")+
-  ylim(c(0,180))
+  labs(x="", y="Similarity between two-cue \n and single cue offset (°)") +
+  scale_y_continuous(expand = c(0, 0), limits=c(0,180))
 
 #plasticity analysis
-p8 <- ggplot(plasticity_data,aes(Conflict,Plasticity)) +
+p5 <- ggplot(plasticity_data,aes(Conflict,Plasticity)) +
   theme(panel.background = element_rect(fill=NA),
         legend.position = 'none',
-        text=element_text(size=10),
-        axis.text = element_text(size=7), axis.ticks.length.x = unit(0.1, "cm"),
-        axis.text.x = element_text(vjust=.8, hjust=0.8),
-        axis.line.x = element_line(size=1),
-        axis.line.y = element_line(size=1)) +
+        text=element_text(size=17),
+        axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_line(size=.5),
+        axis.line.y = element_line(size=.5)) +
   geom_point(aes(color = factor(order)),size = 2)  +
   geom_point(aes(Conflict,Plasticity+360,color = factor(order)),size=2) +
   geom_abline(intercept = 0, slope = 1,color = 'red') +
-  geom_abline(intercept = 360, slope = 1,color = 'red') +
-  labs(x="Conflict (deg)", y="Plasticity (deg)")+
-  xlim(c(-180,180)) + ylim(c(-180,540))
+  labs(x="Two-cue offset - initial single cue offset (°)", y="Final single cue offset - initial single cue offset (°)")+
+  scale_y_continuous(expand = c(0, 0), limits=c(-180,220)) +
+  scale_x_continuous(expand = c(0, 0), limits=c(-180,180))
 
 
-# row_1 <- plot_spacer() + p1 + p2 + p3 + plot_layout(nrow = 1)
-# row_2 <- p4 + p6 + p5 + p7 + plot_layout(nrow = 1)
-# row_3 <- plot_spacer() + plot_spacer() + p8 + plot_layout(nrow = 1)
-# full_plot <- row_1/row_2/row_3 + plot_layout(heights = c(1,1,2))
-# full_plot + plot_annotation(tag_levels = list(c('B','','','C','D','E','F','H')))
-
-row_1 <- p1 + p3 + p2 + plot_spacer() + plot_spacer() + plot_layout(nrow = 1)
-row_2 <- p4 + p6 + p5 + p7 + plot_layout(nrow = 1)
-row_3 <- plot_spacer() + plot_spacer() + p8 + plot_layout(nrow = 1)
-full_plot <- row_1/row_2/row_3 + plot_layout(heights = c(1,1,2))
-full_plot + plot_annotation(tag_levels = list(c('C','','','D','E','F','G','I')))
+row_1 <- p1 + p2 + p3 + p4 + plot_layout(nrow = 1)
+row_2 <- plot_spacer() + plot_spacer() + p5 + plot_layout(nrow = 1)
+full_plot <- row_1/row_2 + plot_layout(heights = c(1,2))
+full_plot + plot_annotation(tag_levels = list(c('C','D','E','F','H')))
 
 ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig6", file="most_fig_6.svg",device = 'svg', width=14, height=12)

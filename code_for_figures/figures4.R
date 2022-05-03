@@ -105,29 +105,25 @@ cor.test(initial_low_contrast$offset_precision,initial_low_contrast$mean_bump_wi
 # Relationship between offset precision and bump parameters
 p1 <- ggplot(initial_low_contrast, aes(offset_precision,mean_bump_width)) +
   geom_point(size = 3.5) +
-  # geom_point(aes(offset_precision[2],mean_bump_width[2]),color='blue') +
-  # geom_point(aes(offset_precision[11],mean_bump_width[11]),color='red') +
   geom_smooth(method='lm', se = FALSE, color = 'red') +
   theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=16),
-        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
-        axis.line.x = element_line(size=1),
-        axis.line.y = element_line(size=1)) +
-  scale_x_continuous(name="HD encoding reliability", limits=c(0, 1)) +
-  scale_y_continuous(name="Bump width (deg)", limits=c(70,150)) 
+        text=element_text(size=17),
+        axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_line(size=.5),
+        axis.line.y = element_line(size=.5)) +
+  scale_x_continuous(name="HD certainty", expand = c(0, 0), limits=c(0, 1)) +
+  scale_y_continuous(name="Bump width (°)", expand = c(0, 0), limits = c(70,135)) 
 
 p2 <- ggplot(initial_low_contrast, aes(offset_precision,mean_bump_mag)) +
   geom_point(size = 3.5) +
-  # geom_point(aes(offset_precision[2],mean_bump_mag[2]),color='blue') +
-  # geom_point(aes(offset_precision[11],mean_bump_mag[11]),color='red') +
   theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=16),
-        axis.text = element_text(size=12), axis.ticks.length.x = unit(0.1, "cm"),
-        axis.line.x = element_line(size=1),
-        axis.line.y = element_line(size=1)) +
-  scale_x_continuous(name="HD encoding reliability", limits=c(0, 1)) +
-  scale_y_continuous(name="Bump amplitude (\u0394F/F)", limits=c(0, 3)) 
+        text=element_text(size=17),
+        axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_line(size=.5),
+        axis.line.y = element_line(size=.5)) +
+  scale_x_continuous(name="HD certainty", expand = c(0, 0), limits=c(0, 1)) +
+  scale_y_continuous(name="Bump amplitude (\u0394F/F)", expand = c(0, 0), limits = c(0, 2.7)) 
 
 p <- p1 + p2
-p + plot_annotation(tag_levels = list(c('B','C')))
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig4", file="bottom_fig_4.svg",device = 'svg', width=14, height=8)
+p + plot_annotation(tag_levels = list(c('C','D')))
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig4", file="bottom_fig_4.svg",device = 'svg', width=8, height=5)

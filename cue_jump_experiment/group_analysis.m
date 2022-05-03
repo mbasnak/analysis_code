@@ -1044,6 +1044,10 @@ saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\CueJump-Experiment\
 sorted_bump_PI = PI(:,mean_sorting_order);
 writematrix(sorted_bump_PI,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_bump_PI.csv')
 
+%save configuration data
+sorted_configuration = configuration(mean_sorting_order);
+writematrix(sorted_configuration,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\configuration.csv')
+
 %% Behavioral preference index (bump)
 
 figure('Position',[100 100 1400 1000]),

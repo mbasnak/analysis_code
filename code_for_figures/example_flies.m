@@ -16,8 +16,10 @@ ax(1) = subplot(3,1,1);
 dff_matrix = continuous_data.dff_matrix(changeContrast(1):changeContrast(4),1:41)';
 imagesc(flip(dff_matrix))
 colormap(flipud(gray))
+hold on
+xline(length(dff_matrix)/3,'r','linestyle','--','linewidth',2)
+xline(2*length(dff_matrix)/3,'r','linestyle','--','linewidth',2)
 set(gca,'YTickLabel',[]);
-%ylabel('EPG activity in the PB','fontsize',12);
 set(gca,'XTickLabel',[]);
 set(gca,'xtick',[])
 set(gca,'ytick',[])
@@ -27,39 +29,47 @@ pos = get(subplot(3,1,1),'Position');
 h = colorbar('Position', [pos(1)+pos(3)+0.01  pos(2)  pos(3)/60  pos(4)]);
 
 % Plot the heading and the EPG phase
-ax(2) = subplot(3,1,2)
+ax(2) = subplot(3,1,2);
 %Get heading to plot
 visual_stim = wrapTo180(continuous_data.visual_stim_pos(changeContrast(1):changeContrast(4)));
 %Remove wrapped lines to plot
 [x_out_heading,visual_stim_to_plot] = removeWrappedLines(continuous_data.time(changeContrast(1):changeContrast(4)),visual_stim);
+x_out_heading = x_out_heading - x_out_heading(1);
 plot(x_out_heading,visual_stim_to_plot,'LineWidth',1.5,'color',[0.4940 0.1840 0.5560])
 hold on
 phase = wrapTo180(rad2deg(continuous_data.bump_pos(changeContrast(1):changeContrast(4))'));
 [x_out_phase,phase_to_plot] = removeWrappedLines(continuous_data.time(changeContrast(1):changeContrast(4)),phase);
+x_out_phase = x_out_phase - x_out_phase(1);
 plot(x_out_phase,phase_to_plot,'color',[0.4660 0.6740 0.1880],'LineWidth',1.5)
+xline(200,'r','linestyle','--','linewidth',2)
+xline(400,'r','linestyle','--','linewidth',2)
 ylim([-180, 180]);
+yticks([-180:180:180]);
+yticklabels({'-180','0','180'});
 if ~isnan(x_out_phase(end))
     xlim([x_out_phase(1),x_out_phase(end)]);
 else
     xlim([x_out_phase(1),x_out_phase(end-1)]);
 end
-%ylabel('Angular pos (deg)','fontsize',12);
 set(gca,'XTickLabel',[]);
 set(gca,'XTick',[]);
 ax = gca;
 ax.FontSize = 14;
 
-ax(3) = subplot(3,1,3)
+ax(3) = subplot(3,1,3);
 offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos(changeContrast(1):changeContrast(4))',deg2rad(visual_stim))));
-[x_out_offset,offset_to_plot] = removeWrappedLines(continuous_data.time(changeContrast(1):changeContrast(4)),offset);
+%Change time to min
+time = continuous_data.time/60;
+[x_out_offset,offset_to_plot] = removeWrappedLines(time(changeContrast(1):changeContrast(4)),offset);
 x_out_offset = x_out_offset - x_out_offset(1);
 plot(x_out_offset,offset_to_plot,'k','LineWidth',1.5)
 hold on
-xline(200,'r','linestyle','--','linewidth',2)
-xline(400,'r','linestyle','--','linewidth',2)
+xline(200/60,'r','linestyle','--','linewidth',2)
+xline(400/60,'r','linestyle','--','linewidth',2)
 ylim([-180 180]);
-%ylabel('HD encoding (deg)','fontsize',12);
-xlabel('Time (sec)','fontsize',16);
+yticks([-180:180:180]);
+yticklabels({'-180','0','180'});
+xlabel('Time (min)','fontsize',20);
 if ~isnan(x_out_offset(end))
     xlim([x_out_offset(1) x_out_offset(end)]);
 else
@@ -71,6 +81,56 @@ ax.FontSize = 14;
 
 saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig1\example_fly_fig1.svg')
 save('Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp25\data\Experimental\two_ND_filters_3_contrasts\example_fly_fig1.mat','dff_matrix','visual_stim_to_plot','phase_to_plot','offset_to_plot','x_out_offset','x_out_phase','x_out_heading');
+
+
+%polarhistograms
+figure('Position',[0 0 1800 800]),
+subplot(1,3,1)
+polarhistogram(deg2rad(offset(1:floor(length(offset)/3))),15,'FaceColor','k','FaceAlpha',.3,'EdgeAlpha',0.3)
+hold on
+offset_mean = circ_mean(deg2rad(offset(1:floor(length(offset)/3))));
+offset_strength = circ_r(deg2rad(offset(1:floor(length(offset)/3))));
+rl = rlim;
+polarplot([offset_mean,offset_mean],[0,rl(2)*offset_strength],'k','linewidth',6)
+set(gca,'ThetaZeroLocation','top',...
+    'ThetaDir','clockwise');
+rticklabels({}); 
+rticks([]);
+thetaticks([0,90,180,270]);
+ax = gca;
+ax.FontSize = 20;
+
+subplot(1,3,2)
+polarhistogram(deg2rad(offset(floor(length(offset)/3):floor(2*length(offset)/3))),15,'FaceColor','k','FaceAlpha',.3,'EdgeAlpha',0.3)
+hold on
+offset_mean = circ_mean(deg2rad(offset(floor(length(offset)/3):floor(2*length(offset)/3))));
+offset_strength = circ_r(deg2rad(offset(floor(length(offset)/3):floor(2*length(offset)/3))));
+rl = rlim;
+polarplot([offset_mean,offset_mean],[0,rl(2)*offset_strength],'k','linewidth',6)
+set(gca,'ThetaZeroLocation','top',...
+    'ThetaDir','clockwise');
+rticklabels({}); 
+rticks([]);
+thetaticks([0,90,180,270]);
+ax = gca;
+ax.FontSize = 20;
+
+subplot(1,3,3)
+polarhistogram(deg2rad(offset(floor(2*length(offset)/3):end)),15,'FaceColor','k','FaceAlpha',.3,'EdgeAlpha',0.3)
+hold on
+offset_mean = circ_mean(deg2rad(offset(floor(2*length(offset)/3):end)));
+offset_strength = circ_r(deg2rad(offset(floor(2*length(offset)/3):end)));
+rl = rlim;
+polarplot([offset_mean,offset_mean],[0,rl(2)*offset_strength],'k','linewidth',6)
+set(gca,'ThetaZeroLocation','top',...
+    'ThetaDir','clockwise');
+rticklabels({});
+rticks([]);
+thetaticks([0,90,180,270]);
+ax = gca;
+ax.FontSize = 20;
+
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig1\example_fly_fig1_histograms.svg')
 
 %% Example of gof fit for figure 1 (darkness and low contrast, high R2)
 
@@ -266,22 +326,24 @@ end
 
 
 
-%% Example fly for figure 2
+%% Example fly for figure 3
 
 clear all; close all;
 
-load('Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp25\data\Experimental\two_ND_filters_3_contrasts\20201019_60D05_7f\analysis\continuous_analysis_sid_0_tid_0.mat');
+load('Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\20210218_60D05_7f\analysis\continuous_analysis_sid_0_tid_0.mat');
+
+gof = continuous_data.adj_rs > 0.4;
 
 figure('Position',[50 50 1800 900]),
 ax(1) = subplot(6,1,1);
 dff_matrix = continuous_data.dff_matrix';
 imagesc(flip(dff_matrix))
 colormap(flipud(gray))
-xlim([floor(450*9.18) floor(900*9.18)]);
 set(gca,'YTickLabel',[]);
 set(gca,'XTickLabel',[]);
 set(gca,'xtick',[])
 set(gca,'ytick',[])
+xlim([400*9.18, 650*9.18]);
 
 colormap(ax(1),flipud(gray));
 pos = get(subplot(6,1,1),'Position');
@@ -299,9 +361,11 @@ phase = wrapTo180(rad2deg(continuous_data.bump_pos)');
 [x_out_phase,phase_to_plot] = removeWrappedLines(continuous_data.time,phase);
 plot(x_out_phase,phase_to_plot,'color',[0.4660 0.6740 0.1880],'LineWidth',1.5)
 ylim([-180, 180]);
-xlim([450 900]);
+yticks([-180:180:180]);
+yticklabels({'-180','0','180'});
 set(gca,'XTickLabel',[]);
 set(gca,'XTick',[]);
+xlim([400 650]);
 ax = gca;
 ax.FontSize = 14;
 
@@ -313,46 +377,67 @@ x_out_offset = x_out_offset - x_out_offset(1);
 plot(x_out_offset,offset_to_plot,'k','LineWidth',1.5)
 set(gca,'XTick',[]);
 ylim([-180 180]);
-xlim([450 900]);
+yticks([-180:180:180]);
+yticklabels({'-180','0','180'});
+xlim([400 650]);
 ax = gca;
 ax.FontSize = 14;
 
 %rotational speed
-% unwrapped_heading = unwrap(continuous_data.heading);
-% smoothed_heading = smoothdata(unwrapped_heading,'rlowess',50); 
-% yaw_vel = diff(rad2deg(smoothed_heading));
-% yaw_speed = abs(yaw_vel);
 yaw_speed = abs(continuous_data.vel_yaw_ds);
+yaw_speed(~gof) = NaN;
 rolling_rot_speed = movmean(yaw_speed,92);
 
 ax(4) = subplot(6,1,4);
 plot(continuous_data.time,rolling_rot_speed,'k','LineWidth',1.5)
-xlim([450 900]);
 set(gca,'XTick',[]);
+xlim([400 650]);
 ax = gca;
 ax.FontSize = 14;
             
 %bump width
 ax(5) = subplot(6,1,5);
-rolling_bump_width = movmean(continuous_data.bump_width,92);
+bump_width = continuous_data.bump_width;
+bump_width(~gof) = NaN;
+rolling_bump_width = movmean(bump_width,92);
 plot(continuous_data.time,rad2deg(rolling_bump_width),'k','LineWidth',1.5)
-ylim([60 180]);
-xlim([450 900]);
+ylim([60 160]);
+xlim([400 650]);
+yticks([80,120,160]);
+yticklabels({'80','120','160'});
 set(gca,'XTick',[]);
 ax = gca;
 ax.FontSize = 14;
 
 %bump mag
 ax(6) = subplot(6,1,6);
-rolling_bump_mag = movmean(continuous_data.bump_magnitude,92);
+bump_mag = continuous_data.bump_magnitude;
+bump_mag(~gof) = NaN;
+rolling_bump_mag = movmean(bump_mag,92);
 plot(continuous_data.time,rolling_bump_mag,'k','LineWidth',1.5)
-ylim([0 1.5]);
+ylim([0 3.5]);
+xlim([400 650]);
+yticks([1:3]);
+yticklabels({'1','2','3'});
+xticks([400:50:650]);
+xticklabels({'0','50','100','150','200','250'});
 xlabel('Time (sec)','fontsize',16);
-xlim([450 900]);
 ax = gca;
 ax.FontSize = 14;
 
-saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig2\example_fly.svg')
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig3\example_fly.svg')
+
+
+figure,
+subplot(1,2,1)
+plot(rolling_bump_width,rolling_rot_speed,'o')
+corr_bw = corrcoef(rolling_bump_width(~isnan(rolling_bump_width)),rolling_rot_speed(~isnan(rolling_rot_speed)));
+title(['Corr = ',num2str(corr_bw(1,2))]);
+
+subplot(1,2,2)
+plot(rolling_bump_mag,rolling_rot_speed,'o')
+corr_bm = corrcoef(rolling_bump_mag(~isnan(rolling_bump_mag)),rolling_rot_speed(~isnan(rolling_rot_speed)));
+title(['Corr = ',num2str(corr_bm(1,2))]);
 
 %% Example flies for figure 4
 
@@ -367,7 +452,7 @@ changeContrast = find(abs(diff(continuous_data.fr_y_ds))>1);
 
 %Plot
 % Plot the heatmap of EPG activity
-figure('Position',[0 0 1800 500]),
+figure('Position',[0 0 1400 500]),
 ax(1) = subplot(3,1,1);
 dff_matrix = continuous_data.dff_matrix(changeContrast(2):changeContrast(3),:)';
 imagesc(flip(dff_matrix))
@@ -392,6 +477,8 @@ phase = wrapTo180(rad2deg(continuous_data.bump_pos(changeContrast(2):changeContr
 [x_out_phase,phase_to_plot] = removeWrappedLines(continuous_data.time(changeContrast(2):changeContrast(3)),phase);
 plot(x_out_phase,phase_to_plot,'color',[0.4660 0.6740 0.1880],'LineWidth',1.5)
 ylim([-180, 180]);
+yticks([-180:180:180]);
+yticklabels({'-180','0','180'});
 if ~isnan(x_out_phase(end))
     xlim([x_out_phase(1),x_out_phase(end)]);
 else
@@ -409,6 +496,8 @@ offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos(changeContrast(2):
 x_out_offset = x_out_offset - x_out_offset(1);
 plot(x_out_offset,offset_to_plot,'LineWidth',1.5,'color','k')
 ylim([-180 180]);
+yticks([-180:180:180]);
+yticklabels({'-180','0','180'});
 if ~isnan(x_out_offset(end))
     xlim([x_out_offset(1) x_out_offset(end)]);
 else
@@ -421,12 +510,30 @@ ax.FontSize = 14;
 
 saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig4\example_fly1.svg')
 
-offset_precision = circ_r(deg2rad(offset));
+
+histfig = figure,
+subplot(2,1,1)
+polarhistogram(deg2rad(offset),15,'FaceColor','k','FaceAlpha',.3,'EdgeAlpha',0.3)
+hold on
+offset_mean = circ_mean(deg2rad(offset));
+offset_strength = circ_r(deg2rad(offset));
+rl = rlim;
+polarplot([offset_mean,offset_mean],[0,rl(2)*offset_strength],'k','linewidth',4)
+set(gca,'ThetaZeroLocation','top',...
+    'ThetaDir','clockwise');
+rticklabels({});
+rticks([]);
+thetaticks([0,90,180,270]);
+ax = gca;
+ax.FontSize = 14;
 
 
 
 
-clear all; close all;
+%%%%% Fly 2
+
+
+%clear all; close all;
 
 %fly 2, low offset precision
 load('Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp25\data\Experimental\two_ND_filters_3_contrasts\20201130_60D05_7f\analysis\continuous_analysis_sid_2_tid_0.mat');
@@ -437,7 +544,7 @@ changeContrast = find(abs(diff(continuous_data.fr_y_ds))>1);
 
 %Plot
 % Plot the heatmap of EPG activity
-figure('Position',[0 0 1800 500]),
+figure('Position',[0 0 1400 500]),
 ax(1) = subplot(3,1,1);
 dff_matrix = continuous_data.dff_matrix(changeContrast(2):changeContrast(3),:)';
 imagesc(flip(dff_matrix))
@@ -463,6 +570,8 @@ phase = wrapTo180(rad2deg(continuous_data.bump_pos(changeContrast(2):changeContr
 [x_out_phase,phase_to_plot] = removeWrappedLines(continuous_data.time(changeContrast(2):changeContrast(3)),phase);
 plot(x_out_phase,phase_to_plot,'color',[0.4660 0.6740 0.1880],'LineWidth',1.5)
 ylim([-180, 180]);
+yticks([-180:180:180]);
+yticklabels({'-180','0','180'});
 if ~isnan(x_out_phase(end))
     xlim([x_out_phase(1),x_out_phase(end)]);
 else
@@ -480,6 +589,8 @@ offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos(changeContrast(2):
 x_out_offset = x_out_offset - x_out_offset(1);
 plot(x_out_offset,offset_to_plot,'k','LineWidth',1.5)
 ylim([-180 180]);
+yticks([-180:180:180]);
+yticklabels({'-180','0','180'});
 xlabel('Time (sec)','fontsize',16);
 if ~isnan(x_out_offset(end))
     xlim([x_out_offset(1) x_out_offset(end)]);
@@ -491,9 +602,24 @@ ax.FontSize = 14;
 
 saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig4\example_fly2.svg')
 
-offset_precision = circ_r(deg2rad(offset));
 
+figure(histfig)
+subplot(2,1,2)
+polarhistogram(deg2rad(offset),15,'FaceColor','k','FaceAlpha',.3,'EdgeAlpha',0.4)
+hold on
+offset_mean = circ_mean(deg2rad(offset));
+offset_strength = circ_r(deg2rad(offset));
+rl = rlim;
+polarplot([offset_mean,offset_mean],[0,rl(2)*offset_strength],'k','linewidth',4)
+set(gca,'ThetaZeroLocation','top',...
+    'ThetaDir','clockwise');
+rticklabels({});
+rticks([]);
+thetaticks([0,90,180,270]);
+ax = gca;
+ax.FontSize = 14;
 
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig4\examples_polarhistograms.svg')
 
 %% Example flies for figure 5
 
@@ -533,6 +659,8 @@ bar_position = wrapTo180(continuous_data.visual_stim_pos(gain_changes(2)-floor(4
 [x_out_bar, bar_pos_to_plot] = removeWrappedLines(continuous_data.time(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)),bar_position);
 plot(x_out_bar,bar_pos_to_plot,'color',[0.4940 0.1840 0.5560],'LineWidth',1.5)
 ylim([-180, 180]);
+yticks([-180:180:180]);
+yticklabels({'-180','0','180'});
 set(gca,'XTick',[]);
 xlim([x_out_phase(1), x_out_phase(end)]);
 ax = gca;
@@ -544,6 +672,8 @@ heading_offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos(gain_chang
 [x_out_heading_offset, heading_offset_to_plot] = removeWrappedLines(continuous_data.time(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)),heading_offset);
 plot(x_out_heading_offset,heading_offset_to_plot,'.','color','k')
 ylim([-180 180]);
+yticks([-180:180:180]);
+yticklabels({'-180','0','180'});
 set(gca,'XTick',[]);
 xlim([x_out_heading_offset(1), x_out_heading_offset(end)]);
 ax = gca;
@@ -556,18 +686,54 @@ bar_offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos(gain_changes(2
 x_out_offset = x_out_offset - x_out_offset(1);
 plot(x_out_offset,offset_to_plot,'.','color','k')
 ylim([-180 180]);
+yticks([-180:180:180]);
+yticklabels({'-180','0','180'});
 xlim([x_out_offset(1) x_out_offset(end)]);
-set(gca,'XTick',[]);
+xlabel('Time (sec)','fontsize',16);
 ax = gca;
 ax.FontSize = 14;
 
 saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig5\example_fly1.svg')
 
 
+%Polarhistograms
 
+figure,
+subplot(1,2,1)
+heading_offset = heading_offset(floor(1/3*length(heading_offset)):end);
+polarhistogram(deg2rad(heading_offset),15,'FaceColor','k','FaceAlpha',.3,'EdgeAlpha',0.4)
+hold on
+offset_mean = circ_mean(deg2rad(heading_offset));
+offset_strength = circ_r(deg2rad(heading_offset));
+rl = rlim;
+polarplot([offset_mean,offset_mean],[0,rl(2)*offset_strength],'k','linewidth',4)
+set(gca,'ThetaZeroLocation','top',...
+    'ThetaDir','clockwise');
+rticklabels({});
+rticks([]);
+thetaticks([0,90,180,270]);
+ax = gca;
+ax.FontSize = 14;
 
+subplot(1,2,2)
+bar_offset = bar_offset(floor(1/3*length(bar_offset)):end);
+polarhistogram(deg2rad(bar_offset),15,'FaceColor','k','FaceAlpha',.3,'EdgeAlpha',0.4)
+hold on
+offset_mean = circ_mean(deg2rad(bar_offset));
+offset_strength = circ_r(deg2rad(bar_offset));
+rl = rlim;
+polarplot([offset_mean,offset_mean],[0,rl(2)*offset_strength],'k','linewidth',4)
+set(gca,'ThetaZeroLocation','top',...
+    'ThetaDir','clockwise');
+rticklabels({});
+rticks([]);
+thetaticks([0,90,180,270]);
+ax = gca;
+ax.FontSize = 14;
 
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig5\example_fly1_polarhistogram.svg')
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clear all; close all;
 
@@ -605,6 +771,8 @@ bar_position = wrapTo180(continuous_data.visual_stim_pos(gain_changes(2)-floor(4
 [x_out_bar, bar_pos_to_plot] = removeWrappedLines(continuous_data.time(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)),bar_position);
 plot(x_out_bar,bar_pos_to_plot,'color',[0.4940 0.1840 0.5560],'LineWidth',1.5)
 ylim([-180, 180]);
+yticks([-180:180:180]);
+yticklabels({'-180','0','180'});
 set(gca,'XTick',[]);
 xlim([x_out_phase(1), x_out_phase(end)]);
 ax = gca;
@@ -616,6 +784,8 @@ heading_offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos(gain_chang
 [x_out_heading_offset, heading_offset_to_plot] = removeWrappedLines(continuous_data.time(gain_changes(2)-floor(400*9.18):gain_changes(2)-floor(100*9.18)),heading_offset);
 plot(x_out_heading_offset,heading_offset_to_plot,'.','color','k')
 ylim([-180 180]);
+yticks([-180:180:180]);
+yticklabels({'-180','0','180'});
 set(gca,'XTick',[]);
 xlim([x_out_heading_offset(1), x_out_heading_offset(end)]);
 ax = gca;
@@ -628,14 +798,479 @@ bar_offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos(gain_changes(2
 x_out_offset = x_out_offset - x_out_offset(1);
 plot(x_out_offset,offset_to_plot,'.','color','k')
 ylim([-180 180]);
+yticks([-180:180:180]);
+yticklabels({'-180','0','180'});
 xlim([x_out_offset(1) x_out_offset(end)]);
 xlabel('Time (sec)','fontsize',16);
 ax = gca;
 ax.FontSize = 14;
 
-
 saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig5\example_fly2.svg')
 
+%Polarhistograms
+
+figure,
+subplot(1,2,1)
+heading_offset = heading_offset(floor(1/3*length(heading_offset)):end);
+polarhistogram(deg2rad(heading_offset),15,'FaceColor','k','FaceAlpha',.3,'EdgeAlpha',0.4)
+hold on
+offset_mean = circ_mean(deg2rad(heading_offset));
+offset_strength = circ_r(deg2rad(heading_offset));
+rl = rlim;
+polarplot([offset_mean,offset_mean],[0,rl(2)*offset_strength],'k','linewidth',4)
+set(gca,'ThetaZeroLocation','top',...
+    'ThetaDir','clockwise');
+rticklabels({});
+rticks([]);
+thetaticks([0,90,180,270]);
+ax = gca;
+ax.FontSize = 14;
+
+subplot(1,2,2)
+bar_offset = bar_offset(floor(1/3*length(bar_offset)):end);
+polarhistogram(deg2rad(bar_offset),15,'FaceColor','k','FaceAlpha',.3,'EdgeAlpha',0.4)
+hold on
+offset_mean = circ_mean(deg2rad(bar_offset));
+offset_strength = circ_r(deg2rad(bar_offset));
+rl = rlim;
+polarplot([offset_mean,offset_mean],[0,rl(2)*offset_strength],'k','linewidth',4)
+set(gca,'ThetaZeroLocation','top',...
+    'ThetaDir','clockwise');
+rticklabels({});
+rticks([]);
+thetaticks([0,90,180,270]);
+ax = gca;
+ax.FontSize = 14;
+
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig5\example_fly2_polarhistogram.svg')
+
+
+%% Example flies for figure 6
+
+%%%% Fly 1
+clear all; close all;
+path = 'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp35\data\high_reliability\20210924_60D05_7f_fly2';
+
+% Import sessions information
+load([path,'\analysis\sessions_info.mat'])
+
+% Initial panels
+load([path,'\analysis\continuous_analysis_sid_',num2str(sessions.initial_cl_bar),'_tid_0.mat'])
+offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',-continuous_data.heading)));
+pre_panels_offset_above_thresh = deg2rad(offset(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
+offset_precision_pre_panels = circ_r(pre_panels_offset_above_thresh);
+
+% Initial wind
+load([path,'\analysis\continuous_analysis_sid_',num2str(sessions.initial_cl_wind),'_tid_0.mat'])
+offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',-continuous_data.heading)));
+pre_wind_offset_above_thresh = deg2rad(offset(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds>25));
+offset_precision_pre_wind = circ_r(pre_wind_offset_above_thresh);
+
+% Two-cues
+load([path,'\analysis\continuous_analysis_sid_',num2str(sessions.cue_combination),'_tid_0.mat'])
+offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',-continuous_data.heading)));
+combined_offset_above_thresh = deg2rad(offset(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds>25));
+offset_precision_combined = circ_r(combined_offset_above_thresh);
+
+%Final panels
+load([path,'\analysis\continuous_analysis_sid_',num2str(sessions.final_cl_bar),'_tid_0.mat'])
+offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',-continuous_data.heading)));
+post_panels_offset_above_thresh = deg2rad(offset(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds>25));
+offset_precision_post_panels = circ_r(post_panels_offset_above_thresh);
+
+%Final wind
+load([path,'\analysis\continuous_analysis_sid_',num2str(sessions.final_cl_wind),'_tid_0.mat'])
+offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',-continuous_data.heading)));
+post_wind_offset_above_thresh = deg2rad(offset(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
+offset_precision_post_wind = circ_r(post_wind_offset_above_thresh);
+
+% Get circ_mean of offset per block
+if sessions.initial_cl_wind < sessions.initial_cl_bar
+    
+    offset_mean = [circ_mean(pre_wind_offset_above_thresh),circ_mean(pre_panels_offset_above_thresh),circ_mean(combined_offset_above_thresh),circ_mean(post_wind_offset_above_thresh),circ_mean(post_panels_offset_above_thresh)];
+    
+elseif sessions.initial_cl_wind > sessions.initial_cl_bar
+    
+    offset_mean = [circ_mean(pre_panels_offset_above_thresh),circ_mean(pre_wind_offset_above_thresh),circ_mean(combined_offset_above_thresh),circ_mean(post_panels_offset_above_thresh),circ_mean(post_wind_offset_above_thresh)];
+    
+end
+
+fly_color = [.3 .3 .3];
+
+% Plot offset evolution with overlaid mean
+if sessions.initial_cl_wind > sessions.initial_cl_bar
+    
+    figure('Position',[100 100 1400 400]),
+    
+    subplot(1,5,1)
+    polarhistogram(pre_panels_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(1),offset_mean(1)],[0,rl(2)*offset_precision_pre_panels],'k','linewidth',5)
+    title('Initial visual cue offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+    subplot(1,5,2)
+    polarhistogram(pre_wind_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(2),offset_mean(2)],[0,rl(2)*offset_precision_pre_wind],'k','linewidth',5)
+    title('Initial wind offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+    subplot(1,5,3)
+    polarhistogram(combined_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(3),offset_mean(3)],[0,rl(2)*offset_precision_combined],'k','linewidth',5)
+    title('Two-cue offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+    subplot(1,5,4)
+    polarhistogram(post_panels_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(4),offset_mean(4)],[0,rl(2)*offset_precision_post_panels],'k','linewidth',5)
+    title('Final visual cue offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+    subplot(1,5,5)
+    polarhistogram(post_wind_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(5),offset_mean(5)],[0,rl(2)*offset_precision_post_wind],'k','linewidth',5)
+    title('Final wind offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+else
+    
+    figure('Position',[100 100 1400 400]),
+    
+    subplot(1,5,1)
+    polarhistogram(pre_wind_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(1),offset_mean(1)],[0,rl(2)*offset_precision_pre_wind],'k','linewidth',5)
+    title('Initial wind offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+    subplot(1,5,2)
+    polarhistogram(pre_panels_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(2),offset_mean(2)],[0,rl(2)*offset_precision_pre_panels],'k','linewidth',5)
+    title('Initial visual cue offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+    subplot(1,5,3)
+    polarhistogram(combined_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(3),offset_mean(3)],[0,rl(2)*offset_precision_combined],'k','linewidth',5)
+    title('Two-cue offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+    subplot(1,5,4)
+    polarhistogram(post_wind_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(4),offset_mean(4)],[0,rl(2)*offset_precision_post_wind],'k','linewidth',5)
+    title('Final wind offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+    subplot(1,5,5)
+    polarhistogram(post_panels_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(5),offset_mean(5)],[0,rl(2)*offset_precision_post_panels],'k','linewidth',5)
+    title('Final visual cue offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+end
+
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig6\example_fly1_polarhistograms.svg')
+
+
+%%%% Fly 2
+clear all; close all;
+path = 'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp35\data\high_reliability\20210618_60D05_7f';
+
+% Import sessions information
+load([path,'\analysis\sessions_info.mat'])
+
+% Initial panels
+load([path,'\analysis\continuous_analysis_sid_',num2str(sessions.initial_cl_bar),'_tid_0.mat'])
+offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',-continuous_data.heading)));
+pre_panels_offset_above_thresh = deg2rad(offset(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
+offset_precision_pre_panels = circ_r(pre_panels_offset_above_thresh);
+
+% Initial wind
+load([path,'\analysis\continuous_analysis_sid_',num2str(sessions.initial_cl_wind),'_tid_0.mat'])
+offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',-continuous_data.heading)));
+pre_wind_offset_above_thresh = deg2rad(offset(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds>25));
+offset_precision_pre_wind = circ_r(pre_wind_offset_above_thresh);
+
+% Two-cues
+load([path,'\analysis\continuous_analysis_sid_',num2str(sessions.cue_combination),'_tid_0.mat'])
+offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',-continuous_data.heading)));
+combined_offset_above_thresh = deg2rad(offset(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds>25));
+offset_precision_combined = circ_r(combined_offset_above_thresh);
+
+%Final panels
+load([path,'\analysis\continuous_analysis_sid_',num2str(sessions.final_cl_bar),'_tid_0.mat'])
+offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',-continuous_data.heading)));
+post_panels_offset_above_thresh = deg2rad(offset(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds>25));
+offset_precision_post_panels = circ_r(post_panels_offset_above_thresh);
+
+%Final wind
+load([path,'\analysis\continuous_analysis_sid_',num2str(sessions.final_cl_wind),'_tid_0.mat'])
+offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',-continuous_data.heading)));
+post_wind_offset_above_thresh = deg2rad(offset(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
+offset_precision_post_wind = circ_r(post_wind_offset_above_thresh);
+
+% Get circ_mean of offset per block
+if sessions.initial_cl_wind < sessions.initial_cl_bar
+    
+    offset_mean = [circ_mean(pre_wind_offset_above_thresh),circ_mean(pre_panels_offset_above_thresh),circ_mean(combined_offset_above_thresh),circ_mean(post_wind_offset_above_thresh),circ_mean(post_panels_offset_above_thresh)];
+    
+elseif sessions.initial_cl_wind > sessions.initial_cl_bar
+    
+    offset_mean = [circ_mean(pre_panels_offset_above_thresh),circ_mean(pre_wind_offset_above_thresh),circ_mean(combined_offset_above_thresh),circ_mean(post_panels_offset_above_thresh),circ_mean(post_wind_offset_above_thresh)];
+    
+end
+
+fly_color = [.3 .3 .3];
+
+% Plot offset evolution with overlaid mean
+if sessions.initial_cl_wind > sessions.initial_cl_bar
+    
+    figure('Position',[100 100 1400 400]),
+    
+    subplot(1,5,1)
+    polarhistogram(pre_panels_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(1),offset_mean(1)],[0,rl(2)*offset_precision_pre_panels],'k','linewidth',5)
+    title('Initial visual cue offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+    subplot(1,5,2)
+    polarhistogram(pre_wind_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(2),offset_mean(2)],[0,rl(2)*offset_precision_pre_wind],'k','linewidth',5)
+    title('Initial wind offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+    subplot(1,5,3)
+    polarhistogram(combined_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(3),offset_mean(3)],[0,rl(2)*offset_precision_combined],'k','linewidth',5)
+    title('Two-cue offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+    subplot(1,5,4)
+    polarhistogram(post_panels_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(4),offset_mean(4)],[0,rl(2)*offset_precision_post_panels],'k','linewidth',5)
+    title('Final visual cue offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+    subplot(1,5,5)
+    polarhistogram(post_wind_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(5),offset_mean(5)],[0,rl(2)*offset_precision_post_wind],'k','linewidth',5)
+    title('Final wind offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+else
+    
+    figure('Position',[100 100 1400 400]),
+    
+    subplot(1,5,1)
+    polarhistogram(pre_wind_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(1),offset_mean(1)],[0,rl(2)*offset_precision_pre_wind],'k','linewidth',5)
+    title('Initial wind offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+    subplot(1,5,2)
+    polarhistogram(pre_panels_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(2),offset_mean(2)],[0,rl(2)*offset_precision_pre_panels],'k','linewidth',5)
+    title('Initial visual cue offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+    subplot(1,5,3)
+    polarhistogram(combined_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(3),offset_mean(3)],[0,rl(2)*offset_precision_combined],'k','linewidth',5)
+    title('Two-cue offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+    subplot(1,5,4)
+    polarhistogram(post_wind_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(4),offset_mean(4)],[0,rl(2)*offset_precision_post_wind],'k','linewidth',5)
+    title('Final wind offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+    subplot(1,5,5)
+    polarhistogram(post_panels_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(5),offset_mean(5)],[0,rl(2)*offset_precision_post_panels],'k','linewidth',5)
+    title('Final visual cue offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+end
+
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig6\example_fly2_polarhistograms.svg')
 
 %% Example flies for figure 7
 
@@ -684,6 +1319,8 @@ wind_to_plot = motor_pos(real_bar_jump_frame-10*sec_to_frames:real_bar_jump_fram
 plot(x_out_time,wind_pos_to_plot,'linewidth',2)
 xline(time(real_bar_jump_frame),'k','linestyle','--','linewidth',2)
 ylim([-180 180]);
+yticks([-180:180:180]);
+yticklabels({'-180','0','180'});
 xlim([time(real_bar_jump_frame-floor(10*sec_to_frames)) time(real_bar_jump_frame+floor(10*sec_to_frames))]);
 set(gca,'xtick',[]);
 ax = gca;
@@ -704,6 +1341,8 @@ plot(x_out_time,wind_off_to_plot,'linewidth',2,'color',[0.9290 0.6940 0.1250])
 xlim([time(real_bar_jump_frame-floor(10*sec_to_frames)) time(real_bar_jump_frame+floor(10*sec_to_frames))]);
 xline(time(real_bar_jump_frame),'k','linestyle','--','linewidth',2)
 ylim([-180 180]);
+yticks([-180:180:180]);
+yticklabels({'-180','0','180'});
 ax = gca;
 ax.FontSize = 14;
 set(gca,'xtick',[])
@@ -757,6 +1396,8 @@ wind_to_plot = motor_pos(real_bar_jump_frame-10*sec_to_frames:real_bar_jump_fram
 plot(x_out_time,wind_pos_to_plot,'linewidth',2)
 xline(time(real_bar_jump_frame),'k','linestyle','--','linewidth',2)
 ylim([-180 180]);
+yticks([-180:180:180]);
+yticklabels({'-180','0','180'});
 xlim([time(real_bar_jump_frame-floor(10*sec_to_frames)) time(real_bar_jump_frame+floor(10*sec_to_frames))]);
 set(gca,'xtick',[]);
 ax = gca;
@@ -777,6 +1418,8 @@ plot(x_out_time,wind_off_to_plot,'linewidth',2,'color',[0.9290 0.6940 0.1250])
 xlim([time(real_bar_jump_frame-floor(10*sec_to_frames)) time(real_bar_jump_frame+floor(10*sec_to_frames))]);
 xline(time(real_bar_jump_frame),'k','linestyle','--','linewidth',2)
 ylim([-180 180]);
+yticks([-180:180:180]);
+yticklabels({'-180','0','180'});
 ax = gca;
 ax.FontSize = 14;
 xlabel('Time (sec)','fontsize',16);
