@@ -1337,7 +1337,7 @@ PI_heading = (mean_bar_heading_offset_diff-mean_wind_heading_offset_diff)./(mean
 
 % Compute the stickiness index
 %Bar moves
-mean_move_cue_offset_diff_bj = abs( circ_dist(long_bar_offset_mean_around_bar_jump(:,2), long_bar_offset_mean_around_bar_jump(:,1)));
+mean_move_cue_offset_diff_bj = abs(circ_dist(long_bar_offset_mean_around_bar_jump(:,2), long_bar_offset_mean_around_bar_jump(:,1)));
 mean_stay_cue_offset_diff_bj = abs(circ_dist(long_wind_offset_mean_around_bar_jump(:,2), long_wind_offset_mean_around_bar_jump(:,1)));
 %Wind moves
 mean_move_cue_offset_diff_wj = abs(circ_dist(long_wind_offset_mean_around_wind_jump(:,2), long_wind_offset_mean_around_wind_jump(:,1)));

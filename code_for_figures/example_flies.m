@@ -811,7 +811,10 @@ saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig5\exampl
 
 figure,
 subplot(1,2,1)
-heading_offset = heading_offset(floor(1/3*length(heading_offset)):end);
+heading_offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos(gain_changes(2)-floor(200*9.18):gain_changes(2))',-continuous_data.heading(gain_changes(2)-floor(200*9.18):gain_changes(2)))));
+total_mvt = continuous_data.total_mvt_ds(gain_changes(2)-floor(200*9.18):gain_changes(2));
+moving = total_mvt > 20;
+heading_offset = heading_offset(moving);
 polarhistogram(deg2rad(heading_offset),15,'FaceColor','k','FaceAlpha',.3,'EdgeAlpha',0.4)
 hold on
 offset_mean = circ_mean(deg2rad(heading_offset));
@@ -827,7 +830,8 @@ ax = gca;
 ax.FontSize = 14;
 
 subplot(1,2,2)
-bar_offset = bar_offset(floor(1/3*length(bar_offset)):end);
+bar_offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos(gain_changes(2)-floor(200*9.18):gain_changes(2))',deg2rad(continuous_data.visual_stim_pos(gain_changes(2)-floor(200*9.18):gain_changes(2))))));
+bar_offset = bar_offset(moving);
 polarhistogram(deg2rad(bar_offset),15,'FaceColor','k','FaceAlpha',.3,'EdgeAlpha',0.4)
 hold on
 offset_mean = circ_mean(deg2rad(bar_offset));

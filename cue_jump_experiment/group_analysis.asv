@@ -31,8 +31,6 @@ SI = [];
 mean_stay_cue_offset_diff = [];
 mean_stay_cue_heading_diff = [];
 mean_stay_cue_offset_diff_signed = [];
-mean_stay_cue_heading_diff_signed = [];
-jump_size = [];
 
 initial_bar_bm = [];
 initial_wind_bm = [];
@@ -99,9 +97,6 @@ for fly = 1:length(data)
     SI = [SI,data(fly).SI];
     mean_stay_cue_offset_diff = [mean_stay_cue_offset_diff,data(fly).mean_stay_cue_offset_diff];
     mean_stay_cue_heading_diff = [mean_stay_cue_heading_diff,data(fly).mean_stay_cue_heading_diff];
-    mean_stay_cue_offset_diff_signed = [mean_stay_cue_offset_diff_signed,data(fly).mean_stay_cue_offset_diff_signed];
-    mean_stay_cue_heading_diff_signed = [mean_stay_cue_heading_diff_signed,data(fly).mean_stay_cue_heading_diff_signed];
-    jump_size = [jump_size,data(fly).jump_size];
     
     initial_bar_bm{fly} = data(fly).initial_bar_bm;
     initial_wind_bm{fly} = data(fly).initial_wind_bm;

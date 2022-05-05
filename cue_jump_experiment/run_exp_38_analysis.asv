@@ -1408,17 +1408,8 @@ for folder = 1:length(foldernames)
                 jump_size(jump_size < 0) = -120;
                 jump_size(jump_size > 0) = 120;
 
-                %% Get mean offset and heading changes for the cue that stays, signed
-                
-                
-                mean_stay_cue_offset_diff_bj_signed = circ_dist(long_wind_offset_mean_around_bar_jump(:,2), long_wind_offset_mean_around_bar_jump(:,1));
-                mean_stay_cue_offset_diff_wj_signed = circ_dist(long_bar_offset_mean_around_wind_jump(:,2), long_bar_offset_mean_around_wind_jump(:,1));
-                mean_stay_cue_offset_diff_signed = [mean_stay_cue_offset_diff_bj_signed;mean_stay_cue_offset_diff_wj_signed];
+                %% Get mean offset
 
-                
-                mean_stay_cue_heading_diff_bj_signed = circ_dist(long_wind_heading_offset_mean_around_bar_jump(:,2), long_wind_heading_offset_mean_around_bar_jump(:,1));
-                mean_stay_cue_heading_diff_wj_signed = circ_dist(long_bar_heading_offset_mean_around_wind_jump(:,2), long_bar_heading_offset_mean_around_wind_jump(:,1));
-                mean_stay_cue_heading_diff_signed = [mean_stay_cue_heading_diff_bj_signed;mean_stay_cue_heading_diff_wj_signed];
 
                 %% Sort bump parameters around jumps into 'preferred' and 'non-preferred'
                 
@@ -1726,7 +1717,6 @@ for folder = 1:length(foldernames)
                     'pref_index','pref_index_2','heading_pref_index','heading_pref_index_2','stick_index','stick_index_2',...
                     'initial_bar_bm','initial_wind_bm','initial_bar_bw','initial_wind_bw','initial_bar_offset','initial_wind_offset',...
                     'PI','PI_heading','SI','mean_stay_cue_offset_diff','mean_stay_cue_heading_diff',...
-                    'jump_size','mean_stay_cue_offset_diff_signed','mean_stay_cue_heading_diff_signed',...
                     'wind_offset_precision_awj_10','wind_offset_precision_abj_10','bar_offset_precision_abj_10','bar_offset_precision_awj_10',...
                     'wind_offset_precision_awj_25','wind_offset_precision_abj_25','bar_offset_precision_abj_25','bar_offset_precision_awj_25',...
                     'wind_offset_precision_awj_75','wind_offset_precision_abj_75','bar_offset_precision_abj_75','bar_offset_precision_awj_75',...

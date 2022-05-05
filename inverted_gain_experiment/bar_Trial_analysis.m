@@ -11,29 +11,16 @@ folderNames = dir('Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp25\data\Experime
 
 fcn_precision = @(x) circ_r(x);
 
-offset_precision_standing = [];
-offset_precision_moving = [];
-mean_bump_mag_standing = [];
-mean_bump_mag_moving = [];
-mean_bump_mag_low_mvt = [];
-mean_bump_width_standing = [];
-mean_bump_width_moving = [];
-mean_bump_width_low_mvt = [];
-bump_mag_moving = [];
-bump_width_moving = [];
-zbump_mag_moving = [];
-zbump_width_moving = [];
+bm_thresh = [];
+bw_thresh = [];
+rot_speed_thresh = [];
 rolling_bump_mag = [];
 rolling_bump_width = [];
-rot_speed_moving = [];
-for_vel_moving = [];
 rolling_rot_speed = [];
 rolling_rot_speed_thresh = [];
 rolling_for_vel_thresh = [];
 rolling_offset_precision = [];
 fly_num = [];
-fly_number = [];
-fly_ID = string();
 
 %for the fly folders
 for folder = 1:length(folderNames)
@@ -60,18 +47,23 @@ for folder = 1:length(folderNames)
         yaw_speed = abs(continuous_data.vel_yaw_ds);
         rolling_rot_speed = [movmean(yaw_speed,92),rolling_rot_speed];
         yaw_speed(~gof) = NaN;
+        rot_speed_thresh = [yaw_speed,rot_speed_thresh];
         rolling_rot_speed_thresh = [movmean(yaw_speed,92),rolling_rot_speed_thresh];
         for_vel = continuous_data.vel_for_ds;
         for_vel(~gof) = NaN;
         rolling_for_vel_thresh = [movmean(for_vel,92);rolling_for_vel_thresh];
+        
         bump_mag = continuous_data.bump_magnitude;
         bump_mag(~gof) = NaN;
         bm = (bump_mag - nanmean(bump_mag))/nanstd(bump_mag);
+        bm_thresh = [bm,bm_thresh];
         rolling_bump_mag = [movmean(bm,92),rolling_bump_mag];
         bump_width = continuous_data.bump_width;
         bump_width(~gof) = NaN;
         bw = (bump_width - nanmean(bump_width))./nanstd(bump_width);
-        rolling_bump_width = [movmean(bw,92),rolling_bump_width];   
+        bw_thresh = [bw,bw_thresh];
+        rolling_bump_width = [movmean(bw,92),rolling_bump_width];    
+               
         fly_num = [repelem(folder,1,length(continuous_data.bump_width)),fly_num];
 
 
@@ -107,18 +99,23 @@ for folder = 1:length(folderNames3)
         yaw_speed = abs(continuous_data.vel_yaw_ds);
         rolling_rot_speed = [movmean(yaw_speed,92),rolling_rot_speed];
         yaw_speed(~gof) = NaN;
+        rot_speed_thresh = [yaw_speed,rot_speed_thresh];
         rolling_rot_speed_thresh = [movmean(yaw_speed,92),rolling_rot_speed_thresh];
         for_vel = continuous_data.vel_for_ds;
         for_vel(~gof) = NaN;
         rolling_for_vel_thresh = [movmean(for_vel,92);rolling_for_vel_thresh];
+        
         bump_mag = continuous_data.bump_magnitude;
         bump_mag(~gof) = NaN;
         bm = (bump_mag - nanmean(bump_mag))/nanstd(bump_mag);
+        bm_thresh = [bm,bm_thresh];
         rolling_bump_mag = [movmean(bm,92),rolling_bump_mag];
         bump_width = continuous_data.bump_width;
         bump_width(~gof) = NaN;
         bw = (bump_width - nanmean(bump_width))./nanstd(bump_width);
-        rolling_bump_width = [movmean(bw,92),rolling_bump_width];   
+        bw_thresh = [bw,bw_thresh];
+        rolling_bump_width = [movmean(bw,92),rolling_bump_width];  
+        
         fly_num = [repelem(folder+last_fly,1,length(continuous_data.bump_width)),fly_num];
         
     end
@@ -128,6 +125,9 @@ end
 
 all_movement_data_bar_trial = table(rolling_offset_precision,rolling_rot_speed_thresh',rolling_for_vel_thresh,rolling_bump_mag',rolling_bump_width',fly_num','VariableNames',{'offset_precision','rolling_rot_speed','rolling_for_vel','rolling_bump_mag','rolling_bump_width','fly'});
 writetable(all_movement_data_bar_trial,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\all_movement_data_bar_trial_including_rest_10_sec.csv')
+
+non_smoothed_data_bar_trial = table(bw_thresh',bm_thresh',rot_speed_thresh',fly_num', 'VariableNames',{'bump_width','bump_mag','rot_speed','fly_num'});
+writetable(non_smoothed_data_bar_trial,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\non_smoothed_data_bar_trial.csv')
 
 %% Save offset precision and rot speed data for analysis in r
 

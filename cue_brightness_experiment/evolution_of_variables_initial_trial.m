@@ -19,6 +19,7 @@ precision_time = [];
 bump_pars_time = [];
 total_mvt = [];
 rot_speed = [];
+for_vel = [];
 
 fcn_precision = @(x) circ_r(x);
 fcn_mean = @(x) nanmean(x);
@@ -64,6 +65,7 @@ for folder = 1:length(folderNames)
         
         total_mvt = [continuous_data.total_mvt_ds(moving & gof),total_mvt];
         rot_speed = [abs(continuous_data.vel_yaw_ds(moving & gof)),rot_speed];
+        for_vel = [continuous_data.vel_for_ds(moving & gof);for_vel];        
         
     end
 end
@@ -113,14 +115,15 @@ for folder = 1:length(folderNames2)
         
         total_mvt = [continuous_data.total_mvt_ds(moving & gof),total_mvt];
         rot_speed = [abs(continuous_data.vel_yaw_ds(moving & gof)),rot_speed];
-        
+        for_vel = [continuous_data.vel_for_ds(moving & gof);for_vel];        
+
     end
 end
 
 
 %% Save speed and bump pars data for analysis in r
 
-bump_pars_evo_data_bar_trial = table(bump_mag,bump_width,bump_pars_time,total_mvt',rot_speed',fly_num','VariableNames',{'bump_mag','bump_width','time','total_mvt','rot_speed','fly'});
+bump_pars_evo_data_bar_trial = table(bump_mag,bump_width,bump_pars_time,total_mvt',rot_speed',for_vel,fly_num','VariableNames',{'bump_mag','bump_width','time','total_mvt','rot_speed','for_vel','fly'});
 %precision_evo_data_bar_trial = table(offset_precision,heading_precision,precision_time,fly_num_precision','VariableNames',{'offset_precision','heading_precision','time','fly'});
 all_data_bar_trial = table(offset_precision,heading_precision,bump_mag,bump_width,bump_pars_time,fly_num','VariableNames',{'offset_precision','heading_precision','bump_mag','bump_width','time','fly'});
 writetable(bump_pars_evo_data_bar_trial,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp25\data\Experimental\two_ND_filters_3_contrasts\bump_pars_evo_data_bar_trial.csv')

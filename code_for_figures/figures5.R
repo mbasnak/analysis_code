@@ -40,25 +40,6 @@ mean_and_sd_offset <- empty_trial_comparison_offset_data %>%
   summarise(sd_offset_precision = sd(offset_precision),
             mean_offset_precision = mean(offset_precision),
             n = n())
-#5) plot
-ggplot() + 
-  geom_line(empty_trial_comparison_offset_data, mapping = aes(trial, offset_precision, group = Fly),color = 'gray50',size=0.5) +
-  theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=18),
-        axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
-        axis.text.x = element_text(angle = 30, vjust=.8, hjust=0.8),
-        axis.line.x = element_line(size=1),
-        axis.line.y = element_line(size=1)) +
-  geom_line(data = mean_and_sd_offset,aes(trial,mean_offset_precision,group = 1),color = 'gray0',size=2) +
-  geom_errorbar(data=mean_and_sd_offset, mapping=aes(x=trial, ymin=mean_offset_precision + sd_offset_precision/sqrt(n), ymax=mean_offset_precision - sd_offset_precision/sqrt(n)), width=0, size=2, color="gray0") +
-  scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
-                   labels=scales::wrap_format(10)) +
-  labs(x="", y="HD encoding reliability")+
-  ylim(c(0,1))
-
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig5", file="heading_offset_precision_comparison.svg",device = 'svg', width=6, height=6)
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig5", file="heading_offset_precision_comparison.png",device = 'png', width=6, height=6)
-
 
 # Run model
 mdl_offset_precision_comparison <- lme(offset_precision ~ trial ,random=~1|Fly, empty_trial_comparison_offset_data)
@@ -99,22 +80,6 @@ mean_and_sd_heading <- empty_trial_comparison_heading_data %>%
   summarise(sd_heading_precision = sd(heading_precision),
             mean_heading_precision = mean(heading_precision),
             n = n())
-#5) plot
-ggplot() + 
-  geom_line(empty_trial_comparison_heading_data, mapping = aes(trial, heading_precision, group = Fly),color = 'gray50',size=0.5) +
-  theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=18),
-        axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
-        axis.text.x = element_text(angle = 30, vjust=.8, hjust=0.8),
-        axis.line.x = element_line(size=1.5),
-        axis.line.y = element_line(size=1.5)) +
-  geom_line(data = mean_and_sd_heading,aes(trial,mean_heading_precision,group = 1),color = 'gray0',size=2) +
-  geom_errorbar(data=mean_and_sd_heading, mapping=aes(x=trial, ymin=mean_heading_precision + sd_heading_precision/sqrt(n), ymax=mean_heading_precision - sd_heading_precision/sqrt(n)), width=0, size=2, color="gray0") +
-  scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
-                   labels=scales::wrap_format(10)) +
-  labs(x="", y="Heading precision")+
-  ylim(c(0,1))
-
 
 #) Run model
 mdl_heading_precision_comparison <- lme(heading_precision ~ trial ,random=~1|Fly, empty_trial_comparison_heading_data)
@@ -134,47 +99,6 @@ learning_data_diff$bump_width <- rad2deg(learning_data_diff$bump_width)
 summary(lm(offset_diff ~ bump_mag, learning_data_diff))
 summary(lm(offset_diff ~ bump_width, learning_data_diff))
 summary(lm(offset_diff ~ offset_precision, learning_data_diff))
-
-#Plot
-p1 <- ggplot(learning_data_diff,aes(offset_diff,bump_mag)) +
-  geom_point(size = 2.5) +
-  geom_smooth(method='lm', se = FALSE, color = 'red', linetype="dashed") +
-  theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=18),
-        axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
-        axis.line.x = element_line(size=1),
-        axis.line.y = element_line(size=1)) +
-  scale_x_continuous(name="Remapping index") +
-  scale_y_continuous(name="Bump amplitude (DF/F)", limits=c(0.5,2.5)) 
-
-p2 <- ggplot(learning_data_diff,aes(offset_diff,bump_width)) +
-  geom_point(size = 2.5)+
-  geom_smooth(method='lm', se = FALSE, color = 'red') +
-  theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=18),
-        axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
-        axis.line.x = element_line(size=1),
-        axis.line.y = element_line(size=1)) +
-  scale_x_continuous(name="Remapping index") +
-  scale_y_continuous(name="Bump width (deg)" , limits=c(70,140)) 
-
-p3 <- ggplot(learning_data_diff,aes(offset_diff,offset_precision)) +
-  geom_point(size = 2.5)+
-  geom_smooth(method='lm', se = FALSE, color = 'red') +
-  theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=18),
-        axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
-        axis.line.x = element_line(size=1),
-        axis.line.y = element_line(size=1)) +
-  scale_x_continuous(name="Remapping index") +
-  scale_y_continuous(name="HD encoding realiability", limits=c(0, 1))
-
-p <- plot_grid(p1, p2, p3,ncol = 3)
-p
-
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig5", file="learning_prediction_diff.svg",device = 'svg', width=11, height=6)
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig5", file="learning_prediction_diff.png",device = 'png', width=11, height=6)
-
 
 
 
@@ -198,23 +122,6 @@ mean_and_sd_offset_diff <- hb_offset_diff_evo %>%
   summarise(sd_offset_diff = sd(offset_diff),
             mean_offset_diff = mean(offset_diff),
             n = n())
-# plot
-ggplot() + 
-  geom_line(hb_offset_diff_evo, mapping = aes(block, offset_diff, group = fly),color = 'gray50',size=0.5) +
-  theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=18),
-        axis.text = element_text(size=15), axis.ticks.length.x = unit(0.5, "cm"),
-        axis.text.x = element_text(vjust=.8, hjust=0.8),
-        axis.line.x = element_line(size=1),
-        axis.line.y = element_line(size=1)) +
-  geom_line(data = mean_and_sd_offset_diff,aes(block,mean_offset_diff,group = 1),color = 'gray0',size=2) +
-  geom_errorbar(data=mean_and_sd_offset_diff, mapping=aes(x=block, ymin=mean_offset_diff + sd_offset_diff/sqrt(n), ymax=mean_offset_diff - sd_offset_diff/sqrt(n)), width=0, size=2, color="gray0") +
-  scale_x_discrete(labels=scales::wrap_format(10)) +
-  labs(x="", y="Remapping index")+
-  ylim(c(-1,1))
-
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig5", file="offset_diff_evo.svg",device = 'svg', width=4, height=6)
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig5", file="offset_diff_evo.png",device = 'png', width=4, height=6)
 
 
 #stats
@@ -224,86 +131,118 @@ hb_offset_diff_evo  %>%
 
 # code to plot full figure for paper --------------------------------------
 
-#empty trial comparison HD encoding reliability
-p1 <- ggplot() + 
-  geom_line(empty_trial_comparison_offset_data, mapping = aes(trial, offset_precision, group = Fly),color = 'gray70',size=0.5) +
-  theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=17),
-        axis.text = element_text(size=16),
-        axis.line.x = element_blank(),
-        axis.ticks.x=element_blank(),
-        axis.line.y = element_line(size=0.5)) +
-  geom_line(data = mean_and_sd_offset,aes(trial,mean_offset_precision,group = 1),color = 'gray0',size=2) +
-  scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
-                   labels=scales::wrap_format(15)) +
-  labs(x="", y="HD certainty")+
-  scale_y_continuous(expand = c(0, 0), limits=c(0, 1))
-  
-#empty trial comparison of consistency of behavioral orientation
-p2 <- ggplot() + 
-  geom_line(empty_trial_comparison_heading_data, mapping = aes(trial, heading_precision, group = Fly),color = 'gray70',size=0.5) +
-  theme(panel.background = element_rect(fill=NA),
-        text=element_text(size=17),
-        axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
-        axis.line.x = element_blank(),
-        axis.ticks.x=element_blank(),
-        axis.line.y = element_line(size=.5)) +
-  geom_line(data = mean_and_sd_heading,aes(trial,mean_heading_precision,group = 1),color = 'gray0',size=2) +
-  scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
-                   labels=scales::wrap_format(15)) +
-  labs(x="", y="Consistency of \n behavioral orientation")+
-  scale_y_continuous(expand = c(0, 0), limits=c(0, 1))
-
 #remapping index evolution
+mean_remapping <- learning_data_diff %>%
+  summarise(mean_remapping = mean(offset_diff))
+
+learners <- hb_offset_diff_evo %>%
+  filter(offset_diff > mean_remapping$mean_remapping) %>%
+  filter(block == 'Final part')
+learners <- learners$fly
+
+non_learners <- hb_offset_diff_evo %>%
+  filter(offset_diff <= mean_remapping$mean_remapping) %>%
+  filter(block == 'Final part')
+non_learners <- non_learners$fly
+
+hb_offset_diff_evo$learner <- rep(0,dim(hb_offset_diff_evo)[1])
+hb_offset_diff_evo$learner[hb_offset_diff_evo$fly %in% learners] = 1
+
 p3 <- ggplot() + 
-  geom_line(hb_offset_diff_evo, mapping = aes(block, offset_diff, group = fly),color = 'gray70',size=0.5) +
+  geom_line(hb_offset_diff_evo, mapping = aes(block, offset_diff, group = fly, color = factor(learner)),size=0.5) +
   stat_summary(hb_offset_diff_evo, mapping = aes(block, offset_diff),fun.y=mean, geom="crossbar", size=1, , width=0.4, color="black") +
   theme(panel.background = element_rect(fill=NA),
         text = element_text(size=17),axis.text = element_text(size = 16),
         axis.line.x = element_blank(),
         axis.ticks.x=element_blank(),
-        axis.line.y = element_line(size=.5)) +
-  geom_point(hb_offset_diff_evo, mapping = aes(block, offset_diff),color='gray70') +
+        axis.line.y = element_line(size=.5),
+        legend.position = 'none') +
+  geom_point(hb_offset_diff_evo, mapping = aes(block, offset_diff, color = factor(learner))) +
   scale_x_discrete(labels=scales::wrap_format(10)) +
-  labs(x="", y="Remapping index")+
+  labs(x="", y="Inversion index")+
+  scale_color_manual(values=c('gray70','gray0')) +
   scale_y_continuous(expand = c(0, 0), limits=c(-1, 1))
 
-#learning predictors
-p4 <- ggplot(learning_data_diff,aes(bump_mag,offset_diff)) +
-  geom_point(size = 2.5) +
+
+#empty trial comparison HD encoding reliability
+empty_trial_comparison_offset_data$Fly = empty_trial_comparison_offset_data$Fly + 1
+empty_trial_comparison_offset_data$learner <- rep(0,dim(empty_trial_comparison_offset_data)[1])
+empty_trial_comparison_offset_data$learner[empty_trial_comparison_offset_data$Fly %in% learners] = 1
+
+p1 <- ggplot() + 
+  geom_line(empty_trial_comparison_offset_data, mapping = aes(trial, offset_precision, group = Fly,color=factor(learner)),size=0.5) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=17),
+        axis.text = element_text(size=16),
+        axis.line.x = element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.line.y = element_line(size=0.5),
+        legend.position = 'none') +
+  geom_line(data = mean_and_sd_offset,aes(trial,mean_offset_precision,group = 1),color = 'gray0',size=2) +
+  scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
+                   labels=scales::wrap_format(10)) +
+  labs(x="", y="HD certainty")+
+  scale_color_manual(values=c('gray70','gray0')) +
+  scale_y_continuous(expand = c(0, 0), limits=c(0, 1))
+
+#empty trial comparison of consistency of behavioral orientation
+empty_trial_comparison_heading_data$Fly = empty_trial_comparison_heading_data$Fly + 1
+empty_trial_comparison_heading_data$learner <- rep(0,dim(empty_trial_comparison_heading_data)[1])
+empty_trial_comparison_heading_data$learner[empty_trial_comparison_heading_data$Fly %in% learners] = 1
+
+p2 <- ggplot() + 
+  geom_line(empty_trial_comparison_heading_data, mapping = aes(trial, heading_precision,group = Fly, color=factor(learner)),size=0.5) +
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=17),
         axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
-        axis.line.x = element_line(size=.5),
-        axis.line.y = element_line(size=.5)) +
-  scale_y_continuous(name="Remapping index", expand = c(0, 0), limits=c(-1,1)) +
-  scale_x_continuous(name="Bump amplitude (\u0394F/F)", expand = c(0, 0), limits=c(0,3)) 
+        axis.line.x = element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.line.y = element_line(size=.5),
+        legend.position = 'none') +
+  geom_line(data = mean_and_sd_heading,aes(trial,mean_heading_precision,group = 1),color = 'gray0',size=2) +
+  scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
+                   labels=scales::wrap_format(10)) +
+  labs(x="", y="Consistency of \n behavioral orientation")+
+  scale_color_manual(values=c('gray70','gray0')) +
+  scale_y_continuous(expand = c(0, 0), limits=c(0, 1))
 
-p5 <- ggplot(learning_data_diff,aes(bump_width,offset_diff)) +
+
+#learning predictors
+learning_data_diff$fly <- 1:nrow(learning_data_diff)
+learning_data_diff$learner <- rep(0,dim(learning_data_diff)[1])
+learning_data_diff$learner[learning_data_diff$fly %in% learners] = 1
+
+p5 <- ggplot(learning_data_diff,aes(bump_width,offset_diff,color = factor(learner))) +
   geom_point(size = 2.5)+
   geom_smooth(method='lm', se = FALSE, color = 'red') +
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=17),
         axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
         axis.line.x = element_line(size=.5),
-        axis.line.y = element_line(size=.5)) +
-  scale_y_continuous(name="Remapping index", expand = c(0, 0), limits=c(-1,1)) +
-  scale_x_continuous(name="Bump width (°)" , expand = c(0, 0), limits=c(70,135)) 
+        axis.line.y = element_line(size=.5),
+        legend.position = 'none') +
+  scale_color_manual(values=c('gray70','gray0')) +
+  scale_y_continuous(name="Inversion index", expand = c(0, 0), limits=c(-1,1)) +
+  scale_x_continuous(name="Bump width (°)" , expand = c(0, 0), limits=c(82,133)) 
 
-p6 <- ggplot(learning_data_diff,aes(offset_precision,offset_diff)) +
-  geom_point(size = 2.5)+
+
+p4 <- ggplot(learning_data_diff,aes(bump_mag,offset_diff,color = factor(learner))) +
+  geom_point(size = 2.5) +
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=17),
         axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
         axis.line.x = element_line(size=.5),
-        axis.line.y = element_line(size=.5)) +
-  scale_y_continuous(name="Remapping index", expand = c(0, 0), limits=c(-1,1)) +
-  scale_x_continuous(name="HD certainty", expand = c(0, 0), limits=c(0, 1))
+        axis.line.y = element_line(size=.5),
+        legend.position = 'none') +
+  scale_color_manual(values=c('gray70','gray0')) +
+  scale_y_continuous(name="Inversion index", expand = c(0, 0), limits=c(-1,1)) +
+  scale_x_continuous(name="Bump amplitude (\u0394F/F)", expand = c(0, 0), limits=c(0.8,3)) 
 
-row_1 <- plot_spacer() + plot_spacer() + p1 + p2 + plot_layout(nrow=1)
-row_2 <- p3 + p5 + p4 + p6
-row_2 <- row_2 + plot_layout(widths=c(1,2,2,2))
+
+
+row_1 <- plot_spacer() + plot_spacer() +  plot_spacer() + p3 + plot_layout(nrow=1)
+row_2 <- p1 + p2 + p5 + p4 + plot_layout(nrow=1)
 full_plot <- row_1/row_2 
-full_plot + plot_layout(heights = c(1,1.5))+ plot_annotation(tag_levels = list(c('F','G','H','I','J','K')))
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig5", file="bottom_fig_5.svg",device = 'svg', width=18, height=9)
+full_plot + plot_layout(heights = c(1,2))+ plot_annotation(tag_levels = list(c('D','E','F','G','H')))
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig5", file="bottom_fig_5.svg",device = 'svg', width=15, height=10)
 

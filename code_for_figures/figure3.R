@@ -43,7 +43,9 @@ p1 <- data %>%
   geom_ribbon(aes( ymin=bin_mean - bin_sem, ymax=bin_mean + bin_sem), fill = "gray0",alpha = .2) + 
   geom_line(aes(group=1), lwd=1)+
   labs(x = 'Rotational speed (°/s)', y='HD certainty', color = '',fill = '')+ 
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) 
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
+  scale_x_continuous(expand = c(0, 0), limits = c(0,70)) 
+
 
 
 #running model
@@ -77,7 +79,10 @@ p2 <-data %>%
         text = element_text(size=17),axis.text = element_text(size = 16))+
   geom_ribbon(aes(ymin=bin_mean_bw - bin_sem_bw, ymax=bin_mean_bw + bin_sem_bw), fill = "gray0",alpha = .2) + 
   geom_line(aes(group=1), lwd=1, color='gray0')+
-  labs(x = 'Rotational speed (°/s)', y='Bump width (z-scored)', color = '',fill = '')
+  labs(x = 'Rotational speed (°/s)', y='Bump width (z-scored)', color = '',fill = '') +
+  scale_y_continuous(expand = c(0, 0), limits = c(-0.42,0.62)) +
+  scale_x_continuous(expand = c(0, 0), limits = c(0,70)) 
+
 
 p3 <-data %>% 
   filter(!is.nan(rolling_bump_mag)) %>%
@@ -104,7 +109,10 @@ p3 <-data %>%
         text = element_text(size=17),axis.text = element_text(size = 16))+
   geom_ribbon(aes( ymin=bin_mean_bm - bin_sem_bm, ymax=bin_mean_bm + bin_sem_bm), fill = "gray0",alpha = 0.2) + 
   geom_line(aes(group=1), lwd=1,color = 'gray0')+
-  labs(x = 'Rotational speed (°/s)', y='Bump amplitude (z-scored)', color = '',fill = '')
+  labs(x = 'Rotational speed (°/s)', y='Bump amplitude (z-scored)', color = '',fill = '') +
+  scale_y_continuous(expand = c(0, 0), limits = c(-0.42,0.62)) +
+  scale_x_continuous(expand = c(0, 0), limits = c(0,70)) 
+
 
 
 #running model

@@ -441,6 +441,22 @@ yticklabels({'0','30','60','90','120','150','180'});
 cue_type_data = [abs(single_cue_cc_sim_bar)',abs(single_cue_cc_sim_wind)'];
 writematrix(cue_type_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp35\data\high_reliability\cue_type_data.csv');
 
+%% Initial data
+
+for fly = 1:length(data)
+    if configuration(fly) == 1
+        initial_offset_bar(fly) = offset_mean(fly,1);
+        initial_offset_wind(fly) = offset_mean(fly,2);
+    else
+        initial_offset_bar(fly) = offset_mean(fly,2);
+        initial_offset_wind(fly) = offset_mean(fly,1);
+    end
+end
+
+%save data for statistical analysis
+initial_offset_data = [initial_offset_bar',initial_offset_wind'];
+writematrix(initial_offset_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp35\data\high_reliability\initial_offset_data.csv');
+
 %% Cue plasticity vs size of conflict
 
 for fly = 1:length(data)
