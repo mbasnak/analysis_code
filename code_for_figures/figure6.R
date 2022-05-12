@@ -277,6 +277,9 @@ p4 <- ggplot(initial_offset_data,aes(visual_cue,wind)) +
   scale_y_continuous(expand = c(0, 0), limits=c(-180,220), breaks = c(-180,0,180)) +
   scale_x_continuous(expand = c(0, 0), limits=c(-180,180), breaks = c(-180,0,180))
 
+cor.test(initial_offset_data$visual_cue,initial_offset_data$wind)
+
+
 #cue similarity
 p5 <- ggplot() + 
   geom_line(cue_order_data, mapping = aes(order, similarity, group = fly),color = 'gray70',size=0.5) +

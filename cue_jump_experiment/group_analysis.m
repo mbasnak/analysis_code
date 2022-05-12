@@ -32,7 +32,7 @@ mean_stay_cue_offset_diff = [];
 mean_stay_cue_heading_diff = [];
 mean_stay_cue_offset_diff_signed = [];
 mean_stay_cue_heading_diff_signed = [];
-jump_size = [];
+Jump_size = [];
 
 initial_bar_bm = [];
 initial_wind_bm = [];
@@ -101,7 +101,7 @@ for fly = 1:length(data)
     mean_stay_cue_heading_diff = [mean_stay_cue_heading_diff,data(fly).mean_stay_cue_heading_diff];
     mean_stay_cue_offset_diff_signed = [mean_stay_cue_offset_diff_signed,data(fly).mean_stay_cue_offset_diff_signed];
     mean_stay_cue_heading_diff_signed = [mean_stay_cue_heading_diff_signed,data(fly).mean_stay_cue_heading_diff_signed];
-    jump_size = [jump_size,data(fly).jump_size];
+    Jump_size = [Jump_size,data(fly).jump_size];
     
     initial_bar_bm{fly} = data(fly).initial_bar_bm;
     initial_wind_bm{fly} = data(fly).initial_wind_bm;
@@ -1169,6 +1169,125 @@ sorted_wind_heading_change = sorted_heading_change(5:8,:);
 writematrix(sorted_bar_heading_change,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_bar_heading_change.csv')
 writematrix(sorted_wind_heading_change,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_wind_heading_change.csv')
 
+
+
+%% signed change in offset
+
+jump_size_new_order = zeros(8,14);
+for fly = 1:length(jump_size)
+    if configuration(fly) == 1
+        jump_size_new_order(:,fly) = jump_size([1,3,5,7,2,4,6,8],fly);
+    else
+        jump_size_new_order(:,fly) = jump_size([2,4,6,8,1,3,5,7],fly);
+    end
+end
+
+sorted_jump_size = jump_size_new_order(:,mean_sorting_order);
+
+
+sorted_offset_change = rad2deg(mean_stay_cue_offset_diff_signed(:,mean_sorting_order));
+
+
+figure('Position',[100 100 1400 1000]),
+boxplot(sorted_offset_change,'color','k')
+hold on
+yline(0);
+scatter(repmat([1:length(data)],8,1),sorted_offset_change,[],[.5 .5 .5],'filled')
+set(findobj(gca,'type','line'),'linew',2)
+xlabel('Fly #');
+ylabel('Offset change');
+ylim([-180 180]);
+
+
+%change offset change sign based on jump size
+sorted_offset_change_positive = sorted_offset_change;
+sorted_offset_change_positive(sorted_jump_size < 0) = -sorted_offset_change_positive(sorted_jump_size < 0);
+
+figure('Position',[100 100 1400 1000]),
+boxplot(sorted_offset_change_positive,'color','k')
+hold on
+yline(0);
+scatter(repmat([1:length(data)],8,1),sorted_offset_change_positive,[],[.5 .5 .5],'filled')
+set(findobj(gca,'type','line'),'linew',2)
+xlabel('Fly #');
+ylabel('Offset change');
+ylim([-180 180]);
+
+writematrix(sorted_offset_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_offset_change_positive.csv')
+
+
+%Save
+sorted_bar_offset_change_positive = sorted_offset_change_positive(1:4,:);
+sorted_wind_offset_change_positive = sorted_offset_change_positive(5:8,:);
+writematrix(sorted_bar_offset_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_bar_offset_change_positive.csv')
+writematrix(sorted_wind_offset_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_wind_offset_change_positive.csv')
+
+
+%% Repeat for behavior
+
+sorted_heading_change = rad2deg(mean_stay_cue_heading_diff_signed(:,mean_sorting_order));
+
+
+figure('Position',[100 100 1400 1000]),
+boxplot(sorted_heading_change,'color','k')
+hold on
+yline(0);
+scatter(repmat([1:length(data)],8,1),sorted_heading_change,[],[.5 .5 .5],'filled')
+set(findobj(gca,'type','line'),'linew',2)
+xlabel('Fly #');
+ylabel('heading change');
+ylim([-180 180]);
+
+
+%change heading change sign based on jump size
+sorted_heading_change_positive = sorted_heading_change;
+sorted_heading_change_positive(sorted_jump_size < 0) = -sorted_heading_change_positive(sorted_jump_size < 0);
+
+figure('Position',[100 100 1400 1000]),
+boxplot(sorted_heading_change_positive,'color','k')
+hold on
+yline(0);
+scatter(repmat([1:length(data)],8,1),sorted_heading_change_positive,[],[.5 .5 .5],'filled')
+set(findobj(gca,'type','line'),'linew',2)
+xlabel('Fly #');
+ylabel('heading change');
+ylim([-180 180]);
+
+writematrix(sorted_heading_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_heading_change_positive.csv')
+
+
+%Save
+sorted_bar_heading_change_positive = sorted_heading_change_positive(1:4,:);
+sorted_wind_heading_change_positive = sorted_heading_change_positive(5:8,:);
+writematrix(sorted_bar_heading_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_bar_heading_change_positive.csv')
+writematrix(sorted_wind_heading_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_wind_heading_change_positive.csv')
+
+
+%% Save the non-sorted version of the data for debugging
+
+offset_change = rad2deg(mean_stay_cue_offset_diff_signed);
+heading_change = rad2deg(mean_stay_cue_heading_diff_signed);
+
+%change offset sign based on jump size
+offset_change_positive = offset_change;
+offset_change_positive(jump_size_new_order < 0) = -offset_change_positive(jump_size_new_order < 0);
+bar_offset_change_positive = offset_change_positive(1:4,:);
+wind_offset_change_positive = offset_change_positive(5:8,:);
+
+%change heading sign based on jump size
+heading_change_positive = heading_change;
+heading_change_positive(jump_size_new_order < 0) = -heading_change_positive(jump_size_new_order < 0);
+bar_heading_change_positive = heading_change_positive(1:4,:);
+wind_heading_change_positive = heading_change_positive(5:8,:);
+
+%save
+writematrix(offset_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\offset_change_positive.csv')
+writematrix(bar_offset_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\bar_offset_change_positive.csv')
+writematrix(wind_offset_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\wind_offset_change_positive.csv')
+
+writematrix(heading_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\heading_change_positive.csv')
+writematrix(bar_heading_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\bar_heading_change_positive.csv')
+writematrix(wind_heading_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\wind_heading_change_positive.csv')
 
 %% Relationship between bump and behavior preference index
 
