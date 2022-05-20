@@ -1330,6 +1330,17 @@ for folder = 1:length(foldernames)
                 PI = (mean_bar_offset_diff-mean_wind_offset_diff)./(mean_bar_offset_diff+mean_wind_offset_diff);
                 
                 
+                %signed PI
+                mean_bar_offset_diff_bj_signed = circ_dist(long_bar_offset_mean_around_bar_jump(:,2), long_bar_offset_mean_around_bar_jump(:,1));
+                mean_wind_offset_diff_bj_signed = circ_dist(long_wind_offset_mean_around_bar_jump(:,2), long_wind_offset_mean_around_bar_jump(:,1));
+                mean_bar_offset_diff_wj_signed = circ_dist(long_bar_offset_mean_around_wind_jump(:,2), long_bar_offset_mean_around_wind_jump(:,1));
+                mean_wind_offset_diff_wj_signed = circ_dist(long_wind_offset_mean_around_wind_jump(:,2), long_wind_offset_mean_around_wind_jump(:,1));
+                mean_bar_offset_diff_signed = [mean_bar_offset_diff_bj_signed;mean_bar_offset_diff_wj_signed];
+                mean_wind_offset_diff_signed = [mean_wind_offset_diff_bj_signed;mean_wind_offset_diff_wj_signed];
+                              
+                
+                
+                
                 %1) For heading PI
                 %Bar jumps
                 mean_bar_heading_offset_diff_bj = abs(circ_dist(long_bar_heading_offset_mean_around_bar_jump(:,2),long_bar_heading_offset_mean_around_bar_jump(:,1)));
@@ -1341,6 +1352,16 @@ for folder = 1:length(foldernames)
                 mean_bar_heading_offset_diff = [mean_bar_heading_offset_diff_bj;mean_bar_heading_offset_diff_wj];
                 mean_wind_heading_offset_diff = [mean_wind_heading_offset_diff_bj;mean_wind_heading_offset_diff_wj];
                 PI_heading = (mean_bar_heading_offset_diff-mean_wind_heading_offset_diff)./(mean_bar_heading_offset_diff+mean_wind_heading_offset_diff);
+                
+                
+                %signed heading PI
+                mean_bar_heading_offset_diff_bj_signed = circ_dist(long_bar_heading_offset_mean_around_bar_jump(:,2), long_bar_heading_offset_mean_around_bar_jump(:,1));
+                mean_wind_heading_offset_diff_bj_signed = circ_dist(long_wind_heading_offset_mean_around_bar_jump(:,2), long_wind_heading_offset_mean_around_bar_jump(:,1));
+                mean_bar_heading_offset_diff_wj_signed = circ_dist(long_bar_heading_offset_mean_around_wind_jump(:,2), long_bar_heading_offset_mean_around_wind_jump(:,1));
+                mean_wind_heading_offset_diff_wj_signed = circ_dist(long_wind_heading_offset_mean_around_wind_jump(:,2), long_wind_heading_offset_mean_around_wind_jump(:,1));
+                mean_bar_heading_diff_signed = [mean_bar_heading_offset_diff_bj_signed;mean_bar_heading_offset_diff_wj_signed];
+                mean_wind_heading_diff_signed = [mean_wind_heading_offset_diff_bj_signed;mean_wind_heading_offset_diff_wj_signed];
+                
                 
                 % Compute the stickiness index
                 %Bar moves
@@ -1408,18 +1429,29 @@ for folder = 1:length(foldernames)
                 jump_size(jump_size < 0) = -120;
                 jump_size(jump_size > 0) = 120;
 
-                %% Get mean offset and heading changes for the cue that stays, signed
+                %% Get mean offset and heading changes for the cue that stays and moves, signed
                 
                 
+                %stays
                 mean_stay_cue_offset_diff_bj_signed = circ_dist(long_wind_offset_mean_around_bar_jump(:,2), long_wind_offset_mean_around_bar_jump(:,1));
                 mean_stay_cue_offset_diff_wj_signed = circ_dist(long_bar_offset_mean_around_wind_jump(:,2), long_bar_offset_mean_around_wind_jump(:,1));
                 mean_stay_cue_offset_diff_signed = [mean_stay_cue_offset_diff_bj_signed;mean_stay_cue_offset_diff_wj_signed];
 
-                
                 mean_stay_cue_heading_diff_bj_signed = circ_dist(long_wind_heading_offset_mean_around_bar_jump(:,2), long_wind_heading_offset_mean_around_bar_jump(:,1));
                 mean_stay_cue_heading_diff_wj_signed = circ_dist(long_bar_heading_offset_mean_around_wind_jump(:,2), long_bar_heading_offset_mean_around_wind_jump(:,1));
                 mean_stay_cue_heading_diff_signed = [mean_stay_cue_heading_diff_bj_signed;mean_stay_cue_heading_diff_wj_signed];
 
+
+                %moves
+                mean_move_cue_offset_diff_bj_signed = circ_dist(long_bar_offset_mean_around_bar_jump(:,2), long_bar_offset_mean_around_bar_jump(:,1));
+                mean_move_cue_offset_diff_wj_signed = circ_dist(long_wind_offset_mean_around_wind_jump(:,2), long_wind_offset_mean_around_wind_jump(:,1));
+                mean_move_cue_offset_diff_signed = [mean_move_cue_offset_diff_bj_signed;mean_move_cue_offset_diff_wj_signed];
+               
+                mean_move_cue_heading_diff_bj_signed = circ_dist(long_bar_heading_offset_mean_around_bar_jump(:,2), long_bar_heading_offset_mean_around_bar_jump(:,1));
+                mean_move_cue_heading_diff_wj_signed = circ_dist(long_wind_heading_offset_mean_around_wind_jump(:,2), long_wind_heading_offset_mean_around_wind_jump(:,1));
+                mean_move_cue_heading_diff_signed = [mean_move_cue_heading_diff_bj_signed;mean_move_cue_heading_diff_wj_signed];
+                                         
+                
                 %% Sort bump parameters around jumps into 'preferred' and 'non-preferred'
                 
                 %1) Get the bump parameters around all jumps, sorted by jump order
@@ -1727,6 +1759,9 @@ for folder = 1:length(foldernames)
                     'initial_bar_bm','initial_wind_bm','initial_bar_bw','initial_wind_bw','initial_bar_offset','initial_wind_offset',...
                     'PI','PI_heading','SI','mean_stay_cue_offset_diff','mean_stay_cue_heading_diff',...
                     'jump_size','mean_stay_cue_offset_diff_signed','mean_stay_cue_heading_diff_signed',...
+                    'mean_move_cue_offset_diff_signed','mean_move_cue_heading_diff_signed',...
+                    'mean_bar_offset_diff_signed','mean_wind_offset_diff_signed',...
+                    'mean_bar_heading_diff_signed','mean_wind_heading_diff_signed',...
                     'wind_offset_precision_awj_10','wind_offset_precision_abj_10','bar_offset_precision_abj_10','bar_offset_precision_awj_10',...
                     'wind_offset_precision_awj_25','wind_offset_precision_abj_25','bar_offset_precision_abj_25','bar_offset_precision_awj_25',...
                     'wind_offset_precision_awj_75','wind_offset_precision_abj_75','bar_offset_precision_abj_75','bar_offset_precision_awj_75',...

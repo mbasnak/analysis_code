@@ -564,8 +564,6 @@ for jump = 1:length(real_bar_jump_frames)
    saveas(gcf,[path,'\continuous_plots\around_bar_jump_',num2str(jump),'.png']);
 end
 
-
-
 %% Repeat for wind jumps
 
 for jump = 1:length(real_wind_jump_frames)
@@ -669,7 +667,7 @@ if configuration == 1
     initial_wind_bw = continuous_data.bump_width(initial_wind_period);
     initial_wind_bw = initial_wind_bw(initial_wind_moving & initial_wind_good_fit);
     
-     %Offset
+    %Offset
     figure,
     subplot(1,2,1)
     polarhistogram(deg2rad(initial_wind_offset),15)
@@ -1323,6 +1321,17 @@ mean_wind_offset_diff = [mean_wind_offset_diff_bj;mean_wind_offset_diff_wj];
 PI = (mean_bar_offset_diff-mean_wind_offset_diff)./(mean_bar_offset_diff+mean_wind_offset_diff);
 
 
+% %signed bump PI
+% mean_bar_offset_diff_bj_signed = circ_dist(long_bar_offset_mean_around_bar_jump(:,2), long_bar_offset_mean_around_bar_jump(:,1));
+% mean_wind_offset_diff_bj_signed = circ_dist(long_wind_offset_mean_around_bar_jump(:,2), long_wind_offset_mean_around_bar_jump(:,1));
+% mean_bar_offset_diff_wj_signed = circ_dist(long_bar_offset_mean_around_wind_jump(:,2), long_bar_offset_mean_around_wind_jump(:,1));
+% mean_wind_offset_diff_wj_signed = circ_dist(long_wind_offset_mean_around_wind_jump(:,2), long_wind_offset_mean_around_wind_jump(:,1));
+% mean_bar_offset_diff_signed = [mean_bar_offset_diff_bj_signed;mean_bar_offset_diff_wj_signed];
+% mean_wind_offset_diff_signed = [mean_wind_offset_diff_bj_signed;mean_wind_offset_diff_wj_signed];
+% signed_PI = (mean_bar_offset_diff_signed-mean_wind_offset_diff_signed)./(mean_bar_offset_diff_signed+mean_wind_offset_diff_signed);
+% %need to adjust this by jump direction
+
+
 %1) For heading PI
 %Bar jumps
 mean_bar_heading_offset_diff_bj = abs(circ_dist(long_bar_heading_offset_mean_around_bar_jump(:,2),long_bar_heading_offset_mean_around_bar_jump(:,1)));
@@ -1381,6 +1390,30 @@ saveas(gcf,[path,'\continuous_plots\stickiness_index.png']);
 
 stick_index = mean(SI);
 stick_index_2 = mean(mean_move_cue_offset_diff-mean_stay_cue_offset_diff)/mean(mean_move_cue_offset_diff+mean_stay_cue_offset_diff);
+
+                
+%% Get jump sizes
+
+jump_size = zeros(8,1);
+
+jump_size(1:4,:) = circ_dist(deg2rad(continuous_data.visual_stim_pos(real_bar_jump_frames - 1)),deg2rad(continuous_data.visual_stim_pos(real_bar_jump_frames + 2)));
+jump_size(5:8,:) = circ_dist(continuous_data.motor_pos(real_wind_jump_frames - 1),continuous_data.motor_pos(real_wind_jump_frames + 5));
+
+jump_size(jump_size < 0) = -120;
+jump_size(jump_size > 0) = 120;
+                
+
+%% Get mean offset and heading changes for the cue that stays, signed
+
+
+mean_stay_cue_offset_diff_bj_signed = circ_dist(long_wind_offset_mean_around_bar_jump(:,2), long_wind_offset_mean_around_bar_jump(:,1));
+mean_stay_cue_offset_diff_wj_signed = circ_dist(long_bar_offset_mean_around_wind_jump(:,2), long_bar_offset_mean_around_wind_jump(:,1));
+mean_stay_cue_offset_diff_signed = [mean_stay_cue_offset_diff_bj_signed;mean_stay_cue_offset_diff_wj_signed];
+
+mean_stay_cue_heading_diff_bj_signed = circ_dist(long_wind_heading_offset_mean_around_bar_jump(:,2), long_wind_heading_offset_mean_around_bar_jump(:,1));
+mean_stay_cue_heading_diff_wj_signed = circ_dist(long_bar_heading_offset_mean_around_wind_jump(:,2), long_bar_heading_offset_mean_around_wind_jump(:,1));
+mean_stay_cue_heading_diff_signed = [mean_stay_cue_heading_diff_bj_signed;mean_stay_cue_heading_diff_wj_signed];
+
 
 %% Sort bump parameters around jumps into 'preferred' and 'non-preferred'
 

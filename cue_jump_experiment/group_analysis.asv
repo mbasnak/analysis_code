@@ -32,6 +32,8 @@ mean_stay_cue_offset_diff = [];
 mean_stay_cue_heading_diff = [];
 mean_stay_cue_offset_diff_signed = [];
 mean_stay_cue_heading_diff_signed = [];
+mean_move_cue_offset_diff_signed = [];
+mean_move_cue_heading_diff_signed = [];
 Jump_size = [];
 
 initial_bar_bm = [];
@@ -101,6 +103,8 @@ for fly = 1:length(data)
     mean_stay_cue_heading_diff = [mean_stay_cue_heading_diff,data(fly).mean_stay_cue_heading_diff];
     mean_stay_cue_offset_diff_signed = [mean_stay_cue_offset_diff_signed,data(fly).mean_stay_cue_offset_diff_signed];
     mean_stay_cue_heading_diff_signed = [mean_stay_cue_heading_diff_signed,data(fly).mean_stay_cue_heading_diff_signed];
+    mean_move_cue_offset_diff_signed = [mean_move_cue_offset_diff_signed,data(fly).mean_move_cue_offset_diff_signed];
+    mean_move_cue_heading_diff_signed = [mean_move_cue_heading_diff_signed,data(fly).mean_stay_cue_heading_diff_signed];
     Jump_size = [Jump_size,data(fly).jump_size];
     
     initial_bar_bm{fly} = data(fly).initial_bar_bm;
@@ -1058,7 +1062,7 @@ writematrix(sorted_bump_PI,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data
 sorted_configuration = configuration(mean_sorting_order);
 writematrix(sorted_configuration,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\configuration.csv')
 
-%% Behavioral preference index (bump)
+%% Behavioral preference index
 
 figure('Position',[100 100 1400 1000]),
 boxplot(heading_PI,'color','k')
@@ -1169,22 +1173,9 @@ sorted_wind_heading_change = sorted_heading_change(5:8,:);
 writematrix(sorted_bar_heading_change,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_bar_heading_change.csv')
 writematrix(sorted_wind_heading_change,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_wind_heading_change.csv')
 
-
-
 %% signed change in offset
 
-jump_size_new_order = zeros(8,14);
-for fly = 1:length(jump_size)
-    if configuration(fly) == 1
-        jump_size_new_order(:,fly) = jump_size([1,3,5,7,2,4,6,8],fly);
-    else
-        jump_size_new_order(:,fly) = jump_size([2,4,6,8,1,3,5,7],fly);
-    end
-end
-
-sorted_jump_size = jump_size_new_order(:,mean_sorting_order);
-
-
+sorted_jump_size = Jump_size(:,mean_sorting_order);
 sorted_offset_change = rad2deg(mean_stay_cue_offset_diff_signed(:,mean_sorting_order));
 
 
@@ -1201,7 +1192,7 @@ ylim([-180 180]);
 
 %change offset change sign based on jump size
 sorted_offset_change_positive = sorted_offset_change;
-sorted_offset_change_positive(sorted_jump_size < 0) = -sorted_offset_change_positive(sorted_jump_size < 0);
+sorted_offset_change_positive(sorted_jump_size > 0) = -sorted_offset_change_positive(sorted_jump_size > 0);
 
 figure('Position',[100 100 1400 1000]),
 boxplot(sorted_offset_change_positive,'color','k')
@@ -1241,7 +1232,7 @@ ylim([-180 180]);
 
 %change heading change sign based on jump size
 sorted_heading_change_positive = sorted_heading_change;
-sorted_heading_change_positive(sorted_jump_size < 0) = -sorted_heading_change_positive(sorted_jump_size < 0);
+sorted_heading_change_positive(sorted_jump_size > 0) = -sorted_heading_change_positive(sorted_jump_size > 0);
 
 figure('Position',[100 100 1400 1000]),
 boxplot(sorted_heading_change_positive,'color','k')
@@ -1265,45 +1256,29 @@ writematrix(sorted_wind_heading_change_positive,'Z:\Wilson Lab\Mel\Experiments\U
 
 %% Save the non-sorted version of the data for debugging
 
+offset_change = rad2deg(mean_stay_cue_offset_diff_signed);
+heading_change = rad2deg(mean_stay_cue_heading_diff_signed);
 
-jump_size_new_order;
-rad2deg(mean_stay_cue_offset_diff_signed);
+%change offset sign based on jump size
+offset_change_positive = offset_change;
+offset_change_positive(Jump_size > 0) = -offset_change_positive(Jump_size > 0);
+bar_offset_change_positive = offset_change_positive(1:4,:);
+wind_offset_change_positive = offset_change_positive(5:8,:);
 
+%change heading sign based on jump size
+heading_change_positive = heading_change;
+heading_change_positive(Jump_size > 0) = -heading_change_positive(Jump_size > 0);
+bar_heading_change_positive = heading_change_positive(1:4,:);
+wind_heading_change_positive = heading_change_positive(5:8,:);
 
-figure('Position',[100 100 1400 1000]),
-boxplot(sorted_offset_change,'color','k')
-hold on
-yline(0);
-scatter(repmat([1:length(data)],8,1),sorted_offset_change,[],[.5 .5 .5],'filled')
-set(findobj(gca,'type','line'),'linew',2)
-xlabel('Fly #');
-ylabel('Offset change');
-ylim([-180 180]);
+%save
+writematrix(offset_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\offset_change_positive.csv')
+writematrix(bar_offset_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\bar_offset_change_positive.csv')
+writematrix(wind_offset_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\wind_offset_change_positive.csv')
 
-
-%change offset change sign based on jump size
-sorted_offset_change_positive = sorted_offset_change;
-sorted_offset_change_positive(sorted_jump_size < 0) = -sorted_offset_change_positive(sorted_jump_size < 0);
-
-figure('Position',[100 100 1400 1000]),
-boxplot(sorted_offset_change_positive,'color','k')
-hold on
-yline(0);
-scatter(repmat([1:length(data)],8,1),sorted_offset_change_positive,[],[.5 .5 .5],'filled')
-set(findobj(gca,'type','line'),'linew',2)
-xlabel('Fly #');
-ylabel('Offset change');
-ylim([-180 180]);
-
-writematrix(sorted_offset_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_offset_change_positive.csv')
-
-
-%Save
-sorted_bar_offset_change_positive = sorted_offset_change_positive(1:4,:);
-sorted_wind_offset_change_positive = sorted_offset_change_positive(5:8,:);
-writematrix(sorted_bar_offset_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_bar_offset_change_positive.csv')
-writematrix(sorted_wind_offset_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_wind_offset_change_positive.csv')
-
+writematrix(heading_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\heading_change_positive.csv')
+writematrix(bar_heading_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\bar_heading_change_positive.csv')
+writematrix(wind_heading_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\wind_heading_change_positive.csv')
 
 %% Relationship between bump and behavior preference index
 
@@ -1427,28 +1402,41 @@ writetable(offset_ratio_data2,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\d
 writetable(offset_ratio_mean_data2,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\offset_ratio_mean_data2.csv')
 
 
-% 
-% %% Look at PI evolution to see if there are consistent trends
-% 
-% for fly = 1:length(PI)
-%     
-%     figure,
-%     plot(PI(:,fly),'-ko')
-%     hold on
-%     if configuration(fly) == 1
-%        plot([1:2:8],PI(1:2:8,fly),'ko','MarkerFaceColor','r')
-%        plot([2:2:8],PI(2:2:8,fly),'ko','MarkerFaceColor','b')       
-%     else
-%        plot([1:2:8],PI(1:2:8,fly),'ko','MarkerFaceColor','b')
-%        plot([2:2:8],PI(2:2:8,fly),'ko','MarkerFaceColor','r')    
-%     end
-%     ylim([-1 1]);
-%     ylabel('Preference index');
-%     xlabel('Jump #');
-%     yline(0);
-%     title(['Fly #',num2str(fly)]);
-%     
-% end
+%% Compute an index instead
+
+%1) compute initial offset ratio
+for fly = 1:length(data)
+    initial_bar_offset_precision(fly) = circ_r(deg2rad(initial_bar_offset{fly}));
+    initial_wind_offset_precision(fly) = circ_r(deg2rad(initial_wind_offset{fly}),[],[],2);
+    initial_offset_ratio_index(fly) = (initial_wind_offset_precision(fly)-initial_bar_offset_precision(fly))./(initial_wind_offset_precision(fly)+initial_bar_offset_precision(fly));
+end
+%if the ratio < 1, then bar offset var < wind offset var
+
+%2) relate preference index to initial offset variabililty
+figure('Position',[100 100 1000 800]),
+plot(initial_offset_ratio_index(configuration==1),pref_index(configuration==1),'ko','MarkerFaceColor','r','MarkerSize',12)
+hold on
+plot(initial_offset_ratio_index(configuration==2),pref_index(configuration==2),'ko','MarkerFaceColor','b','MarkerSize',12)
+legend('Bar first','Wind first');
+xlabel({'Initial offset precision ratio'; '(wind offset precision / bar offset precision)'},'fontsize',20);
+ylabel('Bump preference index','fontsize',20);
+ylim([-1 1]);
+xline(1,'HandleVisibility','off','linewidth',2); yline(0,'HandleVisibility','off','linewidth',2);
+xticks([0.5:0.5:2]);
+yticks([-1:0.5:1]);
+ax = gca;
+ax.FontSize = 16;
+
+[rho,p] = corrcoef(initial_offset_ratio_index,pref_index)
+
+
+%save data
+repeated_offset_ratio_index = repmat(initial_offset_ratio_index,8,1);
+offset_ratio_index_data = table(repeated_offset_ratio_index',PI','VariableNames',{'initial_offset_ratio','pref_index'});
+offset_ratio_index_mean_data = table(initial_offset_ratio_index',pref_index,'VariableNames',{'initial_offset_ratio','pref_index'});
+writetable(offset_ratio_index_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\offset_ratio_index_data.csv')
+writetable(offset_ratio_index_mean_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\offset_ratio_index_mean_data.csv')
+
 
 %% Using the preference index computed as the ratio of means
 
@@ -1467,8 +1455,12 @@ saveas(gcf,[path,'\groupPlots\pref_ind_2_vs_initial_offset_precision.png'])
 for fly = 1:length(data)
     initial_bm_ratio(fly) = mean(initial_bar_bm{fly})/mean(initial_wind_bm{fly});
     initial_bw_ratio(fly) = mean(initial_bar_bw{fly})/mean(initial_wind_bw{fly}); 
+    
     initial_bm_ratio2(fly) = mean(initial_wind_bm{fly})/mean(initial_bar_bm{fly});
     initial_bw_ratio2(fly) = mean(initial_wind_bw{fly})/mean(initial_bar_bw{fly}); 
+    
+    initial_bm_ratio_index(fly) = (mean(initial_wind_bm{fly})-mean(initial_bar_bm{fly}))./(mean(initial_wind_bm{fly})+mean(initial_bar_bm{fly}));
+    initial_bw_ratio_index(fly) = (mean(initial_wind_bw{fly})-mean(initial_bar_bw{fly}))./(mean(initial_wind_bw{fly})+mean(initial_bar_bw{fly}));
 end
 %if the ratio < 1, then bar offset var < wind offset var
 
@@ -1503,10 +1495,16 @@ repeated_bm_ratio = repmat(initial_bm_ratio,8,1);
 repeated_bw_ratio = repmat(initial_bw_ratio,8,1);
 bump_pars_ratio_data = table(repeated_bm_ratio',repeated_bw_ratio',PI','VariableNames',{'initial_bm_ratio','initial_bw_ratio','pref_index'});
 writetable(bump_pars_ratio_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\bump_pars_ratio_data.csv')
+
 repeated_bm_ratio2 = repmat(initial_bm_ratio2,8,1);
 repeated_bw_ratio2 = repmat(initial_bw_ratio2,8,1);
 bump_pars_ratio_data2 = table(repeated_bm_ratio2',repeated_bw_ratio2',PI','VariableNames',{'initial_bm_ratio','initial_bw_ratio','pref_index'});
 writetable(bump_pars_ratio_data2,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\bump_pars_ratio_data2.csv')
+
+repeated_bm_ratio_index = repmat(initial_bm_ratio_index,8,1);
+repeated_bw_ratio_index = repmat(initial_bw_ratio_index,8,1);
+bump_pars_ratio_index_data = table(repeated_bm_ratio_index',repeated_bw_ratio_index',PI','VariableNames',{'initial_bm_ratio','initial_bw_ratio','pref_index'});
+writetable(bump_pars_ratio_index_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\bump_pars_ratio_index_data.csv')
 
 
 %% repeat with the inverse ratio
