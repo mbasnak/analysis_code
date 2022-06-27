@@ -91,4 +91,9 @@ simCI(model1, contrast = "pairwise", type = "Tukey")
 
 
 #with PCA
-
+pc <- prcomp(my_data[2:4],
+             center = TRUE,
+             scale. = TRUE)
+attributes(pc)
+pc
+summary(pc)

@@ -279,5 +279,6 @@ legend(h,'Darkness','Low brightness','High brightness','location','best');
 saveas(gcf,[path,'\continuousGroupPlots\z_bump_parameters_vs_mvt_and_contrast.png']);
 saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\CueBrightness-Experiment\z_bump_parameters_vs_mvt_and_contrast.svg');
 
+
 %%
 clear all; close all; clc

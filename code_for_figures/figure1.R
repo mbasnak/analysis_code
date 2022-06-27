@@ -99,32 +99,6 @@ summary(glht(mdl_BW, linfct = mcp(ContrastLevel = "Tukey"), test = adjusted("bon
 
 
 
-#example fly
-example_fly <- read.mat('Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp25/data/Experimental/two_ND_filters_3_contrasts/example_fly_fig1.mat')
-
-dff_data <- as.data.frame(t(example_fly$dff_matrix))
-names(dff_data) <- paste0("V", stringr::str_pad(1:41, width=2, pad=0))
-dff_data <- dff_data %>% mutate(time = 1:n()) %>% 
-  pivot_longer(cols = -time)
-
-
-
-visual_stim <- as.data.frame(cbind(example_fly$visual_stim_to_plot,example_fly$x_out_heading))
-colnames(visual_stim) <- c('visual_stim','time')
-
-phase <- as.data.frame(cbind(example_fly$phase_to_plot,example_fly$x_out_phase))
-colnames(phase) <- c('phase','time')
-
-offset <- as.data.frame(cbind(example_fly$offset_to_plot,example_fly$x_out_offset))
-colnames(offset) <- c('offset','time')
-
-
-
-offset_low_contrast <- offset %>% slice(1:1690)
-offset_high_contrast <- offset %>% slice(3311:4949)
-offset_no_contrast <- offset %>% slice(1691:3310)
-
-
 
 
 # combined plots for figure -----------------------------------------------
