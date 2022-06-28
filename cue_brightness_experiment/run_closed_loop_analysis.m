@@ -951,6 +951,18 @@ for fly = 1:length(data_dirs)
             
             modelTable = addvars(modelTable,all_heading','NewVariableNames','Heading');
             
+                        
+            %% Add bump position to the model table 
+            
+            all_bump_pos = [];
+            for block = 1:length(blockLimits)
+                bump_pos_b{block} = phase(blockLimits{block}(1):blockLimits{block}(2))';
+                all_bump_pos = [all_bump_pos,bump_pos_b{block}];
+            end
+            
+            modelTable = addvars(modelTable,all_bump_pos','NewVariableNames','BumpPos');
+            
+            
             %% Save useful data
             
             save([path,'continuous_summary_data.mat'],'summary_data','mean_reference_offset','mean_reference_offset2','modelTable')
