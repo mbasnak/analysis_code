@@ -962,6 +962,16 @@ for fly = 1:length(data_dirs)
             
             modelTable = addvars(modelTable,all_bump_pos','NewVariableNames','BumpPos');
             
+            %% Add offset to the model table
+            
+            all_offset = [];
+            for block = 1:length(blockLimits)
+                offset_b{block} = phase(blockLimits{block}(1):blockLimits{block}(2))';
+                all_offset = [all_offset,offset_b{block}];
+            end
+            
+            modelTable = addvars(modelTable,all_offset','NewVariableNames','Offset');
+            
             
             %% Save useful data
             
