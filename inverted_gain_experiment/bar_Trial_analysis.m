@@ -16,6 +16,8 @@ bw_thresh = [];
 rot_speed_thresh = [];
 rolling_bump_mag = [];
 rolling_bump_width = [];
+rolling_bump_mag_nonz = [];
+rolling_bump_width_nonz = [];
 rolling_rot_speed = [];
 rolling_rot_speed_thresh = [];
 rolling_for_vel_thresh = [];
@@ -58,11 +60,13 @@ for folder = 1:length(folderNames)
         bm = (bump_mag - nanmean(bump_mag))/nanstd(bump_mag);
         bm_thresh = [bm,bm_thresh];
         rolling_bump_mag = [movmean(bm,92),rolling_bump_mag];
+        rolling_bump_mag_nonz = [movmean(bump_mag,92),rolling_bump_mag_nonz];
         bump_width = continuous_data.bump_width;
         bump_width(~gof) = NaN;
         bw = (bump_width - nanmean(bump_width))./nanstd(bump_width);
         bw_thresh = [bw,bw_thresh];
-        rolling_bump_width = [movmean(bw,92),rolling_bump_width];    
+        rolling_bump_width = [movmean(bw,92),rolling_bump_width];  
+        rolling_bump_width_nonz = [movmean(bump_width,92),rolling_bump_width_nonz];  
                
         fly_num = [repelem(folder,1,length(continuous_data.bump_width)),fly_num];
 
@@ -110,11 +114,13 @@ for folder = 1:length(folderNames3)
         bm = (bump_mag - nanmean(bump_mag))/nanstd(bump_mag);
         bm_thresh = [bm,bm_thresh];
         rolling_bump_mag = [movmean(bm,92),rolling_bump_mag];
+        rolling_bump_mag_nonz = [movmean(bump_mag,92),rolling_bump_mag_nonz];
         bump_width = continuous_data.bump_width;
         bump_width(~gof) = NaN;
         bw = (bump_width - nanmean(bump_width))./nanstd(bump_width);
         bw_thresh = [bw,bw_thresh];
         rolling_bump_width = [movmean(bw,92),rolling_bump_width];  
+        rolling_bump_width_nonz = [movmean(bump_width,92),rolling_bump_width_nonz];
         
         fly_num = [repelem(folder+last_fly,1,length(continuous_data.bump_width)),fly_num];
         
@@ -128,6 +134,10 @@ writetable(all_movement_data_bar_trial,'Z:\Wilson Lab\Mel\Experiments\Uncertaint
 
 non_smoothed_data_bar_trial = table(bw_thresh',bm_thresh',rot_speed_thresh',fly_num', 'VariableNames',{'bump_width','bump_mag','rot_speed','fly_num'});
 writetable(non_smoothed_data_bar_trial,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\non_smoothed_data_bar_trial.csv')
+
+%save non-zscored data
+all_movement_data_bar_trial_nonz = table(rolling_offset_precision,rolling_rot_speed_thresh',rolling_for_vel_thresh,rolling_bump_mag_nonz',rolling_bump_width_nonz',fly_num','VariableNames',{'offset_precision','rolling_rot_speed','rolling_for_vel','rolling_bump_mag','rolling_bump_width','fly'});
+writetable(all_movement_data_bar_trial_nonz,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp28\data\all_movement_data_bar_trial_including_rest_10_sec_nonz.csv')
 
 %% Save offset precision and rot speed data for analysis in r
 
