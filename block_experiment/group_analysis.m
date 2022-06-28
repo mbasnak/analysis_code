@@ -59,6 +59,10 @@ allSummaryData = addvars(allSummaryData,flyNumber');
 allSummaryData.Properties.VariableNames{'Var7'} = 'Fly';
 
 
+%save initial cue difference for statistical analysis
+writematrix(initial_cue_diff','Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp35\data\high_reliability\initial_cue_diff.csv');
+
+
 %% Plot offset precision vs bump parameters for each block
 
 for block = 1:5
