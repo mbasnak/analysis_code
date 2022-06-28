@@ -966,7 +966,7 @@ for fly = 1:length(data_dirs)
             
             all_offset = [];
             for block = 1:length(blockLimits)
-                offset_b{block} = phase(blockLimits{block}(1):blockLimits{block}(2))';
+                offset_b{block} = offset(blockLimits{block}(1):blockLimits{block}(2))';
                 all_offset = [all_offset,offset_b{block}];
             end
             
