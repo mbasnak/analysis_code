@@ -100,3 +100,5 @@ hold on
 title('High contrast');
 
 end
+
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\ExtraFigures\figure1_heading_polarhistograms.svg')
