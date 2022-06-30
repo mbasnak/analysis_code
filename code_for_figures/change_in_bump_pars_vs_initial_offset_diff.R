@@ -37,7 +37,7 @@ p1 <- ggplot() +
         axis.line.x = element_line(size=.5),
         axis.line.y = element_line(size=.5))  +
   scale_x_continuous(limits = c(0, 180)) + 
-  labs(x="Initial offset difference", y="Change in bump width") 
+  labs(x="Initial offset difference (°)", y="Change in bump width (°)") 
 
 #2) Bump amplitude change versus angular separation
 p2 <- ggplot() + 
@@ -48,6 +48,9 @@ p2 <- ggplot() +
         axis.line.x = element_line(size=.5),
         axis.line.y = element_line(size=.5))  +
   scale_x_continuous(limits = c(0, 180)) + 
-  labs(x="Initial offset difference", y="Change in bump amplitude (\u0394F/F)") 
+  labs(x="Initial offset difference (°)", y="Change in bump amplitude (\u0394F/F)") 
 
 p1 + p2
+
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/ExtraFigures", file="change_in_bump_pars_vs_initial_offset_diff.svg",device = 'svg', width=10, height=6)
+
