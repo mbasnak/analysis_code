@@ -33,7 +33,7 @@ end
 
 %% Plot coloring by cue identity
 
-figure,
+figure('Position',[100 100 1400 600]),
 for fly = 1:length(data)
     
     subplot(3,6,fly)
@@ -53,20 +53,22 @@ for fly = 1:length(data)
     rticklabels({});
     rticks([]);
     thetaticklabels({});
-    thetaticks([]);    
+    thetaticks([0,90,180,270]);    
     ax = gca;
     ax.FontSize = 20;
 end
 
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\ExtraFigures\cc_offset_polarhistograms_by_cue_type.svg')
+
 %% Plot coloring by cue order
 
-figure,
+figure('Position',[100 100 1400 600]),
 for fly = 1:length(data)
     
     subplot(3,6,fly)
-    polarplot([offset_mean(fly,1),offset_mean(fly,1)],[0,offset_precision(fly,1)],'r','linewidth',4)
+    polarplot([offset_mean(fly,1),offset_mean(fly,1)],[0,offset_precision(fly,1)],'color',[.8 .3 .1],'linewidth',4)
     hold on
-    polarplot([offset_mean(fly,2),offset_mean(fly,2)],[0,offset_precision(fly,2)],'color',[.2 .8 .5],'linewidth',4)
+    polarplot([offset_mean(fly,2),offset_mean(fly,2)],[0,offset_precision(fly,2)],'color',[.2 .5 .8],'linewidth',4)
     polarplot([offset_mean(fly,3),offset_mean(fly,3)],[0,offset_precision(fly,3)],'color',[.5 .5 .5],'linewidth',4)
     set(gca,'ThetaZeroLocation','top',...
         'ThetaDir','clockwise');
@@ -74,7 +76,9 @@ for fly = 1:length(data)
     rticklabels({});
     rticks([]);
     thetaticklabels({});
-    thetaticks([]);    
+    thetaticks([0,90,180,270]);    
     ax = gca;
     ax.FontSize = 20;
 end
+
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\ExtraFigures\cc_offset_polarhistograms_by_cue_order.svg')
