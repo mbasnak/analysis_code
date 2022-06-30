@@ -230,7 +230,7 @@ p3 <-nonz_data %>%
         text = element_text(size=17),axis.text = element_text(size = 16))+
   geom_ribbon(aes( ymin=bin_mean_bm - bin_sem_bm, ymax=bin_mean_bm + bin_sem_bm), fill = "gray0",alpha = 0.2) + 
   geom_line(aes(group=1), lwd=1,color = 'gray0')+
-  labs(x = 'Rotational speed (°/s)', y='Bump amplitude (\u0394F/F)', color = '',fill = '') +
+  labs(x = 'Rotational speed (°/s)', y='Bump amplitude (/u0394F/F)', color = '',fill = '') +
   scale_y_continuous(expand = c(0, 0), limits = c(0, 2.5)) +
   scale_x_continuous(expand = c(0, 0), limits = c(0,70)) 
 
@@ -245,3 +245,9 @@ row_1 <- p1 + p2 + p3
 full_plot <- row_1
 full_plot + plot_annotation(tag_levels = list(c('B','C','D')))
 
+#running model
+summary(lme(rolling_bump_mag ~ rolling_rot_speed,random=~1|fly,nonz_data,na.action=na.omit))
+summary(lme(rolling_bump_width ~ rolling_rot_speed,random=~1|fly,nonz_data,na.action=na.omit))
+
+
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/ExtraFigures", file="bump_pars_vs_rot_speed.svg",device = 'svg', width=15, height=6)
