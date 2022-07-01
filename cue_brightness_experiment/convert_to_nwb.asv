@@ -36,7 +36,9 @@ for fly = 1%:length(data_dirs)
             load([fly_files(file).folder,'\',fly_files(file).name])
             
             
-            generateCore();                    
+            generateCore();
+            
+            
             
             %% Set up the NWB file
             
@@ -251,7 +253,7 @@ for fly = 1%:length(data_dirs)
             %Finally, the ophys ProcessingModule is added to the NwbFile.
             nwb.processing.set('ophys', ophys_module);
             %Write the NWB file
-            nwbExport(nwb, ['cue_contrast_data_fly_',num2str(fly),'.nwb']);
+            nwbExport(nwb, ['cue_contrast_data_fly_',num2str(),'.nwb']);
 
             
         end
