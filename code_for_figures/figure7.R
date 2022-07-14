@@ -167,3 +167,110 @@ row_2 <- p2 + p4 + plot_layout(widths = c(1.5,1))
 full_plot <- row_1/row_2
 full_plot + plot_annotation(tag_levels = list(c('C','D','E','F')))
 ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig7", file="bottom_fig_7.svg",device = 'svg', width=13, height=9)
+
+
+################### Repeat omitting fly 5 only from panel D
+
+filtered_offset_ratio_data <- offset_ratio_ordered_data2 %>% filter(fly != 5)
+
+#bump PI vs initial offset ratio
+p3 <- ggplot(filtered_offset_ratio_data,aes(offset_ratio, pref_ind)) + 
+  geom_line(aes(offset_ratio, pref_ind, group = fly),color = 'gray70',size=1) +
+  geom_point() +
+  geom_smooth(method='lm', se = FALSE, color = 'red')  +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=17),
+        axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_line(size=.5),
+        axis.line.y = element_line(size=.5)) +
+  scale_y_continuous(expand = c(0, 0), limits=c(-1,1)) +
+  labs(x = "Initial wind certainty / \n Initial visual cue certainty", y='Bump preference index')
+
+row_1 <- p1 + p3 + plot_layout(widths = c(1.5,1))
+row_2 <- p2 + p4 + plot_layout(widths = c(1.5,1))
+full_plot <- row_1/row_2
+full_plot + plot_annotation(tag_levels = list(c('C','D','E','F')))
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig7", file="bottom_fig_7_no_outlier_in_panelD.svg",device = 'svg', width=13, height=9)
+
+offset_and_PI_mdl2 <- lme(pref_ind ~ offset_ratio,random=~1|fly, filtered_offset_ratio_data)
+summary(offset_and_PI_mdl2)
+
+
+################### Repeat omitting fly 5 from all panels
+
+#bump PI
+filtered_bump_PI <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/filtered_bump_PI.csv",header = FALSE)
+names(filtered_bump_PI) <- paste0("fly", 1:ncol(filtered_bump_PI))
+
+p1 <- filtered_bump_PI %>% 
+  pivot_longer(everything(), names_to = "fly", values_to = "PI") %>%
+  mutate(fly = str_remove(fly, "fly") %>% as.numeric()) %>% 
+  ggplot(aes(x=fly, y=PI, group=fly)) + 
+  geom_hline(yintercept = 0, lty=2) + 
+  gghalves::geom_half_violin(scale = "width", trim=TRUE, adjust=1.0, fill="#FF9F9B", alpha=0.7) +
+  geom_point(size=1.5) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=17),
+        axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_line(size=.5),
+        axis.line.y = element_line(size=.5)) +
+  scale_x_continuous(breaks=1:13) +
+  scale_y_continuous(expand = c(0, 0), limits=c(-1,1)) +
+  stat_summary(aes(group=fly), fun.y = mean, color="black", geom="crossbar", width=0.5, lwd=0.5) +
+  xlab("Fly #") + ylab("Bump preference index")
+
+#heading PI
+filtered_heading_PI <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/filtered_heading_PI.csv",header = FALSE)
+names(filtered_heading_PI) <- paste0("fly", 1:ncol(filtered_heading_PI))
+
+p2 <- filtered_heading_PI %>% 
+  pivot_longer(everything(), names_to = "fly", values_to = "PI") %>%
+  mutate(fly = str_remove(fly, "fly") %>% as.numeric()) %>% 
+  ggplot(aes(x=fly, y=PI, group=fly)) + 
+  geom_hline(yintercept = 0, lty=2) + 
+  gghalves::geom_half_violin(scale = "width", trim=TRUE, adjust=1.0, fill="#FF9F9B", alpha=0.7) +
+  geom_point(size=1.5) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=17),
+        axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_line(size=.5),
+        axis.line.y = element_line(size=.5)) +
+  scale_x_continuous(breaks=1:13) +
+  scale_y_continuous(expand = c(0, 0), limits=c(-1,1)) +
+  stat_summary(aes(group=fly), fun.y = mean, color="black", geom="crossbar", width=0.5, lwd=0.5) +
+  xlab("Fly #") + ylab("Behavioral preference index")
+
+
+# relationship between bump and behavior PI
+# relationship between bump and behavior PI
+filtered_all_PI_data <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/filtered_all_PI_data.csv")
+#assess if points are randomly distributed or aggregated, using the clark evans method
+point_data <- ppp(x = filtered_all_PI_data$bump.PI,y=filtered_all_PI_data$heading.PI,window=owin(c(-1,1),c(-1,1)))
+clarkevans.test(point_data)
+
+p4 <- ggplot(filtered_all_PI_data, aes(bump.PI,heading.PI))+
+  geom_hline(yintercept = 0, color="gray0", lwd=1) +
+  geom_vline(xintercept = 0, color="gray0", lwd=1) +
+  geom_point(size=2)+ 
+  scale_x_continuous(expand=expansion(add=0))+
+  scale_y_continuous(expand=expansion(add=0)) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=17),
+        axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_line(size=1),
+        axis.line.y = element_line(size=1)) +
+  annotate("rect", xmin=-1, xmax=0, ymin=0, ymax=-1, fill="yellow", alpha=0.1) +
+  annotate("rect", xmin=-1, xmax=0, ymin=0, ymax=1, fill="red", alpha=0.1) +
+  annotate("rect", xmin=0, xmax=1, ymin=0, ymax=-1, fill="green", alpha=0.1) +
+  annotate("rect", xmin=0, xmax=1, ymin=0, ymax=1, fill="blue", alpha=0.1) +
+  annotate(geom = 'segment', y = Inf, yend = Inf, color = 'gray0', x = -Inf, xend = Inf, size = 1) +
+  annotate(geom = 'segment', y = -Inf, yend = Inf, color = 'gray0', x = Inf, xend = Inf, size = 1) +
+  labs(x = 'Bump preference index') +
+  labs(y = 'Behavioral preference index')
+
+row_1 <- p1 + p3 + plot_layout(widths = c(1.5,1))
+row_2 <- p2 + p4 + plot_layout(widths = c(1.5,1))
+full_plot <- row_1/row_2
+full_plot + plot_annotation(tag_levels = list(c('C','D','E','F')))
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig7", file="bottom_fig_7_no_outlier.svg",device = 'svg', width=13, height=9)
+
