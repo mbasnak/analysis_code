@@ -1,12 +1,12 @@
-%code to convert data to NWB 
+%code to convert data to NWB
 
 clear all; close all;
 
-generateCore();                    
+generateCore();
 
 %% Get the path for each fly
 
-parentDir = 'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp25\data\Experimental\two_ND_filters_3_contrasts';
+parentDir = 'Z:\Wilson Lab\Mel\Experiments\Uncertainty\GCaMP_control\data';
 folderNames = dir(parentDir);
 
 for content = 1:length(folderNames)
@@ -23,21 +23,40 @@ data_dirs = flyData(~cellfun(@isempty,flyData));
 
 for fly = 1:length(data_dirs)
     
-    load([data_dirs{fly},'\sessions_info.mat']);
-    sid = sessions_info.closed_loop;
     
     %get the contents of the fly folder
     fly_files = dir([data_dirs{fly},'\analysis']);
-    %determine which content belongs to the sid we extracted
     
-    %determine which content belongs to the sid we extracted
     for file = 1:length(fly_files)
-       if (contains(fly_files(file).name,['sid_',num2str(sid),'_']) & contains(fly_files(file).name,'continuous'))
+        
+        if contains(fly_files(file).name,'continuous_analysis')
+            
             %load the data
             fileName = fly_files(file).name;
             load([fly_files(file).folder,'\',fly_files(file).name])
-%             
-                        
+            
+            %% Determine stimulus speed
+            
+            if (continuous_data.run_obj.function_number == 52 | continuous_data.run_obj.function_number == 53)
+                stim_vel = 30;
+            elseif (continuous_data.run_obj.function_number == 54 | continuous_data.run_obj.function_number == 55)
+                stim_vel = 60;
+            elseif (continuous_data.run_obj.function_number == 206 | continuous_data.run_obj.function_number == 207)
+                stim_vel = 90;
+            elseif (continuous_data.run_obj.function_number == 208 | continuous_data.run_obj.function_number == 209)
+                stim_vel = 120;
+            elseif (continuous_data.run_obj.function_number == 210 | continuous_data.run_obj.function_number == 211)
+                stim_vel = 150;
+            elseif (continuous_data.run_obj.function_number == 212 | continuous_data.run_obj.function_number == 213)
+                stim_vel = 180;
+            else
+                stim_vel = 210;
+            end
+            
+            sid = fly_files(file).name(25:26);
+            sid = regexprep(sid,'_','');
+            
+            
             %% Set up the NWB file
             
             %An NWB file represents a single session of an experiment.
@@ -46,29 +65,59 @@ for fly = 1:length(data_dirs)
             %For all MatNWB functions, we use the Matlab method of entering keyword argument pairs, where arguments are entered
             %as name followed by value.
             
-                      
-            nwb = NwbFile( ...
-                'session_description', 'fly presented with visual cues of varying contrast',...
-                'identifier', strcat('Fly',num2str(fly)), ...
-                'session_start_time', continuous_data.run_obj.date, ...
-                'general_experimenter', 'Melanie Basnak', ... % optional
-                'general_institution', 'Harvard University'); % optional 
+            %get name from matching sid run_obj and extract date
+            run_obj_files = dir([data_dirs{fly},'\ball\runobj']);
+            for run_obj_file = 1:length(run_obj_files)
+                if contains(run_obj_files(run_obj_file).name,['sid_',num2str(sid)])
+                    run_obj_file_name = run_obj_files(run_obj_file).name;
+                end
+            end
+            year = str2num(run_obj_file_name(1:4));
+            month = str2num(run_obj_file_name(6:7));
+            day = str2num(run_obj_file_name(8:9));
+            hour = str2num(run_obj_file_name(11:12));
+            min = str2num(run_obj_file_name(14:15));
+            sec = str2num(run_obj_file_name(17:18));
             
+            if fly == 6
+                nwb = NwbFile( ...
+                    'session_description', 'fly presented with a bright visual cue rotating in open loop',...
+                    'identifier', strcat('Fly',num2str(30)), ...
+                    'session_start_time', datetime(year, month, day, hour, min, sec), ...
+                    'general_experimenter', 'Melanie Basnak', ... % optional
+                    'general_institution', 'Harvard University'); % optional
+            else
+                nwb = NwbFile( ...
+                    'session_description', 'fly presented with a bright visual cue rotating in open loop',...
+                    'identifier', strcat('Fly',num2str(fly+61)), ...
+                    'session_start_time', datetime(year, month, day, hour, min, sec), ...
+                    'general_experimenter', 'Melanie Basnak', ... % optional
+                    'general_institution', 'Harvard University'); % optional
+            end
             
             nwb
             
             
             %% Specify the subject information
             
-            subject = types.core.Subject( ...
-                'subject_id', num2str(fly), ...
-                'age', 'P1D', ...
-                'description', strcat('Fly ',num2str(fly)), ...
-                'genotype', '60D05/GCaMP7f',...
-                'species', 'Drosophila melanogaster', ...
-                'sex', 'F')
+            if fly ==6
+                subject = types.core.Subject( ...
+                    'subject_id', num2str(30), ...
+                    'age', 'P1D', ...
+                    'description', strcat('Fly ',num2str(30)), ...
+                    'genotype', '60D05/GCaMP7f',...
+                    'species', 'Drosophila melanogaster', ...
+                    'sex', 'F');
+            else
+                subject = types.core.Subject( ...
+                    'subject_id', num2str(fly+61), ...
+                    'age', 'P1D', ...
+                    'description', strcat('Fly ',num2str(fly+61)), ...
+                    'genotype', '60D05/GCaMP7f',...
+                    'species', 'Drosophila melanogaster', ...
+                    'sex', 'F');
+            end
             nwb.general_subject = subject;
-            
             
             
             %% Save behavior data
@@ -78,8 +127,8 @@ for fly = 1:length(data_dirs)
             spatial_series_ts = types.core.SpatialSeries( ...
                 'data', heading_data, ...
                 'data_unit','radians',...
-                'reference_frame', '0 means the visual cue is right in front of the fly', ...
-                'timestamps', continuous_data.time)
+                'reference_frame', '0 means the cue is right in front of the fly', ...
+                'timestamps', continuous_data.time);
             
             %store the SpatialSeries object inside of a Position object.
             Position = types.core.CompassDirection('SpatialSeries', spatial_series_ts);
@@ -89,58 +138,12 @@ for fly = 1:length(data_dirs)
             
             % create processing module
             behavior_mod = types.core.ProcessingModule( ...
-                'description',  'contains behavioral data')
+                'description',  'contains behavioral data');
             % add the Position object (that holds the SpatialSeries object)
             behavior_mod.nwbdatainterface.set(...
                 'Position', Position);
             % add the processing module to the NWBFile object, and name it "behavior"
             nwb.processing.set('behavior', behavior_mod);
-            
-            
-            %% Define the 'trials' (set the ID of the different experimental blocks in this fly's session)
-            
-            %Identify contrast change frames
-            contrast_change = find(abs(diff(continuous_data.fr_y_ds)) > 1);
-            pos_function = continuous_data.run_obj.function_number;
-            
-            %Define the order of intensities of the visual stimuli presented according to the function used
-            %1 = darkness; 2 = low contrast, 3 = high contrast
-            if pos_function == 195
-                contrast = [1,2,1,3,2,3];
-            elseif pos_function == 196
-                contrast = [2,1,3,1,2,3];
-            else
-                contrast = [3,1,2,1,2,3];
-            end
-            
-            if fly ~= 2
-                trials = types.core.TimeIntervals( ...
-                    'colnames', {'start_time', 'stop_time', 'cue_contrast'}, ...
-                    'description', 'trial data and properties', ...
-                    'id', types.hdmf_common.ElementIdentifiers('data', int64(0:5)), ...
-                    'start_time', types.hdmf_common.VectorData('data', [0; continuous_data.time(contrast_change(1:5))], ...
-                    'description','start time of trial'), ...
-                    'stop_time', types.hdmf_common.VectorData('data', [continuous_data.time(contrast_change(1:5)); continuous_data.time(end)], ...
-                    'description','end of each trial'), ...
-                    'cue_contrast', types.hdmf_common.VectorData('data', contrast, ...
-                    'description', 'visual cue contrast (where 1 = zero contrast, 2 = low contrast, 3 = high contrast'))
-                nwb.intervals_trials = trials;
-                
-            else
-                contrast = contrast(1:5);
-                trials = types.core.TimeIntervals( ...
-                    'colnames', {'start_time', 'stop_time', 'cue_contrast'}, ...
-                    'description', 'trial data and properties', ...
-                    'id', types.hdmf_common.ElementIdentifiers('data', int64(0:4)), ...
-                    'start_time', types.hdmf_common.VectorData('data', [0; continuous_data.time(contrast_change(1:4))], ...
-                    'description','start time of trial'), ...
-                    'stop_time', types.hdmf_common.VectorData('data', [continuous_data.time(contrast_change(1:4)); continuous_data.time(end)], ...
-                    'description','end of each trial'), ...
-                    'cue_contrast', types.hdmf_common.VectorData('data', contrast, ...
-                    'description', 'visual cue contrast (where 1 = zero contrast, 2 = low contrast, 3 = high contrast'))
-                nwb.intervals_trials = trials;
-                
-            end
             
             
             %% Imaging data
@@ -149,7 +152,7 @@ for fly = 1:length(data_dirs)
             
             % First, you must create an ImagingPlane object, which will hold information about the area and method used to collect
             %the optical imaging data.
-                       
+            
             optical_channel = types.core.OpticalChannel( ...
                 'description', 'description', ...
                 'emission_lambda', 510.);
@@ -175,7 +178,6 @@ for fly = 1:length(data_dirs)
             import ScanImageTiffReader.ScanImageTiffReader;
             expression = ['*sid_' num2str(sid) '_tid_' num2str(0) '_*'];
             imagingFile = dir(fullfile([data_dirs{fly},'\2p'], expression));
-            %reader = ScanImageTiffReader('cdata_Closed_Loop_X_Open_Loop_Y_20201019_155917_sid_1_tid_0_tt_1200__00001.tif');
             reader = ScanImageTiffReader(fullfile(data_dirs{fly}, '2p', imagingFile(1).name));
             
             %data
@@ -191,22 +193,27 @@ for fly = 1:length(data_dirs)
             %reshape
             rawFile_original = permute(rawFile_original,[2 1 3]); %permute 1st and 2nd dimensions of the image data
             dimensions = size(rawFile_original); %store imaging dimensions
-            rawFile = reshape(rawFile_original, dimensions(1), dimensions(2), SI.hFastZ.numFramesPerVolume, SI.hFastZ.numVolumes, SI.hChannels.channelSave(end));
+            
+            rawFile = reshape(rawFile_original, dimensions(1), dimensions(2), SI.hStackManager.numFramesPerVolume, SI.hStackManager.numVolumes, SI.hChannels.channelSave(end));
+            
             %we're reshaping the image file so that it now has 4 dimensions: the first
             %two are the x and y coordinates of an imaging plane, the third one is the
             %number of frames per volume, and the last one is the number of volumes
             %taken in the trial.
-
+            
+            %compress the data
+            compressed_data = types.untyped.DataPipe('data', rawFile);
+            
             image_series = types.core.TwoPhotonSeries( ...
                 'imaging_plane', types.untyped.SoftLink(imaging_plane), ...
-                'data', rawFile, ...
+                'data', compressed_data, ...
                 'data_unit', 'n.a.',...
                 'timestamps',continuous_data.time);
             nwb.acquisition.set('TwoPhotonSeries', image_series);
             
             
             %% Add ROIs using an image mask
-                        
+            
             % load roi data
             load([data_dirs{fly} '\2p\ROI\ROI_midline_sid_' num2str(sid) '_tid_0.mat']);
             
@@ -216,7 +223,7 @@ for fly = 1:length(data_dirs)
                     roi_mid = row;
                 end
             end
-
+            
             % determine ROI mask
             % Pull up the locations for all the px in the PB mask
             PB_mask = zeros(size(rawFile,1),size(rawFile,2));
@@ -226,8 +233,8 @@ for fly = 1:length(data_dirs)
                 end
             end
             PB_mask(PB_mask>1) = 1;
-            PB_coverage = logical(PB_mask);          
-
+            PB_coverage = logical(PB_mask);
+            
             
             %get the normal lines through the segment midpoints
             midline_coordinates = [roi(roi_mid).xi,roi(roi_mid).yi];
@@ -235,24 +242,18 @@ for fly = 1:length(data_dirs)
             %transform to integer
             midline_coordinates_in = floor(midline_coordinates);
             figure, imagesc(PB_coverage)
-            for segment = 1:length(midline_coordinates_in)-1 
+            for segment = 1:length(midline_coordinates_in)-1
                 roiLine = images.roi.Line(gca, 'Position', [midline_coordinates_in(segment,1),midline_coordinates_in(segment,2); midline_coordinates_in(segment+1,1),midline_coordinates_in(segment+1,2)]);
                 midline_segment_mask{segment} = createMask(roiLine);
             end
             
-            %Uncomment to plot each of the midline segments
-%             for segment = 1:37
-%                 figure,
-%                 imagesc(midline_segment_mask{segment})
-%             end
-%                  
             
             n_rois = length(midline_segment_mask);
             image_mask = zeros(size(midline_segment_mask{1,1},1),size(midline_segment_mask{1,1},2),n_rois);
             for roi = 1:n_rois
-               image_mask(:,:,roi) = midline_segment_mask{1,roi};
+                image_mask(:,:,roi) = midline_segment_mask{1,roi};
             end
-            image_mask = logical(image_mask);          
+            image_mask = logical(image_mask);
             
             
             % add data to NWB structures
@@ -261,15 +262,15 @@ for fly = 1:length(data_dirs)
                 'id', types.hdmf_common.ElementIdentifiers('data', 0:n_rois-1), ...
                 'imaging_plane', types.untyped.SoftLink(imaging_plane),'description','contains rois',...
                 'image_mask', types.hdmf_common.VectorData( ...
-                'data', image_mask, 'description', 'points corresponding to the centroids that the DF/F traces are associated with'));
+                'data', image_mask, 'description', 'segmented of the PB midline that the DF/F traces are associated with'));
             
             %Now create an ImageSegmentation object and put the plane_segmentation object inside of it, naming it PlaneSegmentation.
             img_seg = types.core.ImageSegmentation();
-            img_seg.planesegmentation.set('PlaneSegmentation', plane_segmentation)
+            img_seg.planesegmentation.set('PlaneSegmentation', plane_segmentation);
             
             %Now create a ProcessingModule called "ophys" and put our img_seg object in it, calling it ImageSegmentation, and add the ProcessingModule to nwb.
             ophys_module = types.core.ProcessingModule( ...
-                'description',  'contains optical physiology data')
+                'description',  'contains optical physiology data');
             ophys_module.nwbdatainterface.set('ImageSegmentation', img_seg);
             nwb.processing.set('ophys', ophys_module);
             
@@ -289,16 +290,20 @@ for fly = 1:length(data_dirs)
             fluorescence = types.core.Fluorescence();
             fluorescence.roiresponseseries.set('RoiResponseSeries', roi_response_series);
             ophys_module.nwbdatainterface.set('Fluorescence', fluorescence);
-           
+            
             %Finally, the ophys ProcessingModule is added to the NwbFile.
             nwb.processing.set('ophys', ophys_module);
             %Write the NWB file
-            nwbExport(nwb, ['cue_contrast_data_fly_',num2str(fly),'.nwb']);
-
+            if fly == 6
+                nwbExport(nwb, ['passive_rotation_data_fly_',num2str(30),'_sid_',sid,'_stim_vel_',num2str(stim_vel),'.nwb']);
+            else
+                nwbExport(nwb, ['passive_rotation_data_fly_',num2str(fly+61),'_sid_',sid,'_stim_vel_',num2str(stim_vel),'.nwb']);
+            end
+            
             
         end
     end
-      
+    
     clearvars -except data_dirs
     
 end

@@ -58,15 +58,13 @@ for fly = 1:length(data)
     allSummaryData = [allSummaryData;data(fly).summary_data];
     flyNumber = [flyNumber,repelem(fly,length(data(fly).summary_data.BumpMag))];
     
-    allRollingData = [allRollingData;data(fly).rolling_data];
-    fly_num = [fly_num,repelem(fly,length(data(fly).rolling_data.Time))];
+        allSummaryData = [allSummaryData;data(fly).summary_data];
+    flyNumber = [flyNumber,repelem(fly,length(data(fly).summary_data.BumpMag))];
     
 end
 allSummaryData = addvars(allSummaryData,flyNumber');
 allSummaryData.Properties.VariableNames{'Var7'} = 'Fly';
 
-allRollingData = addvars(allRollingData,fly_num');
-allRollingData.Properties.VariableNames{'Var6'} = 'Fly';
 
 %save initial cue difference for statistical analysis
 writematrix(initial_cue_diff','Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp35\data\high_reliability\initial_cue_diff.csv');
@@ -373,24 +371,24 @@ time = [];
 for fly = 1:length(data)
     
     %compute rolling variables
-    offset = data(fly).rolling_data.Offset;
+    offset = data(fly).summary_data.Offset;
     rolling_offset_precision = [matlab.tall.movingWindow(fcn_precision,550,offset);rolling_offset_precision];
     
-    bm = data(fly).rolling_data.ThreshBM';
+    bm = data(fly).summary_data.ThreshBM';
     rolling_bump_mag = [movmean(bm,550,'omitnan'),rolling_bump_mag];
-    bw = data(fly).rolling_data.ThreshBW';
+    bw = data(fly).summary_data.ThreshBW';
     rolling_bump_width = [movmean(bw,550,'omitnan'),rolling_bump_width];
     
     %find block changes
-    block = data(fly).rolling_data.Block;
+    block = data(fly).summary_data.BlockType;
     block_diff = diff(block);
     block_changes = [block_changes;1;block_diff];
     
-    time = [time;data(fly).rolling_data.Time];
+    time = [time;data(fly).summary_data.Time];
     
 end
 
-fly_num = allRollingData.Fly;
+fly_num = allSummaryData.Fly;
 time = time/60;
 rolling_data_block_experiment = table(rolling_offset_precision,rolling_bump_mag',rolling_bump_width',fly_num,block_changes,time,'VariableNames',{'offset_precision','rolling_bump_mag','rolling_bump_width','fly','block_changes','time'});
 writetable(rolling_data_block_experiment,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp35\data\high_reliability\rolling_data_block_experiment.csv')

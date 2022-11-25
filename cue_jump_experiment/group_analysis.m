@@ -267,43 +267,103 @@ title('Wind jumps');
 suptitle('Bump width');
 
 %saveas(gcf,[path,'\groupPlots\bump_width_long_rasterplots.png'])
-% 
-% %% Mean bump parameters around the jumps, all cues
-% 
-% figure('Position',[100 100 1400 1000]),
-% 
-% %bump magnitude around cue jumps
-% subplot(1,2,1)
-% mean_bm_around_cue_jump = nanmean([short_bm_bar_jump;short_bm_wind_jump]);
-% std_bm_around_cue_jump = std([short_bm_bar_jump;short_bm_wind_jump]);
-% ste_bm_around_cue_jump = std_bm_around_cue_jump/sqrt(size(short_bm_bar_jump,1)*2);
-% boundedline([1:size(short_bm_bar_jump,2)],mean_bm_around_cue_jump,ste_bm_around_cue_jump,'cmap',gray)
-% hold on
-% line([size(short_bm_bar_jump,2)/2 size(short_bm_bar_jump,2)/2],[0 3],'color','r','linewidth',3);
-% xlim([0 size(short_bm_bar_jump,2)]);
-% xticks([0 size(short_bm_bar_jump,2)/4 size(short_bm_bar_jump,2)/2 size(short_bm_bar_jump,2)*(3/4) size(short_bm_bar_jump,2)]);
-% xticklabels({'-2','-1','0','1','2'});
-% ylabel('Bump magnitude');
-% xlabel('Time (s)');
-% title('Cue jumps');
-% 
-% %bump width around cue jumps
-% subplot(1,2,2)
-% mean_bw_around_cue_jump = nanmean([short_bw_bar_jump;short_bw_wind_jump]);
-% std_bw_around_cue_jump = std([short_bw_bar_jump;short_bw_wind_jump]);
-% ste_bw_around_cue_jump = std_bw_around_cue_jump/sqrt(size(short_bw_bar_jump,1)*2);
-% boundedline([1:size(short_bw_bar_jump,2)],mean_bw_around_cue_jump,ste_bw_around_cue_jump,'cmap',gray)
-% hold on
-% line([size(short_bm_bar_jump,2)/2 size(short_bm_bar_jump,2)/2],[0 3],'color','r','linewidth',3);
-% xlim([0 size(short_bm_bar_jump,2)]);
-% xticks([0 size(short_bm_bar_jump,2)/4 size(short_bm_bar_jump,2)/2 size(short_bm_bar_jump,2)*(3/4) size(short_bm_bar_jump,2)]);
-% xticklabels({'-2','-1','0','1','2'});
-% ylabel('Bump width');
-% xlabel('Time (s)');
-% title('Cue jumps');
-% 
-% saveas(gcf,[path,'\groupPlots\mean_bump_pars_aj_all_cues.png'])
-% 
+
+%% Mean bump parameters around the jumps, all cues
+
+figure('Position',[100 100 1400 1000]),
+
+%bump magnitude around cue jumps
+subplot(1,2,1)
+mean_bm_around_cue_jump = nanmean([short_bm_bar_jump;short_bm_wind_jump]);
+std_bm_around_cue_jump = std([short_bm_bar_jump;short_bm_wind_jump]);
+ste_bm_around_cue_jump = std_bm_around_cue_jump/sqrt(size(short_bm_bar_jump,1)*2);
+boundedline([1:size(short_bm_bar_jump,2)],mean_bm_around_cue_jump,ste_bm_around_cue_jump,'cmap',gray)
+hold on
+line([size(short_bm_bar_jump,2)/2 size(short_bm_bar_jump,2)/2],[1 2],'color','r','linewidth',3);
+xlim([0 size(short_bm_bar_jump,2)]);
+xticks([0 size(short_bm_bar_jump,2)/4 size(short_bm_bar_jump,2)/2 size(short_bm_bar_jump,2)*(3/4) size(short_bm_bar_jump,2)]);
+xticklabels({'-2','-1','0','1','2'});
+ylabel('Bump magnitude');
+xlabel('Time (s)');
+title('Cue jumps');
+
+%bump width around cue jumps
+subplot(1,2,2)
+mean_bw_around_cue_jump = nanmean([rad2deg(short_bw_bar_jump);rad2deg(short_bw_wind_jump)]);
+std_bw_around_cue_jump = std([rad2deg(short_bw_bar_jump);rad2deg(short_bw_wind_jump)]);
+ste_bw_around_cue_jump = std_bw_around_cue_jump/sqrt(size(short_bw_bar_jump,1)*2);
+boundedline([1:size(short_bw_bar_jump,2)],mean_bw_around_cue_jump,ste_bw_around_cue_jump,'cmap',gray)
+hold on
+line([size(short_bm_bar_jump,2)/2 size(short_bm_bar_jump,2)/2],[90 140],'color','r','linewidth',3);
+xlim([0 size(short_bm_bar_jump,2)]);
+xticks([0 size(short_bm_bar_jump,2)/4 size(short_bm_bar_jump,2)/2 size(short_bm_bar_jump,2)*(3/4) size(short_bm_bar_jump,2)]);
+xticklabels({'-2','-1','0','1','2'});
+ylabel('Bump width');
+xlabel('Time (s)');
+title('Cue jumps');
+
+saveas(gcf,[path,'\groupPlots\mean_bump_pars_aj_all_cues.png'])
+
+%% Compare mean bump pars 1 sec before and 1 sec after the jumps
+
+half_position = floor(size(short_bw_bar_jump,2)/2);
+all_cues_bm = [short_bm_bar_jump;short_bm_wind_jump];
+all_cues_bw = [rad2deg(short_bw_bar_jump);rad2deg(short_bw_wind_jump)];
+
+figure('Position',[50 50 900 1000]),
+
+%Bump magnitude
+subplot(9,2,[1,3,5,7])
+imagesc(zscore(all_cues_bw,[],2))
+hold on
+line([half_position half_position],[1 length(all_cues_bw)],'color','r','linewidth',2)
+colormap(flipud(gray))
+title('Bump width');
+
+subplot(9,2,9)
+plot(nanmean(all_cues_bw),'k')
+hold on
+xline(half_position,'color','r','linewidth',2)
+xlim([1 size(all_cues_bw,2)]);
+ylim([100 140]);
+
+subplot(9,2,[11,13,15,17]);
+mean_aj_bw_all_cues = [nanmean(all_cues_bw(:,half_position-10:half_position),2),nanmean(all_cues_bw(:,half_position+1:half_position+11),2)];
+plot(mean_aj_bw_all_cues','color',[.5 .5 .5])
+hold on
+plot(mean(mean_aj_bw_all_cues),'-ko','linewidth',2)
+xlim([0 3]);
+xticks([1:2]);
+xticklabels({'pre jump','post jump'});
+
+%Bump width
+subplot(9,2,[2,4,6,8])
+imagesc(zscore(all_cues_bm,[],2))
+hold on
+line([half_position half_position],[1 length(all_cues_bm)],'color','r','linewidth',2)
+colormap(flipud(gray))
+title('Bump amplitude');
+
+subplot(9,2,10)
+plot(nanmean(all_cues_bm),'k')
+hold on
+xline(half_position,'color','r','linewidth',2)
+xlim([1 size(all_cues_bm,2)]);
+ylim([1 2]);
+
+subplot(9,2,[12,14,16,18]);
+mean_aj_bm_all_cues = [nanmean(all_cues_bm(:,half_position-10:half_position),2),nanmean(all_cues_bm(:,half_position+1:half_position+11),2)];
+plot(mean_aj_bm_all_cues','color',[.5 .5 .5])
+hold on
+plot(mean(mean_aj_bm_all_cues),'-ko','linewidth',2)
+xlim([0 3]);
+xticks([1:2]);
+xticklabels({'pre jump','post jump'});
+
+%Statistical analysis
+signrank(mean_aj_bw_all_cues(:,1),mean_aj_bw_all_cues(:,2))
+signrank(mean_aj_bm_all_cues(:,1),mean_aj_bm_all_cues(:,2))
+
 % %% Mean bump parameters around the jumps, by cue type
 % 
 % figure('Position',[100 100 1400 1000]),
@@ -852,6 +912,11 @@ ylim([1.5 2.5]);
 
 saveas(gcf,[path,'\groupPlots\mean_long_bump_pars_aj_by_pref_cue.png'])
 saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\CueJump-Experiment\mean_long_bump_pars_aj_by_pref_cue.svg')
+
+
+%% Mean bump parameters around cue shifts, averaging all cues
+
+
 
 %% Mean offset precision around the jumps, all cues
 
@@ -1778,6 +1843,21 @@ xticks([1:2]);
 xticklabels({'pre jump','post jump'});
 
 suptitle('Total movement');
+
+
+%% Save initial parameters
+
+%save dataset containing initial mean bm, bw and HD encoding for single cue
+%blocks
+mean_initial_bar_bm = cellfun(@mean,initial_bar_bm);
+mean_initial_bar_bw = cellfun(@mean,initial_bar_bw);
+mean_initial_wind_bm = cellfun(@mean,initial_wind_bm);
+mean_initial_wind_bw = cellfun(@mean,initial_wind_bw);
+
+
+%save data
+initial_data = table(mean_initial_bar_bm',mean_initial_bar_bw',mean_initial_wind_bm',mean_initial_wind_bw',initial_bar_offset_precision',initial_wind_offset_precision','VariableNames',{'initial_bar_bm','initial_bar_bw','initial_wind_bm','initial_wind_bw','initial_bar_offset_precision','initial_wind_offset_precision'});
+writetable(initial_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\initial_data.csv')
 
 
 %% Clear space

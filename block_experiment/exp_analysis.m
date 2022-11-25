@@ -121,8 +121,11 @@ meanBW_thresh_pre_panels = nanmean(continuous_data.bump_width(continuous_data.ad
 mean_total_mvt_thresh_pre_panels = nanmean(continuous_data.total_mvt_ds(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds>25));
 
 %Store all bump param and mvt values
+allOffset = deg2rad(offset(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
 allBumpMag = continuous_data.bump_magnitude;
+allBumpMagThresh = continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25);
 allBumpWidth = continuous_data.bump_width;
+allBumpWidthThresh = continuous_data.bump_width(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25);
 allTotalMvt = continuous_data.total_mvt_ds;
 allYawSpeed = abs(continuous_data.vel_yaw_ds);
 allVelFor = continuous_data.vel_for_ds';
@@ -196,8 +199,11 @@ meanBW_thresh_pre_wind = nanmean(continuous_data.bump_width(continuous_data.adj_
 mean_total_mvt_thresh_pre_wind = nanmean(continuous_data.total_mvt_ds(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds>25));
 
 %Store all bump param and mvt values
+allOffset = [allOffset,deg2rad(offset(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25))];
 allBumpMag = [allBumpMag,continuous_data.bump_magnitude];
+allBumpMagThresh = [allBumpMagThresh,continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25)];
 allBumpWidth = [allBumpWidth,continuous_data.bump_width];
+allBumpWidthThresh = [allBumpWidthThresh,continuous_data.bump_width(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25)];
 allTotalMvt = [allTotalMvt,continuous_data.total_mvt_ds];
 allYawSpeed = [allYawSpeed,abs(continuous_data.vel_yaw_ds)];
 allVelFor = [allVelFor,continuous_data.vel_for_ds'];
@@ -316,8 +322,11 @@ meanBW_thresh_combined = mean(continuous_data.bump_width(continuous_data.adj_rs>
 mean_total_mvt_thresh_combined = nanmean(continuous_data.total_mvt_ds(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds>25));
 
 %Store all bump param and mvt values
+allOffset = [allOffset,deg2rad(offset(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25))];
 allBumpMag = [allBumpMag,continuous_data.bump_magnitude];
+allBumpMagThresh = [allBumpMagThresh,continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25)];
 allBumpWidth = [allBumpWidth,continuous_data.bump_width];
+allBumpWidthThresh = [allBumpWidthThresh,continuous_data.bump_width(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25)];
 allTotalMvt = [allTotalMvt,continuous_data.total_mvt_ds];
 allYawSpeed = [allYawSpeed,abs(continuous_data.vel_yaw_ds)];
 allVelFor = [allVelFor,continuous_data.vel_for_ds'];
@@ -392,8 +401,11 @@ meanBW_thresh_post_panels = nanmean(continuous_data.bump_width(continuous_data.a
 mean_total_mvt_thresh_post_panels = nanmean(continuous_data.total_mvt_ds(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
 
 %Store all bump param and mvt values
+allOffset = [allOffset,deg2rad(offset(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25))];
 allBumpMag = [allBumpMag,continuous_data.bump_magnitude];
+allBumpMagThresh = [allBumpMagThresh,continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25)];
 allBumpWidth = [allBumpWidth,continuous_data.bump_width];
+allBumpWidthThresh = [allBumpWidthThresh,continuous_data.bump_width(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25)];
 allTotalMvt = [allTotalMvt,continuous_data.total_mvt_ds];
 allYawSpeed = [allYawSpeed,abs(continuous_data.vel_yaw_ds)];
 allVelFor = [allVelFor,continuous_data.vel_for_ds'];
@@ -468,8 +480,11 @@ meanBW_thresh_post_wind = nanmean(continuous_data.bump_width(continuous_data.adj
 mean_total_mvt_thresh_post_wind = nanmean(continuous_data.total_mvt_ds(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
 
 %Store all bump param and mvt values
+allOffset = [allOffset,deg2rad(offset(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25))];
 allBumpMag = [allBumpMag,continuous_data.bump_magnitude];
+allBumpMagThresh = [allBumpMagThresh,continuous_data.bump_magnitude(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25)];
 allBumpWidth = [allBumpWidth,continuous_data.bump_width];
+allBumpWidthThresh = [allBumpWidthThresh,continuous_data.bump_width(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25)];
 allTotalMvt = [allTotalMvt,continuous_data.total_mvt_ds];
 allYawSpeed = [allYawSpeed,abs(continuous_data.vel_yaw_ds)];
 allVelFor = [allVelFor,continuous_data.vel_for_ds'];
@@ -908,7 +923,7 @@ end
 
 %% Combine certain variables in table
 
-summary_data = table(allBumpMag',allBumpWidth',allTotalMvt',allYawSpeed',allVelFor',blockType','VariableNames',{'BumpMag','BumpWidth','TotalMvt','YawSpeed','ForVel','BlockType'});
+summary_data = table(allOffset',allBumpMag',allBumpMagThresh',allBumpWidth',allBumpWidthThresh',allTotalMvt',allYawSpeed',allVelFor',blockType','VariableNames',{'Offset','BumpMag','BumpMagThresh','BumpWidth','BumpWidthThresh','TotalMvt','YawSpeed','ForVel','BlockType'});
 
 %% Save variables
 

@@ -1,5 +1,11 @@
 #compare the 3 different states of the cue combination data
 
+library(tidyr)
+library(rCAT)
+library(dplyr)
+library(nlme)
+library(multcomp)
+
 
 #MANOVA 
 #using this tutorial:
@@ -90,10 +96,28 @@ simCI(model1, contrast = "pairwise", type = "Tukey")
 
 
 
-#with PCA
-pc <- prcomp(my_data[2:4],
-             center = TRUE,
-             scale. = TRUE)
-attributes(pc)
-pc
-summary(pc)
+
+
+#### Combine variables
+
+#1) Using PCA
+var.pca <- prcomp(my_data[,2:4], center = TRUE,scale. = TRUE)
+summary(var.pca)
+#store pc1 data
+pc_data <- as_data_frame(var.pca$x)
+pc1_data <- cbind(my_data[,1],pc_data[,1],my_data[,5])
+colnames(pc1_data) <- c('fly','pc1','block')
+pc1_data$block <- as.factor(pc1_data$block)
+
+pc1_data %>%
+  group_by(block) %>%
+  get_summary_stats(pc1, type = "mean_sd")
+
+
+#run repeated measures with pc1 data
+pc1_model_3_blocks <- lme(pc1 ~ block , random=~1|fly, pc1_data)
+summary(pc1_model_3_blocks)
+anova(pc1_model_3_blocks)
+#posthoc comparisons
+summary(glht(pc1_model_3_blocks, linfct = mcp(block = "Tukey")), test = adjusted("bonferroni"))
+#they all seem to differ, but it's unclear what this means (and Pc1 only explains 47% of the variance)

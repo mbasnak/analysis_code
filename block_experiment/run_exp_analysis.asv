@@ -538,14 +538,12 @@ for folder = 1:length(foldernames)
         
         %linearly interpolate for shorter trials
         allOffset = [allOffset,interp1(continuous_data.time,deg2rad(offset),linspace(0,300,2754))];
-        allBMthresh = continuous_data.bump_magnitude;
-        allBMthresh(continuous_data.adj_rs<0.5) = NaN;
-        allBM_thresh = interp1(continuous_data.time,allBMthresh,linspace(0,300,2754));
-        allBWthresh = continuous_data.bump_width;
-        allBWthresh(continuous_data.adj_rs<0.5) = NaN;
-        allBW_thresh = interp1(continuous_data.time,allBWthresh,linspace(0,300,2754));
+        allBM_thresh = interp1(continuous_data.time,continuous_data.bump_magnitude,linspace(0,300,2754));
+        allBW_thresh = interp1(continuous_data.time,continuous_data.bump_width,linspace(0,300,2754));
         block_type = [block_type,repelem(5,1,2754)];
+        allBM_thresh(continuous_data.adj_rs<0.5) = NaN;
         allBumpMagThresh = [allBumpMagThresh,allBM_thresh];
+        allBW_thresh(continuous_data.adj_rs<0.5) = NaN;
         allBumpWidthThresh = [allBumpWidthThresh,allBW_thresh];
         allTime = [allTime,linspace(2300,2600,2754)];
 

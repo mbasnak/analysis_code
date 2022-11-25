@@ -246,3 +246,41 @@ full_plot <- row_1/row_2
 full_plot + plot_layout(heights = c(1,2))+ plot_annotation(tag_levels = list(c('D','E','F','G','H')))
 ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig5", file="bottom_fig_5.svg",device = 'svg', width=15, height=10)
 
+
+
+
+############ extra analyses
+
+#Are bump width and bump amplitude in normal gain significantly correlated with HD encoding accuracy in normal gain?
+
+p1 <- ggplot(learning_data_diff,aes(offset_precision, bump_width)) +
+  geom_point(size = 2.5) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=17),
+        axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_line(size=.5),
+        axis.line.y = element_line(size=.5),
+        legend.position = 'none') +
+  scale_x_continuous(name="HD encoding accuracy", expand = c(0, 0), limits=c(0,1)) +
+  scale_y_continuous(name="Bump width (°)" , expand = c(0, 0), limits=c(82,133)) 
+
+p2 <- ggplot(learning_data_diff,aes(offset_precision, bump_mag)) +
+  geom_point(size = 2.5) +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=17),
+        axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_line(size=.5),
+        axis.line.y = element_line(size=.5),
+        legend.position = 'none') +
+  scale_x_continuous(name="HD encoding accuracy", expand = c(0, 0), limits=c(0,1)) +
+  scale_y_continuous(name="Bump amplitude (\u0394F/F)", expand = c(0, 0), limits=c(0.8,3)) 
+
+full_plot_2 <- p1 + p2
+full_plot_2
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig5", file="bump_pars_vs_HD_encoding_NG.svg",device = 'svg', width=15, height=12)
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig5", file="bump_pars_vs_HD_encoding_NG.pdf",device = 'pdf', width=15, height=12)
+
+
+
+summary(lm(bump_width ~ offset_precision, learning_data_diff))
+summary(lm(bump_mag ~ offset_precision, learning_data_diff))

@@ -261,7 +261,7 @@ p3 <- ggplot() +
   geom_line(data = mean_and_sd_bump_mag,aes(block_type,mean_bump_mag,group = 1),color = 'gray0',size=2) +
   scale_x_discrete(expand=expansion(add = c(0.3, 0.3)), 
                    labels=scales::wrap_format(10)) +
-  labs(x="", y="Bump amplitude (\u0394F/F)") +
+  labs(x="", y="Bump amplitude (/u0394F/F)") +
   scale_y_continuous(expand = c(0, 0), limits=c(0,2.7))
 
 #Initial cue offsets
@@ -320,3 +320,110 @@ full_plot <- row_1/row_2/row_3 #+ plot_layout(heights = c(1,1.3))
 full_plot + plot_annotation(tag_levels = list(c('C','D','E','F','','H','','','J')))
 
 ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig6", file="most_fig_6.svg",device = 'svg', width=14, height=15)
+
+
+#### 60 sec rolling windows for HD encoding and bump parameters
+
+
+#load data
+data <- read.csv('Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability/rolling_data_block_experiment.csv')
+
+block_change_times <- data$time[data$block_changes == 1]
+block_change_times <- block_change_times[1:5]
+
+#1) Relationship between offset precision and rotational speed
+p1 <- data %>% 
+  mutate(time_bin = cut(time,
+                       breaks = seq(0,45,1),
+                       right = TRUE)) %>%
+  group_by(time_bin, fly) %>% 
+  summarise(mean_fly_bin = mean(offset_precision,na.rm = TRUE)) %>%
+  group_by(time_bin) %>%
+  summarise(bin_mean = mean(mean_fly_bin,na.rm = TRUE), 
+            n = n(),
+            bin_sem = sd(mean_fly_bin,na.rm = TRUE)/sqrt(n)
+  ) %>% 
+  separate(time_bin, into=c("a", "b"), sep=",", remove=FALSE) %>% 
+  mutate(right_end = readr::parse_number(b)) %>% 
+  ggplot(aes(right_end, bin_mean)) +
+  theme(legend.position=c(0.70, 0.15),
+        legend.background = element_rect(color=NA, fill=NA),
+        panel.background=element_rect(fill="white"),
+        axis.line = element_line(color="black", size=.5),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        text = element_text(size=17),axis.text = element_text(size = 16))+
+  geom_ribbon(aes( ymin=bin_mean - bin_sem, ymax=bin_mean + bin_sem), fill = "gray0",alpha = .2) + 
+  geom_line(aes(group=1), lwd=1)+
+  geom_vline(xintercept = block_change_times, color = "red", size=2) +
+  labs(x = 'Time (min)', y='HD encoding accuracy', color = '',fill = '')+ 
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
+  scale_x_continuous(expand = c(0, 0), limits = c(0,45)) 
+
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig6", file="rolling_HDencoding.svg",device = 'svg', width=10, height=8)
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig6", file="rolling_HDencoding.png",device = 'png', width=10, height=8)
+
+
+p2 <- data %>% 
+  mutate(time_bin = cut(time,
+                        breaks = seq(0,45,1),
+                        right = TRUE)) %>%
+  group_by(time_bin, fly) %>% 
+  summarise(mean_fly_bin = mean(rad2deg(rolling_bump_width),na.rm = TRUE)) %>%
+  group_by(time_bin) %>%
+  summarise(bin_mean = mean(mean_fly_bin,na.rm = TRUE), 
+            n = n(),
+            bin_sem = sd(mean_fly_bin,na.rm = TRUE)/sqrt(n)
+  ) %>% 
+  separate(time_bin, into=c("a", "b"), sep=",", remove=FALSE) %>% 
+  mutate(right_end = readr::parse_number(b)) %>% 
+  ggplot(aes(right_end, bin_mean)) +
+  theme(legend.position=c(0.70, 0.15),
+        legend.background = element_rect(color=NA, fill=NA),
+        panel.background=element_rect(fill="white"),
+        axis.line = element_line(color="black", size=.5),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        text = element_text(size=17),axis.text = element_text(size = 16))+
+  geom_ribbon(aes( ymin=bin_mean - bin_sem, ymax=bin_mean + bin_sem), fill = "gray0",alpha = .2) + 
+  geom_line(aes(group=1), lwd=1)+
+  geom_vline(xintercept = block_change_times, color = "red", size=2) +
+  labs(x = 'Time (min)', y='Bump width (°)', color = '',fill = '')+ 
+  scale_y_continuous(expand = c(0, 0), limits = c(70, 130)) +
+  scale_x_continuous(expand = c(0, 0), limits = c(0,45))
+
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig6", file="rolling_bump_width.svg",device = 'svg', width=10, height=8)
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig6", file="rolling_bump_width.png",device = 'svg', width=10, height=8)
+
+
+p3 <- data %>% 
+  mutate(time_bin = cut(time,
+                        breaks = seq(0,45,1),
+                        right = TRUE)) %>%
+  group_by(time_bin, fly) %>% 
+  summarise(mean_fly_bin = mean(rolling_bump_mag,na.rm = TRUE)) %>%
+  group_by(time_bin) %>%
+  summarise(bin_mean = mean(mean_fly_bin,na.rm = TRUE), 
+            n = n(),
+            bin_sem = sd(mean_fly_bin,na.rm = TRUE)/sqrt(n)
+  ) %>% 
+  separate(time_bin, into=c("a", "b"), sep=",", remove=FALSE) %>% 
+  mutate(right_end = readr::parse_number(b)) %>% 
+  ggplot(aes(right_end, bin_mean)) +
+  theme(legend.position=c(0.70, 0.15),
+        legend.background = element_rect(color=NA, fill=NA),
+        panel.background=element_rect(fill="white"),
+        axis.line = element_line(color="black", size=.5),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        text = element_text(size=17),axis.text = element_text(size = 16))+
+  geom_ribbon(aes( ymin=bin_mean - bin_sem, ymax=bin_mean + bin_sem), fill = "gray0",alpha = .2) + 
+  geom_line(aes(group=1), lwd=1)+
+  geom_vline(xintercept = block_change_times, color = "red", size=2) +
+  labs(x = 'Time (min)', y='Bump amplitude (/u0394F/F)', color = '',fill = '')+ 
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 2.5)) +
+  scale_x_continuous(expand = c(0, 0), limits = c(0,45))
+
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig6", file="rolling_bump_mag.svg",device = 'svg', width=10, height=8)
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig6", file="rolling_bump_mag.png",device = 'png', width=10, height=8)
+
