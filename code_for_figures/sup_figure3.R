@@ -292,7 +292,7 @@ row_2 <- p4 + p5 + p6 + p3 + plot_layout(nrow = 1)
 row_3 <- p7 + p8 + p9
 full_plot <- row_1/row_2/row_3
 full_plot + plot_annotation(tag_levels = list(c('','A','B','','C','D','E','F','G','H','I')))
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig3", file="full_figure.svg",device = 'svg', width=14, height=16)
+#ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig3", file="full_figure.svg",device = 'svg', width=14, height=16)
 
 
 #run statistics

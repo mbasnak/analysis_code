@@ -255,6 +255,7 @@ ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig5", f
 
 p1 <- ggplot(learning_data_diff,aes(offset_precision, bump_width)) +
   geom_point(size = 2.5) +
+  geom_smooth(method='lm', se = FALSE, color = 'black') +
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=17),
         axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
@@ -266,6 +267,7 @@ p1 <- ggplot(learning_data_diff,aes(offset_precision, bump_width)) +
 
 p2 <- ggplot(learning_data_diff,aes(offset_precision, bump_mag)) +
   geom_point(size = 2.5) +
+  geom_smooth(method='lm', se = FALSE, color = 'black') +
   theme(panel.background = element_rect(fill=NA),
         text=element_text(size=17),
         axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
@@ -275,10 +277,26 @@ p2 <- ggplot(learning_data_diff,aes(offset_precision, bump_mag)) +
   scale_x_continuous(name="HD encoding accuracy", expand = c(0, 0), limits=c(0,1)) +
   scale_y_continuous(name="Bump amplitude (\u0394F/F)", expand = c(0, 0), limits=c(0.8,3)) 
 
-full_plot_2 <- p1 + p2
-full_plot_2
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig5", file="bump_pars_vs_HD_encoding_NG.svg",device = 'svg', width=15, height=12)
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig5", file="bump_pars_vs_HD_encoding_NG.pdf",device = 'pdf', width=15, height=12)
+p3 <-ggplot(learning_data_diff,aes(offset_precision,offset_diff)) +
+  geom_point(size = 2.5)+
+  geom_smooth(method='lm', se = FALSE, color = 'black') +
+  theme(panel.background = element_rect(fill=NA),
+        text=element_text(size=17),
+        axis.text = element_text(size=16), axis.ticks.length.x = unit(0.1, "cm"),
+        axis.line.x = element_line(size=.5),
+        axis.line.y = element_line(size=.5)) +
+  scale_y_continuous(name="Remapping index", expand = c(0, 0), limits=c(-1,1)) +
+  scale_x_continuous(name="HD encoding accuracy", expand = c(0, 0), limits=c(0, 1))
+
+p <- p1 + p2 + p3
+p + plot_annotation(tag_levels = list(c('A','','B')))
+
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures", file="sup_fig_inv_gain.svg",device = 'svg', width=17, height=12)
+ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures", file="sup_fig_inv_gain.png",device = 'svg', width=17, height=12)
+
+
+#ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig5", file="bump_pars_vs_HD_encoding_NG.svg",device = 'svg', width=15, height=12)
+#ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig5", file="bump_pars_vs_HD_encoding_NG.pdf",device = 'pdf', width=15, height=12)
 
 
 

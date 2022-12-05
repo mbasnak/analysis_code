@@ -1756,6 +1756,54 @@ for folder = 1:length(foldernames)
                     
                 end
                 
+                
+                %% Bump pars and offset precision per cue type
+                
+                if configuration == 1
+                    offset_precision_cue1 = circ_r(deg2rad(initial_bar_offset));
+                    offset_precision_cue2 = circ_r(deg2rad(initial_wind_offset'));
+                    bump_width_cue1 = mean(rad2deg(initial_bar_bw));
+                    bump_width_cue2 = mean(rad2deg(initial_wind_bw));
+                    bump_amplitude_cue1 = mean(initial_bar_bm);
+                    bump_amplitude_cue2 = mean(initial_wind_bm);
+                    combined_period = ceil(panels_change_frames(2)+60*sec_to_frames:panels_change_frames(2) + 300*sec_to_frames);
+                else
+                    offset_precision_cue2 = circ_r(deg2rad(initial_bar_offset));
+                    offset_precision_cue1 = circ_r(deg2rad(initial_wind_offset'));
+                    bump_width_cue2 = mean(rad2deg(initial_bar_bw));
+                    bump_width_cue1 = mean(rad2deg(initial_wind_bw));
+                    bump_amplitude_cue2 = mean(initial_bar_bm);
+                    bump_amplitude_cue1 = mean(initial_wind_bm);
+                    combined_period = ceil(wind_change_frames(2)+60*sec_to_frames:wind_change_frames(2) + 300*sec_to_frames);
+                end
+                
+                combined_moving = continuous_data.total_mvt_ds(combined_period) > 25;
+                combined_good_fit = continuous_data.adj_rs(combined_period) > 0.5;
+                
+                combined_offset = bar_offset(combined_period);
+                combined_offset = combined_offset(combined_moving & combined_good_fit);
+                offset_precision_combined = circ_r(deg2rad(combined_offset));
+                all_offset_precision = [offset_precision_cue1,offset_precision_cue2,offset_precision_combined];
+                
+                bump_width_combined = continuous_data.bump_width(combined_period);
+                bump_width_combined = mean(rad2deg(bump_width_combined(combined_moving & combined_good_fit)));
+                all_bump_width = [bump_width_cue1,bump_width_cue2,bump_width_combined];
+                
+                bump_amplitude_combined = continuous_data.bump_magnitude(combined_period);
+                bump_amplitude_combined = mean(bump_amplitude_combined(combined_moving & combined_good_fit));
+                all_bump_mag = [bump_amplitude_cue1,bump_amplitude_cue2,bump_amplitude_combined];
+                
+                
+%                 figure,
+%                 subplot(3,1,1)
+%                 plot(all_offset_precision,'-o')
+%                 
+%                 subplot(3,1,2)
+%                 plot(all_bump_width,'-o')
+%                 
+%                 subplot(3,1,3)
+%                 plot(all_bump_mag,'-o')
+                
                 %% Save data
                 
                 save([path,'\data.mat'],'short_bm_bar_jump','short_bw_bar_jump','short_bm_wind_jump','short_bw_wind_jump','long_bm_bar_jump','long_bw_bar_jump','long_bm_wind_jump','long_bw_wind_jump',...
@@ -1772,7 +1820,8 @@ for folder = 1:length(foldernames)
                     'configuration','long_total_mvt_wind_jump','long_total_mvt_bar_jump','long_rot_speed_wind_jump','long_rot_speed_bar_jump',...
                     'short_bm_pref_cue','short_bw_pref_cue','short_bm_non_pref_cue','short_bw_non_pref_cue',...
                     'long_bm_pref_cue','long_bw_pref_cue','long_bm_non_pref_cue','long_bw_non_pref_cue',...
-                    'adj_rs_aj_pref_cue','adj_rs_aj_non_pref_cue')
+                    'adj_rs_aj_pref_cue','adj_rs_aj_non_pref_cue',...
+                    'all_offset_precision','all_bump_mag','all_bump_width')
                 
                 %% Clear
                 

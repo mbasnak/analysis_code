@@ -91,6 +91,10 @@ bar_offset_precision_awj_75 = [];
 wind_offset_precision_abj_75 = [];
 wind_offset_precision_awj_75 = [];
 
+all_offset_precision = [];
+all_bump_mag = [];
+all_bump_width = [];
+
 
 configuration = [];
 
@@ -166,8 +170,37 @@ for fly = 1:length(data)
     wind_offset_precision_awj_75 = [wind_offset_precision_awj_75;data(fly).wind_offset_precision_awj_75];
     
     configuration = [configuration;data(fly).configuration];
+    
+    all_offset_precision = [all_offset_precision;data(fly).all_offset_precision];
+    all_bump_width = [all_bump_width;data(fly).all_bump_width];
+    all_bump_mag = [all_bump_mag;data(fly).all_bump_mag];
+    
 end
 
+%% Offset precision and bump pars per cue
+
+figure,
+subplot(3,1,1)
+errorbar((1:3),mean(all_offset_precision),std(all_offset_precision)/sqrt(length(all_offset_precision)))
+ylabel('HD encoding accuracy')
+xlim([0,4]);
+ylim([0,1.2]);
+set(gca,'xticklabel',{[]});
+
+subplot(3,1,2)
+errorbar((1:3),mean(all_bump_width),std(all_bump_width)/sqrt(length(all_bump_width)))
+ylabel('Bump width ()');
+xlim([0,4]);
+ylim([70, 130]);
+set(gca,'xticklabel',{[]});
+
+subplot(3,1,3)
+errorbar((1:3),mean(all_bump_mag),std(all_bump_mag)/sqrt(length(all_bump_mag)))
+ylabel('Bump amplitude (DF/F)');
+xlim([0,4]);
+ylim([0.5,2.5]);
+xticks([1:3])
+xticklabels({'single cue 1','single cue 2','both cues'})
 
 %% Short timescale raster plots
 

@@ -1276,6 +1276,219 @@ end
 
 saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig6\example_fly2_polarhistograms.svg')
 
+
+%Alternative fly 2
+clear all; close all;
+path = 'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp35\data\high_reliability\20211130_60D05_7f';
+
+% Import sessions information
+load([path,'\analysis\sessions_info.mat'])
+
+% Initial panels
+load([path,'\analysis\continuous_analysis_sid_',num2str(sessions.initial_cl_bar),'_tid_0.mat'])
+offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',-continuous_data.heading)));
+pre_panels_offset_above_thresh = deg2rad(offset(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
+offset_precision_pre_panels = circ_r(pre_panels_offset_above_thresh);
+
+% Initial wind
+load([path,'\analysis\continuous_analysis_sid_',num2str(sessions.initial_cl_wind),'_tid_0.mat'])
+offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',-continuous_data.heading)));
+pre_wind_offset_above_thresh = deg2rad(offset(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds>25));
+offset_precision_pre_wind = circ_r(pre_wind_offset_above_thresh);
+
+% Two-cues
+load([path,'\analysis\continuous_analysis_sid_',num2str(sessions.cue_combination),'_tid_0.mat'])
+offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',-continuous_data.heading)));
+combined_offset_above_thresh = deg2rad(offset(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds>25));
+offset_precision_combined = circ_r(combined_offset_above_thresh);
+
+%Final panels
+load([path,'\analysis\continuous_analysis_sid_',num2str(sessions.final_cl_bar),'_tid_0.mat'])
+offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',-continuous_data.heading)));
+post_panels_offset_above_thresh = deg2rad(offset(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds>25));
+offset_precision_post_panels = circ_r(post_panels_offset_above_thresh);
+
+%Final wind
+load([path,'\analysis\continuous_analysis_sid_',num2str(sessions.final_cl_wind),'_tid_0.mat'])
+offset = wrapTo180(rad2deg(circ_dist(continuous_data.bump_pos',-continuous_data.heading)));
+post_wind_offset_above_thresh = deg2rad(offset(continuous_data.adj_rs>=0.5 & continuous_data.total_mvt_ds > 25));
+offset_precision_post_wind = circ_r(post_wind_offset_above_thresh);
+
+% Get circ_mean of offset per block
+if sessions.initial_cl_wind < sessions.initial_cl_bar
+    
+    offset_mean = [circ_mean(pre_wind_offset_above_thresh),circ_mean(pre_panels_offset_above_thresh),circ_mean(combined_offset_above_thresh),circ_mean(post_wind_offset_above_thresh),circ_mean(post_panels_offset_above_thresh)];
+    
+elseif sessions.initial_cl_wind > sessions.initial_cl_bar
+    
+    offset_mean = [circ_mean(pre_panels_offset_above_thresh),circ_mean(pre_wind_offset_above_thresh),circ_mean(combined_offset_above_thresh),circ_mean(post_panels_offset_above_thresh),circ_mean(post_wind_offset_above_thresh)];
+    
+end
+
+fly_color = [.3 .3 .3];
+
+% Plot offset evolution with overlaid mean
+if sessions.initial_cl_wind > sessions.initial_cl_bar
+    
+    figure('Position',[100 100 1400 400]),
+    
+    subplot(1,5,1)
+    polarhistogram(pre_panels_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(1),offset_mean(1)],[0,rl(2)*offset_precision_pre_panels],'k','linewidth',5)
+    title('Initial visual cue offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+    subplot(1,5,2)
+    polarhistogram(pre_wind_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(2),offset_mean(2)],[0,rl(2)*offset_precision_pre_wind],'k','linewidth',5)
+    title('Initial wind offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+    subplot(1,5,3)
+    polarhistogram(combined_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(3),offset_mean(3)],[0,rl(2)*offset_precision_combined],'k','linewidth',5)
+    title('Two-cue offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+    subplot(1,5,4)
+    polarhistogram(post_panels_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(4),offset_mean(4)],[0,rl(2)*offset_precision_post_panels],'k','linewidth',5)
+    title('Final visual cue offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+    subplot(1,5,5)
+    polarhistogram(post_wind_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(5),offset_mean(5)],[0,rl(2)*offset_precision_post_wind],'k','linewidth',5)
+    title('Final wind offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+else
+    
+    figure('Position',[100 100 1400 400]),
+    
+    subplot(1,5,1)
+    polarhistogram(pre_wind_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(1),offset_mean(1)],[0,rl(2)*offset_precision_pre_wind],'k','linewidth',5)
+    title('Initial wind offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+    subplot(1,5,2)
+    polarhistogram(pre_panels_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(2),offset_mean(2)],[0,rl(2)*offset_precision_pre_panels],'k','linewidth',5)
+    title('Initial visual cue offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+    subplot(1,5,3)
+    polarhistogram(combined_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(3),offset_mean(3)],[0,rl(2)*offset_precision_combined],'k','linewidth',5)
+    title('Two-cue offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+    subplot(1,5,4)
+    polarhistogram(post_wind_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(4),offset_mean(4)],[0,rl(2)*offset_precision_post_wind],'k','linewidth',5)
+    title('Final wind offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+    subplot(1,5,5)
+    polarhistogram(post_panels_offset_above_thresh,15,'FaceColor',fly_color,'EdgeColor',fly_color,'FaceAlpha',.3,'EdgeAlpha',.3)
+    hold on
+    rl = rlim;
+    polarplot([offset_mean(5),offset_mean(5)],[0,rl(2)*offset_precision_post_panels],'k','linewidth',5)
+    title('Final visual cue offset','fontsize',12);
+    set(gca,'ThetaZeroLocation','top',...
+        'ThetaDir','clockwise');
+    Ax = gca;
+    Ax.RTickLabel = [];
+    Ax.RTickLabel = [];
+    Ax.RGrid = 'off';
+    Ax.ThetaGrid = 'off';
+    thetaticks([0 90 180 270]);
+    
+end
+
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig6\alternative_example_fly2_polarhistograms.svg')
+
 %% Example flies for figure 7
 
 %fly 1: prefers the bar

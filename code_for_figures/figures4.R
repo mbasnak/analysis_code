@@ -73,4 +73,4 @@ p2 <- ggplot(initial_low_contrast, aes(offset_precision,mean_bump_mag)) +
 
 p <- p1 + p2
 p + plot_annotation(tag_levels = list(c('C','D')))
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig4", file="bottom_fig_4.svg",device = 'svg', width=8, height=5)
+#ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig4", file="bottom_fig_4.svg",device = 'svg', width=8, height=5)
