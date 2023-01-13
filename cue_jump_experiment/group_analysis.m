@@ -57,6 +57,11 @@ long_bw_bar_jump = [];
 long_bm_wind_jump = [];
 long_bw_wind_jump = [];
 
+short_offset_bar_jump = [];
+short_offset_wind_jump = [];
+long_offset_bar_jump = [];
+long_offset_wind_jump = [];
+
 long_total_mvt_bar_jump = [];
 long_rot_speed_bar_jump = [];
 long_total_mvt_wind_jump = [];
@@ -135,6 +140,11 @@ for fly = 1:length(data)
     long_bw_bar_jump = [long_bw_bar_jump;data(fly).long_bw_bar_jump];
     long_bm_wind_jump = [long_bm_wind_jump;data(fly).long_bm_wind_jump];
     long_bw_wind_jump = [long_bw_wind_jump;data(fly).long_bw_wind_jump];
+    
+    short_offset_bar_jump = [short_offset_bar_jump;data(fly).short_offset_bar_jump];
+    short_offset_wind_jump = [short_offset_wind_jump;data(fly).short_offset_wind_jump];
+    long_offset_bar_jump = [long_offset_bar_jump;data(fly).long_offset_bar_jump];
+    long_offset_wind_jump = [long_offset_wind_jump;data(fly).long_offset_wind_jump];
     
     long_total_mvt_bar_jump = [long_total_mvt_bar_jump;data(fly).long_total_mvt_bar_jump];
     long_rot_speed_bar_jump = [long_rot_speed_bar_jump;data(fly).long_rot_speed_bar_jump];
@@ -1876,7 +1886,6 @@ xticks([1:2]);
 xticklabels({'pre jump','post jump'});
 
 suptitle('Total movement');
-
 
 %% Save initial parameters
 

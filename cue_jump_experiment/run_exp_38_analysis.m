@@ -122,7 +122,7 @@ for folder = 1:length(foldernames)
                 elseif fly_ID == 3
                     real_bar_jump_frames(1) = floor(1188.8*length(continuous_data.dff_matrix)/continuous_data.time(end));
                     real_bar_jump_frames(2) = floor(1788.8*length(continuous_data.dff_matrix)/continuous_data.time(end));
-                    real_bar_jump_frames(3) = floor(2388.5*length(continuous_data.dff_matrix)/continuous_data.time(end));
+                    real_bar_jump_frames(3) = floor(2388.4*length(continuous_data.dff_matrix)/continuous_data.time(end));
                     real_bar_jump_frames(4) = floor(2988.8*length(continuous_data.dff_matrix)/continuous_data.time(end));
                 elseif fly_ID == 4
                     real_bar_jump_frames(1) = floor(1188.7*length(continuous_data.dff_matrix)/continuous_data.time(end));
@@ -177,7 +177,7 @@ for folder = 1:length(foldernames)
                     real_bar_jump_frames(1) = floor(1189.4*length(continuous_data.dff_matrix)/continuous_data.time(end));
                     real_bar_jump_frames(2) = floor(1789.4*length(continuous_data.dff_matrix)/continuous_data.time(end));
                     real_bar_jump_frames(3) = floor(2389.4*length(continuous_data.dff_matrix)/continuous_data.time(end));
-                    real_bar_jump_frames(4) = floor(2989.3*length(continuous_data.dff_matrix)/continuous_data.time(end));
+                    real_bar_jump_frames(4) = floor(2989.4*length(continuous_data.dff_matrix)/continuous_data.time(end));
                 end
                 real_bar_jump_sec = real_bar_jump_frames*continuous_data.time(end)/length(continuous_data.dff_matrix);
                 
@@ -977,6 +977,7 @@ for folder = 1:length(foldernames)
                     short_bm_bar_jump(jump,:) = continuous_data.bump_magnitude(real_bar_jump_frames(jump)-2*sec_to_frames:real_bar_jump_frames(jump)+2*sec_to_frames);
                     short_bw_bar_jump(jump,:) = continuous_data.bump_width(real_bar_jump_frames(jump)-2*sec_to_frames:real_bar_jump_frames(jump)+2*sec_to_frames);
                     adj_rs_aj_bar(jump,:) = continuous_data.adj_rs(real_bar_jump_frames(jump)-2*sec_to_frames:real_bar_jump_frames(jump)+2*sec_to_frames);
+                    short_offset_bar_jump(jump,:) = bar_offset(real_bar_jump_frames(jump)-2*sec_to_frames:real_bar_jump_frames(jump)+2*sec_to_frames);
                 end
                 zscored_short_bm_bar_jump = zscore(short_bm_bar_jump,[],2);
                 zscored_short_bw_bar_jump = zscore(short_bw_bar_jump,[],2);
@@ -986,6 +987,7 @@ for folder = 1:length(foldernames)
                     short_bm_wind_jump(jump,:) = continuous_data.bump_magnitude(real_wind_jump_frames(jump)-2*sec_to_frames:real_wind_jump_frames(jump)+2*sec_to_frames);
                     short_bw_wind_jump(jump,:) = continuous_data.bump_width(real_wind_jump_frames(jump)-2*sec_to_frames:real_wind_jump_frames(jump)+2*sec_to_frames);
                     adj_rs_aj_wind(jump,:) = continuous_data.adj_rs(real_wind_jump_frames(jump)-2*sec_to_frames:real_wind_jump_frames(jump)+2*sec_to_frames);
+                    short_offset_wind_jump(jump,:) = wind_offset(real_wind_jump_frames(jump)-2*sec_to_frames:real_wind_jump_frames(jump)+2*sec_to_frames);
                 end
                 zscored_short_bm_wind_jump = zscore(short_bm_wind_jump,[],2);
                 zscored_short_bw_wind_jump = zscore(short_bw_wind_jump,[],2);
@@ -1055,6 +1057,7 @@ for folder = 1:length(foldernames)
                 for jump = 1:length(real_bar_jump_frames)
                     long_bm_bar_jump(jump,:) = continuous_data.bump_magnitude(real_bar_jump_frames(jump)-120*sec_to_frames:real_bar_jump_frames(jump)+120*sec_to_frames);
                     long_bw_bar_jump(jump,:) = continuous_data.bump_width(real_bar_jump_frames(jump)-120*sec_to_frames:real_bar_jump_frames(jump)+120*sec_to_frames);
+                    long_offset_bar_jump(jump,:) = bar_offset(real_bar_jump_frames(jump)-120*sec_to_frames:real_bar_jump_frames(jump)+120*sec_to_frames);                
                 end
                 zscored_long_bm_bar_jump = zscore(long_bm_bar_jump,[],2);
                 zscored_long_bw_bar_jump = zscore(long_bw_bar_jump,[],2);
@@ -1063,6 +1066,7 @@ for folder = 1:length(foldernames)
                 for jump = 1:length(real_wind_jump_frames)
                     long_bm_wind_jump(jump,:) = continuous_data.bump_magnitude(real_wind_jump_frames(jump)-120*sec_to_frames:real_wind_jump_frames(jump)+120*sec_to_frames);
                     long_bw_wind_jump(jump,:) = continuous_data.bump_width(real_wind_jump_frames(jump)-120*sec_to_frames:real_wind_jump_frames(jump)+120*sec_to_frames);
+                    long_offset_wind_jump(jump,:) = wind_offset(real_wind_jump_frames(jump)-120*sec_to_frames:real_wind_jump_frames(jump)+120*sec_to_frames);                
                 end
                 zscored_long_bm_wind_jump = zscore(long_bm_wind_jump,[],2);
                 zscored_long_bw_wind_jump = zscore(long_bw_wind_jump,[],2);
@@ -1821,7 +1825,8 @@ for folder = 1:length(foldernames)
                     'short_bm_pref_cue','short_bw_pref_cue','short_bm_non_pref_cue','short_bw_non_pref_cue',...
                     'long_bm_pref_cue','long_bw_pref_cue','long_bm_non_pref_cue','long_bw_non_pref_cue',...
                     'adj_rs_aj_pref_cue','adj_rs_aj_non_pref_cue',...
-                    'all_offset_precision','all_bump_mag','all_bump_width')
+                    'all_offset_precision','all_bump_mag','all_bump_width',...
+                    'short_offset_wind_jump','short_offset_bar_jump','long_offset_bar_jump','long_offset_wind_jump')
                 
                 %% Clear
                 

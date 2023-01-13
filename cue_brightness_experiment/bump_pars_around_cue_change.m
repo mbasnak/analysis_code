@@ -211,3 +211,5 @@ b_bm_mean = mean(nanmean(rolling_bm_b_to_d(:,1:1836)));
 line([time(1),0],[b_bm_mean,b_bm_mean]);
 d_bm_mean = mean(nanmean(rolling_bm_b_to_d(:,1837:end)));
 line([0,time(end)],[d_bm_mean,d_bm_mean]);
+
+print('-painters','-dsvg','C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\ExtraFigures\change_in_bump_par_around_cue.svg') 

@@ -115,7 +115,7 @@ elseif fly_ID == 2
 elseif fly_ID == 3
     real_bar_jump_frames(1) = floor(1188.8*length(continuous_data.dff_matrix)/continuous_data.time(end));    
     real_bar_jump_frames(2) = floor(1788.8*length(continuous_data.dff_matrix)/continuous_data.time(end));
-    real_bar_jump_frames(3) = floor(2388.5*length(continuous_data.dff_matrix)/continuous_data.time(end));  
+    real_bar_jump_frames(3) = floor(2388.4*length(continuous_data.dff_matrix)/continuous_data.time(end));  
     real_bar_jump_frames(4) = floor(2988.8*length(continuous_data.dff_matrix)/continuous_data.time(end));     
 elseif fly_ID == 4
     real_bar_jump_frames(1) = floor(1188.7*length(continuous_data.dff_matrix)/continuous_data.time(end));    
@@ -170,7 +170,7 @@ elseif fly_ID == 14
     real_bar_jump_frames(1) = floor(1189.4*length(continuous_data.dff_matrix)/continuous_data.time(end));
     real_bar_jump_frames(2) = floor(1789.4*length(continuous_data.dff_matrix)/continuous_data.time(end)); 
     real_bar_jump_frames(3) = floor(2389.4*length(continuous_data.dff_matrix)/continuous_data.time(end)); 
-    real_bar_jump_frames(4) = floor(2989.3*length(continuous_data.dff_matrix)/continuous_data.time(end));
+    real_bar_jump_frames(4) = floor(2989.4*length(continuous_data.dff_matrix)/continuous_data.time(end));
 end
 real_bar_jump_sec = real_bar_jump_frames*continuous_data.time(end)/length(continuous_data.dff_matrix);
 
