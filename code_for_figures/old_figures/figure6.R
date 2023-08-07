@@ -12,7 +12,7 @@ library(rstatix)
 
 
 # comparison of offset precision between visual and wind environments
-initial_offset_precision_data <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability/initial_offset_precision_data.csv")
+initial_offset_precision_data <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability/initial_offset_precision_data.csv")
 
 initial_offset_precision_data <-
   initial_offset_precision_data %>% 
@@ -29,8 +29,8 @@ mean_and_sd_initial_offset <- initial_offset_precision_data %>%
             mean_offset_precision = mean(offset_precision),
             n = n())
 
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig6", file="initial_offset_precision.svg",device = 'svg', width=4, height=4)
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig6", file="initial_offset_precision.png",device = 'png', width=4, height=4)
+# ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig6", file="initial_offset_precision.svg",device = 'svg', width=4, height=4)
+# ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig6", file="initial_offset_precision.png",device = 'png', width=4, height=4)
 
 
 #stats
@@ -40,7 +40,7 @@ initial_offset_precision_data  %>%
 
 
 #repeat for bump parameters
-initial_bump_pars_data <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability/initial_bump_pars_data.csv")
+initial_bump_pars_data <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability/initial_bump_pars_data.csv")
 
 initial_bump_pars_data <-
   initial_bump_pars_data %>% 
@@ -70,7 +70,7 @@ initial_bump_pars_data  %>%
 
 
 # offset precision vs block type
-offset_precision_data_3_blocks <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability//offset_precision_data_3_blocks.csv", header = FALSE)
+offset_precision_data_3_blocks <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability//offset_precision_data_3_blocks.csv", header = FALSE)
 colnames(offset_precision_data_3_blocks) <- c('initial_single_cue','cue_combination','final_single_cue','fly')
 offset_precision_data_3_blocks <- gather(offset_precision_data_3_blocks, key = "block_type", value = "offset_precision",-fly)
 offset_precision_data_3_blocks$block_type = as.factor(offset_precision_data_3_blocks$block_type)
@@ -102,7 +102,7 @@ mean_and_sd_offset_precision <- offset_precision_data_3_blocks %>%
 
 # bump pars vs block type
 #load data
-bump_mag_data_3_blocks <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability/bump_mag_data_3_blocks.csv", header = FALSE)
+bump_mag_data_3_blocks <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability/bump_mag_data_3_blocks.csv", header = FALSE)
 colnames(bump_mag_data_3_blocks) <- c('initial_single_cue','cue_combination','final_single_cue','fly')
 bump_mag_data_3_blocks <- gather(bump_mag_data_3_blocks, key = "block_type", value = "bump_mag",-fly)
 bump_mag_data_3_blocks$block_type = as.factor(bump_mag_data_3_blocks$block_type)
@@ -116,7 +116,7 @@ anova(bump_mag_model_3_blocks)
 summary(glht(bump_mag_model_3_blocks, linfct = mcp(block_type = "Tukey")), test = adjusted("bonferroni"))
 
 
-bump_width_data_3_blocks <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability/bump_width_data_3_blocks.csv", header = FALSE)
+bump_width_data_3_blocks <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability/bump_width_data_3_blocks.csv", header = FALSE)
 colnames(bump_width_data_3_blocks) <- c('initial_single_cue','cue_combination','final_single_cue','fly')
 bump_width_data_3_blocks <- gather(bump_width_data_3_blocks, key = "block_type", value = "bump_width",-fly)
 bump_width_data_3_blocks$block_type = as.factor(bump_width_data_3_blocks$block_type)
@@ -166,7 +166,7 @@ mean_and_sd_bump_width <- bump_width_data_3_blocks %>%
 
 # first vs second cue similarity with cc
 #load data
-cue_order_data <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability/cue_order_data.csv", header = FALSE)
+cue_order_data <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability/cue_order_data.csv", header = FALSE)
 colnames(cue_order_data) <- c('first_cue','second_cue')
 
 #run wilcoxon test
@@ -199,7 +199,7 @@ mean_and_sd_similarity <- cue_order_data %>%
 
 ### initial offset
 #load data
-initial_offset_data <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability/initial_offset_data.csv", header = FALSE)
+initial_offset_data <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability/initial_offset_data.csv", header = FALSE)
 colnames(initial_offset_data) <- c('visual_cue','wind')
 
 #convert to degrees
@@ -210,8 +210,8 @@ initial_offset_data$wind <- rad2deg(initial_offset_data$wind)
 # plasticity analysis
 
 #load data
-plasticity_data <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability/plasticity_data.csv")
-plasticity_data_thresh <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability/plasticity_data_thresh.csv")
+plasticity_data <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability/plasticity_data.csv")
+plasticity_data_thresh <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability/plasticity_data_thresh.csv")
 plasticity_data$order <-  rep(1:2,each=18)
 
 
@@ -319,14 +319,14 @@ row_3 <- p1 + p2 + p6 + plot_layout(nrow = 1)
 full_plot <- row_1/row_2/row_3 #+ plot_layout(heights = c(1,1.3))
 full_plot + plot_annotation(tag_levels = list(c('C','D','E','F','','H','','','J')))
 
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig6", file="most_fig_6.svg",device = 'svg', width=14, height=15)
+#ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig6", file="most_fig_6.svg",device = 'svg', width=14, height=15)
 
 
 #### 60 sec rolling windows for HD encoding and bump parameters
 
 
 #load data
-data <- read.csv('Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability/rolling_data_block_experiment.csv')
+data <- read.csv('Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp35/data/high_reliability/rolling_data_block_experiment.csv')
 
 block_change_times <- data$time[data$block_changes == 1]
 block_change_times <- block_change_times[1:5]

@@ -15,7 +15,7 @@ library(spatstat)
 
 # bump preference index
 ## Plot bump preference per fly
-sorted_bump_PI <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/sorted_bump_PI.csv",header = FALSE)
+sorted_bump_PI <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp38/data/third_version/sorted_bump_PI.csv",header = FALSE)
 names(sorted_bump_PI) <- paste0("fly", 1:ncol(sorted_bump_PI))
 
 sorted_bump_PI %>% 
@@ -38,7 +38,7 @@ sorted_bump_PI %>%
 
 
 # behavior preference index
-sorted_heading_PI <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/sorted_heading_PI.csv",header = FALSE)
+sorted_heading_PI <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp38/data/third_version/sorted_heading_PI.csv",header = FALSE)
 names(sorted_heading_PI) <- paste0("fly", 1:ncol(sorted_heading_PI))
 
 
@@ -63,7 +63,7 @@ sorted_heading_PI %>%
 
 
 # bump PI vs initial offset ratio
-offset_ratio_data2 <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/offset_ratio_data2.csv")
+offset_ratio_data2 <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp38/data/third_version/offset_ratio_data2.csv")
 
 offset_ratio_ordered_data2 <- offset_ratio_data2 %>%
   select(offset=initial_offset_ratio_1, starts_with("pref_")) %>%
@@ -78,7 +78,7 @@ summary(offset_and_PI_mdl)
 
 
 # relationship between bump and behavior PI
-all_PI_data <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/all_PI_data.csv")
+all_PI_data <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp38/data/third_version/all_PI_data.csv")
 
 
 #assess if points are randomly distributed or aggregated, using the clark evans method
@@ -199,7 +199,7 @@ summary(offset_and_PI_mdl2)
 ################### Repeat omitting fly 5 from all panels
 
 #bump PI
-filtered_bump_PI <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/filtered_bump_PI.csv",header = FALSE)
+filtered_bump_PI <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp38/data/third_version/filtered_bump_PI.csv",header = FALSE)
 names(filtered_bump_PI) <- paste0("fly", 1:ncol(filtered_bump_PI))
 
 p1 <- filtered_bump_PI %>% 
@@ -220,7 +220,7 @@ p1 <- filtered_bump_PI %>%
   xlab("Fly #") + ylab("Bump preference index")
 
 #heading PI
-filtered_heading_PI <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/filtered_heading_PI.csv",header = FALSE)
+filtered_heading_PI <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp38/data/third_version/filtered_heading_PI.csv",header = FALSE)
 names(filtered_heading_PI) <- paste0("fly", 1:ncol(filtered_heading_PI))
 
 p2 <- filtered_heading_PI %>% 
@@ -243,7 +243,7 @@ p2 <- filtered_heading_PI %>%
 
 # relationship between bump and behavior PI
 # relationship between bump and behavior PI
-filtered_all_PI_data <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/filtered_all_PI_data.csv")
+filtered_all_PI_data <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp38/data/third_version/filtered_all_PI_data.csv")
 #assess if points are randomly distributed or aggregated, using the clark evans method
 point_data <- ppp(x = filtered_all_PI_data$bump.PI,y=filtered_all_PI_data$heading.PI,window=owin(c(-1,1),c(-1,1)))
 clarkevans.test(point_data)
@@ -279,7 +279,7 @@ full_plot + plot_annotation(tag_levels = list(c('C','D','E','F')))
 
 ####################### Plot relationship between bump parameters and HD encoding for initial single cue bouts
 
-initial_data <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/initial_data.csv")
+initial_data <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp38/data/third_version/initial_data.csv")
 
 
 #with all the data
@@ -399,10 +399,12 @@ initial_bmdiff_vs_HDencoding_diff <- ggplot(filtered_initial_data)+
 
 full_plot_2 <- initial_bwdiff_vs_HDencoding_diff + initial_bmdiff_vs_HDencoding_diff
 full_plot_2
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig7", file="initial_bump_par_diff_vs_initial_HD_encoding_diff.svg",device = 'svg', width=14, height=9)
+#ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig7", file="initial_bump_par_diff_vs_initial_HD_encoding_diff.svg",device = 'svg', width=14, height=9)
 
 
 cor.test(filtered_initial_data$bump_width_diff,filtered_initial_data$HD_encoding_diff,method = "pearson")
 cor.test(filtered_initial_data$bump_mag_diff,filtered_initial_data$HD_encoding_diff,method = "pearson")
 
 
+
+### Plot the bump pi vs certainty ratio identifying individual trials

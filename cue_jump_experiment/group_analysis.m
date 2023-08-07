@@ -4,7 +4,7 @@ clear all; close all;
 
 %% Load data
 
-path = 'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version';
+path = 'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version';
 
 folderContents = dir(path);
 
@@ -1173,14 +1173,14 @@ saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\CueJump-Experiment\
 
 %save data for stats
 sorted_bump_PI = PI(:,mean_sorting_order);
-writematrix(sorted_bump_PI,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_bump_PI.csv')
+writematrix(sorted_bump_PI,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_bump_PI.csv')
 %without the outlier fly
 filtered_bump_PI = sorted_bump_PI(:,[1:8,10:14]);
-writematrix(filtered_bump_PI,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\filtered_bump_PI.csv')
+writematrix(filtered_bump_PI,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\filtered_bump_PI.csv')
 
 %save configuration data
 sorted_configuration = configuration(mean_sorting_order);
-writematrix(sorted_configuration,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\configuration.csv')
+writematrix(sorted_configuration,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\configuration.csv')
 
 %% Behavioral preference index
 
@@ -1227,10 +1227,10 @@ saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\CueJump-Experiment\
 
 %save data for stats
 sorted_heading_PI = heading_PI(:,mean_sorting_order);
-writematrix(sorted_heading_PI,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_heading_PI.csv')
+writematrix(sorted_heading_PI,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_heading_PI.csv')
 %without the outlier fly
 filtered_heading_PI = sorted_heading_PI(:,[1:8,10:14]);
-writematrix(filtered_heading_PI,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\filtered_heading_PI.csv')
+writematrix(filtered_heading_PI,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\filtered_heading_PI.csv')
 
 %% Divide PI data based on the configuration for each fly
 
@@ -1238,15 +1238,18 @@ wind_PI = PI(5:8,:);
 bar_PI = PI(1:4,:);
 
 %save data for stats
+writematrix(bar_PI,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\bar_PI.csv')
+writematrix(wind_PI,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\wind_PI.csv')
+
 sorted_bar_PI = bar_PI(:,mean_sorting_order);
 sorted_wind_PI = wind_PI(:,mean_sorting_order);
-writematrix(sorted_bar_PI,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_bar_PI.csv')
-writematrix(sorted_wind_PI,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_wind_PI.csv')
+writematrix(sorted_bar_PI,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_bar_PI.csv')
+writematrix(sorted_wind_PI,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_wind_PI.csv')
 %removing outlier fly
 filtered_bar_PI = sorted_bar_PI(:,[1:8,10:14]);
 filtered_wind_PI = sorted_wind_PI(:,[1:8,10:14]);
-writematrix(filtered_bar_PI,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\filtered_bar_PI.csv')
-writematrix(filtered_wind_PI,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\filtered_wind_PI.csv')
+writematrix(filtered_bar_PI,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\filtered_bar_PI.csv')
+writematrix(filtered_wind_PI,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\filtered_wind_PI.csv')
 
 %% Stickiness index
 
@@ -1265,10 +1268,10 @@ saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\CueJump-Experiment\
 
 %save data for analysis
 sorted_SI = SI(:,mean_sorting_order);
-writematrix(sorted_SI,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_SI.csv')
+writematrix(sorted_SI,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_SI.csv')
 %without the outlier fly
 filtered_SI = sorted_SI(:,[1:8,10:14]);
-writematrix(filtered_SI,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\filtered_SI.csv')
+writematrix(filtered_SI,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\filtered_SI.csv')
 
 %% Change in offset and heading relative to non-shifting cue 
 
@@ -1276,23 +1279,23 @@ sorted_offset_change = mean_stay_cue_offset_diff(:,mean_sorting_order);
 sorted_heading_change = mean_stay_cue_heading_diff(:,mean_sorting_order);
 
 %save data for analysis
-writematrix(sorted_offset_change,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_offset_change.csv')
-writematrix(sorted_heading_change,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_heading_change.csv')
+writematrix(sorted_offset_change,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_offset_change.csv')
+writematrix(sorted_heading_change,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_heading_change.csv')
 
 %% Divide change in offset and heading relative to non-shifting cue by cue type
 
 %For offset
 sorted_bar_offset_change = sorted_offset_change(1:4,:);
 sorted_wind_offset_change = sorted_offset_change(5:8,:);
-writematrix(sorted_bar_offset_change,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_bar_offset_change.csv')
-writematrix(sorted_wind_offset_change,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_wind_offset_change.csv')
+writematrix(sorted_bar_offset_change,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_bar_offset_change.csv')
+writematrix(sorted_wind_offset_change,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_wind_offset_change.csv')
 
 
 %For heading
 sorted_bar_heading_change = sorted_heading_change(1:4,:);
 sorted_wind_heading_change = sorted_heading_change(5:8,:);
-writematrix(sorted_bar_heading_change,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_bar_heading_change.csv')
-writematrix(sorted_wind_heading_change,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_wind_heading_change.csv')
+writematrix(sorted_bar_heading_change,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_bar_heading_change.csv')
+writematrix(sorted_wind_heading_change,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_wind_heading_change.csv')
 
 %% signed change in offset
 
@@ -1325,14 +1328,14 @@ xlabel('Fly #');
 ylabel('Offset change');
 ylim([-180 180]);
 
-writematrix(sorted_offset_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_offset_change_positive.csv')
+writematrix(sorted_offset_change_positive,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_offset_change_positive.csv')
 
 
 %Save
 sorted_bar_offset_change_positive = sorted_offset_change_positive(1:4,:);
 sorted_wind_offset_change_positive = sorted_offset_change_positive(5:8,:);
-writematrix(sorted_bar_offset_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_bar_offset_change_positive.csv')
-writematrix(sorted_wind_offset_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_wind_offset_change_positive.csv')
+writematrix(sorted_bar_offset_change_positive,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_bar_offset_change_positive.csv')
+writematrix(sorted_wind_offset_change_positive,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_wind_offset_change_positive.csv')
 
 
 %% Repeat for behavior
@@ -1365,14 +1368,14 @@ xlabel('Fly #');
 ylabel('heading change');
 ylim([-180 180]);
 
-writematrix(sorted_heading_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_heading_change_positive.csv')
+writematrix(sorted_heading_change_positive,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_heading_change_positive.csv')
 
 
 %Save
 sorted_bar_heading_change_positive = sorted_heading_change_positive(1:4,:);
 sorted_wind_heading_change_positive = sorted_heading_change_positive(5:8,:);
-writematrix(sorted_bar_heading_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_bar_heading_change_positive.csv')
-writematrix(sorted_wind_heading_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_wind_heading_change_positive.csv')
+writematrix(sorted_bar_heading_change_positive,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_bar_heading_change_positive.csv')
+writematrix(sorted_wind_heading_change_positive,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\sorted_wind_heading_change_positive.csv')
 
 
 %% Save the non-sorted version of the data for debugging
@@ -1393,13 +1396,13 @@ bar_heading_change_positive = heading_change_positive(1:4,:);
 wind_heading_change_positive = heading_change_positive(5:8,:);
 
 %save
-writematrix(offset_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\offset_change_positive.csv')
-writematrix(bar_offset_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\bar_offset_change_positive.csv')
-writematrix(wind_offset_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\wind_offset_change_positive.csv')
+writematrix(offset_change_positive,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\offset_change_positive.csv')
+writematrix(bar_offset_change_positive,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\bar_offset_change_positive.csv')
+writematrix(wind_offset_change_positive,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\wind_offset_change_positive.csv')
 
-writematrix(heading_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\heading_change_positive.csv')
-writematrix(bar_heading_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\bar_heading_change_positive.csv')
-writematrix(wind_heading_change_positive,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\wind_heading_change_positive.csv')
+writematrix(heading_change_positive,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\heading_change_positive.csv')
+writematrix(bar_heading_change_positive,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\bar_heading_change_positive.csv')
+writematrix(wind_heading_change_positive,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\wind_heading_change_positive.csv')
 
 %% Relationship between bump and behavior preference index
 
@@ -1421,13 +1424,13 @@ saveas(gcf,[path,'\groupPlots\bump_vs_heading_PI.png'])
 saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\CueJump-Experiment\bump_vs_heading_PI.svg')
 
 all_PI_data = table(bump_PI_across_flies,heading_PI_across_flies,'VariableNames',{'bump PI','heading PI'});
-writetable(all_PI_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\all_PI_data.csv')
+writetable(all_PI_data,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\all_PI_data.csv')
 
 %without the outlier fly
 filtered_bump_PI_across_flies = reshape(filtered_bump_PI,8*13,1);
 filtered_heading_PI_across_flies = reshape(filtered_heading_PI,8*13,1);
 filtered_all_PI_data = table(filtered_bump_PI_across_flies,filtered_heading_PI_across_flies,'VariableNames',{'bump PI','heading PI'});
-writetable(filtered_all_PI_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\filtered_all_PI_data.csv')
+writetable(filtered_all_PI_data,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\filtered_all_PI_data.csv')
 
 %% Relationship between mean PI and initial cue precision ratio
 
@@ -1463,13 +1466,13 @@ saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\CueJump-Experiment\
 repeated_offset_ratio = repmat(initial_offset_ratio,8,1);
 offset_ratio_data = table(repeated_offset_ratio',PI','VariableNames',{'initial_offset_ratio','pref_index'});
 offset_ratio_mean_data = table(initial_offset_ratio',pref_index,'VariableNames',{'initial_offset_ratio','pref_index'});
-writetable(offset_ratio_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\offset_ratio_data.csv')
-writetable(offset_ratio_mean_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\offset_ratio_mean_data.csv')
+writetable(offset_ratio_data,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\offset_ratio_data.csv')
+writetable(offset_ratio_mean_data,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\offset_ratio_mean_data.csv')
 initial_offset_precision = [initial_bar_offset_precision,initial_wind_offset_precision];
 block = [repelem(1,1,length(initial_bar_offset_precision)),repelem(2,1,length(initial_wind_offset_precision))];
 fly_num = [1:length(initial_bar_offset_precision),1:length(initial_wind_offset_precision)];
 initial_offset_precision_data = table(initial_offset_precision',block',fly_num','VariableNames',{'initial_offset_precision','block','fly'});
-writetable(initial_offset_precision_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\initial_offset_precision_data.csv')
+writetable(initial_offset_precision_data,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\initial_offset_precision_data.csv')
 
 
 %% 3) repeat for behavioral preference index
@@ -1490,7 +1493,7 @@ saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\CueJump-Experiment\
 
 %save data
 offset_ratio_behavior_data = table(repeated_offset_ratio',heading_PI','VariableNames',{'initial_offset_ratio','heading_pref_index'});
-writetable(offset_ratio_behavior_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\offset_ratio_behavior_data.csv')
+writetable(offset_ratio_behavior_data,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\offset_ratio_behavior_data.csv')
 
 %% Repeat with the opposite ratio to make sure the trend is real
 
@@ -1525,8 +1528,8 @@ saveas(gcf,[path,'\groupPlots\pref_ind_vs_initial_offset_precision2.png'])
 repeated_offset_ratio2 = repmat(initial_offset_ratio2,8,1);
 offset_ratio_data2 = table(repeated_offset_ratio2',PI','VariableNames',{'initial_offset_ratio','pref_index'});
 offset_ratio_mean_data2 = table(initial_offset_ratio2',pref_index,'VariableNames',{'initial_offset_ratio','pref_index'});
-writetable(offset_ratio_data2,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\offset_ratio_data2.csv')
-writetable(offset_ratio_mean_data2,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\offset_ratio_mean_data2.csv')
+writetable(offset_ratio_data2,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\offset_ratio_data2.csv')
+writetable(offset_ratio_mean_data2,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\offset_ratio_mean_data2.csv')
 
 
 %% Compute an index instead
@@ -1561,8 +1564,8 @@ ax.FontSize = 16;
 repeated_offset_ratio_index = repmat(initial_offset_ratio_index,8,1);
 offset_ratio_index_data = table(repeated_offset_ratio_index',PI','VariableNames',{'initial_offset_ratio','pref_index'});
 offset_ratio_index_mean_data = table(initial_offset_ratio_index',pref_index,'VariableNames',{'initial_offset_ratio','pref_index'});
-writetable(offset_ratio_index_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\offset_ratio_index_data.csv')
-writetable(offset_ratio_index_mean_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\offset_ratio_index_mean_data.csv')
+writetable(offset_ratio_index_data,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\offset_ratio_index_data.csv')
+writetable(offset_ratio_index_mean_data,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\offset_ratio_index_mean_data.csv')
 
 
 %% Using the preference index computed as the ratio of means
@@ -1621,17 +1624,17 @@ saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\CueJump-Experiment\
 repeated_bm_ratio = repmat(initial_bm_ratio,8,1);
 repeated_bw_ratio = repmat(initial_bw_ratio,8,1);
 bump_pars_ratio_data = table(repeated_bm_ratio',repeated_bw_ratio',PI','VariableNames',{'initial_bm_ratio','initial_bw_ratio','pref_index'});
-writetable(bump_pars_ratio_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\bump_pars_ratio_data.csv')
+writetable(bump_pars_ratio_data,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\bump_pars_ratio_data.csv')
 
 repeated_bm_ratio2 = repmat(initial_bm_ratio2,8,1);
 repeated_bw_ratio2 = repmat(initial_bw_ratio2,8,1);
 bump_pars_ratio_data2 = table(repeated_bm_ratio2',repeated_bw_ratio2',PI','VariableNames',{'initial_bm_ratio','initial_bw_ratio','pref_index'});
-writetable(bump_pars_ratio_data2,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\bump_pars_ratio_data2.csv')
+writetable(bump_pars_ratio_data2,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\bump_pars_ratio_data2.csv')
 
 repeated_bm_ratio_index = repmat(initial_bm_ratio_index,8,1);
 repeated_bw_ratio_index = repmat(initial_bw_ratio_index,8,1);
 bump_pars_ratio_index_data = table(repeated_bm_ratio_index',repeated_bw_ratio_index',PI','VariableNames',{'initial_bm_ratio','initial_bw_ratio','pref_index'});
-writetable(bump_pars_ratio_index_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\bump_pars_ratio_index_data.csv')
+writetable(bump_pars_ratio_index_data,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\bump_pars_ratio_index_data.csv')
 
 
 %% repeat with the inverse ratio
@@ -1813,7 +1816,7 @@ for cue_jump = 1:size(long_rot_speed_bar_jump,1)
 end
 
 rot_speed_aj = table(rot_speed_bj',rot_speed_wj',time_aj',jump_num','VariableNames',{'rot_speed_bj','rot_speed_wj','time','jump_num'});
-writetable(rot_speed_aj,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\rot_speed_aj.csv')
+writetable(rot_speed_aj,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\rot_speed_aj.csv')
 
 
 %without outlier fly
@@ -1831,7 +1834,7 @@ for cue_jump = 1:size(filtered_long_rot_speed_bar_jump,1)
 end
 
 filtered_rot_speed_aj = table(filtered_rot_speed_bj',filtered_rot_speed_wj',filtered_time_aj',filtered_jump_num','VariableNames',{'rot_speed_bj','rot_speed_wj','time','jump_num'});
-writetable(filtered_rot_speed_aj,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\filtered_rot_speed_aj.csv')
+writetable(filtered_rot_speed_aj,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\filtered_rot_speed_aj.csv')
 
 %% Repeat for total movement
 
@@ -1899,7 +1902,7 @@ mean_initial_wind_bw = cellfun(@mean,initial_wind_bw);
 
 %save data
 initial_data = table(mean_initial_bar_bm',mean_initial_bar_bw',mean_initial_wind_bm',mean_initial_wind_bw',initial_bar_offset_precision',initial_wind_offset_precision','VariableNames',{'initial_bar_bm','initial_bar_bw','initial_wind_bm','initial_wind_bw','initial_bar_offset_precision','initial_wind_offset_precision'});
-writetable(initial_data,'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp38\data\third_version\initial_data.csv')
+writetable(initial_data,'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp38\data\third_version\initial_data.csv')
 
 
 %% Clear space

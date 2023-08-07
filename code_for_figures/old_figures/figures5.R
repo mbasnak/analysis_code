@@ -14,7 +14,7 @@ library(patchwork)
 
 # offset precision comparison IG and darkness
 #1) Load data
-empty_trial_comparison_offset_data <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp28/data/empty_trial_comparison_all_data.csv")
+empty_trial_comparison_offset_data <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp28/data/empty_trial_comparison_all_data.csv")
 empty_trial_comparison_offset_data$Fly <- seq.int(nrow(empty_trial_comparison_offset_data)) 
 #2) Reformat data frame
 empty_trial_comparison_offset_data <- empty_trial_comparison_offset_data %>%
@@ -54,7 +54,7 @@ summary(glht(mdl_offset_precision_comparison, linfct = mcp(trial = "Tukey")), te
 #### Repeat previous steps for heading precision
 
 #1) Load data
-empty_trial_comparison_heading_data <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp28/data/empty_trial_heading_comparison_all_data.csv")
+empty_trial_comparison_heading_data <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp28/data/empty_trial_heading_comparison_all_data.csv")
 empty_trial_comparison_heading_data$Fly <- seq.int(nrow(empty_trial_comparison_heading_data)) 
 #2) Reformat data frame
 empty_trial_comparison_heading_data <- empty_trial_comparison_heading_data %>%
@@ -91,7 +91,7 @@ summary(glht(mdl_heading_precision_comparison, linfct = mcp(trial = "Tukey")), t
 
 
 # relationship between learning and bump pars/offset precision in the NG bout
-learning_data_diff <- read.csv('Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp28/data/learning_data_diff.csv')
+learning_data_diff <- read.csv('Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp28/data/learning_data_diff.csv')
 learning_data_diff$bump_width <- rad2deg(learning_data_diff$bump_width)
 
 
@@ -105,7 +105,7 @@ summary(lm(offset_diff ~ offset_precision, learning_data_diff))
 
 # plot comparison the metric (whether ratio or diff) at the beginning and end of the IG period
 
-hb_offset_diff_evo <- read_csv('Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp28/data/hb_offset_diff_evo.csv')
+hb_offset_diff_evo <- read_csv('Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp28/data/hb_offset_diff_evo.csv')
 
 #3) Rename factor levels
 hb_offset_diff_evo <-
@@ -244,7 +244,7 @@ row_1 <- plot_spacer() + plot_spacer() +  plot_spacer() + p3 + plot_layout(nrow=
 row_2 <- p1 + p2 + p5 + p4 + plot_layout(nrow=1)
 full_plot <- row_1/row_2 
 full_plot + plot_layout(heights = c(1,2))+ plot_annotation(tag_levels = list(c('D','E','F','G','H')))
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig5", file="bottom_fig_5.svg",device = 'svg', width=15, height=10)
+#ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/Fig5", file="bottom_fig_5.svg",device = 'svg', width=15, height=10)
 
 
 

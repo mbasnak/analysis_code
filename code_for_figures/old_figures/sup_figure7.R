@@ -11,21 +11,21 @@ library(patchwork)
 library(rstatix)
 
 #stickiness index
-SI <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/sorted_SI.csv",header = FALSE)
+SI <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp38/data/third_version/sorted_SI.csv",header = FALSE)
 names(SI) <- paste0("fly", 1:ncol(SI))
 
 
 #behavior around jumps
 ### Rotational speed around jumps
-rot_speed_aj <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/rot_speed_aj.csv")
+rot_speed_aj <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp38/data/third_version/rot_speed_aj.csv")
 rot_speed_aj$time <- rot_speed_aj$time - 1102
 
 
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig7", file="behavior_aj.svg",device = 'svg', width=10, height=6)
+#ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig7", file="behavior_aj.svg",device = 'svg', width=10, height=6)
 
 #initial bump par ratios vs PI?
 #Using the opposite ratio
-bump_pars_ratio_data <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/bump_pars_ratio_data2.csv")
+bump_pars_ratio_data <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp38/data/third_version/bump_pars_ratio_data2.csv")
 
 bump_mag_ratio_ordered_data <- bump_pars_ratio_data %>%
   dplyr::select(bm_ratio=initial_bm_ratio_1, starts_with("pref_")) %>%
@@ -51,12 +51,12 @@ summary(bump_width_ratio_and_PI_mdl)
 
 
 ## Bump PI divided by cue type
-sorted_bump_PI <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/sorted_bump_PI.csv",header = FALSE)
+sorted_bump_PI <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp38/data/third_version/sorted_bump_PI.csv",header = FALSE)
 names(sorted_bump_PI) <- paste0("fly", 1:ncol(sorted_bump_PI))
 
-sorted_bar_PI <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/sorted_bar_PI.csv",header = FALSE)
+sorted_bar_PI <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp38/data/third_version/sorted_bar_PI.csv",header = FALSE)
 names(sorted_bar_PI) <- paste0("fly", 1:ncol(sorted_bar_PI))
-sorted_wind_PI <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/sorted_wind_PI.csv",header = FALSE)
+sorted_wind_PI <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp38/data/third_version/sorted_wind_PI.csv",header = FALSE)
 names(sorted_wind_PI) <- paste0("fly", 1:ncol(sorted_wind_PI))
 
 
@@ -65,7 +65,7 @@ sorted_bump_PI <- sorted_bump_PI %>%
   mutate(fly = str_remove(fly, "fly") %>% as.numeric())
 
 #add configuration
-configuration <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/configuration.csv",header = FALSE)
+configuration <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp38/data/third_version/configuration.csv",header = FALSE)
 names(configuration) <- c('configuration')
 sorted_bump_PI$configuration <- rep(configuration[1:14,1],8)
 sorted_bump_PI <-
@@ -89,7 +89,7 @@ sorted_wind_PI <- sorted_wind_PI %>%
 
 ## Initial offset precision comparison between both cues
 
-initial_offset_precision_data <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/initial_offset_precision_data.csv")
+initial_offset_precision_data <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp38/data/third_version/initial_offset_precision_data.csv")
 
 initial_offset_precision_data <-
   initial_offset_precision_data %>% 
@@ -236,7 +236,7 @@ row_2 <- p4 | p5 | p6
 row_3 <- p7 + p8
 full_plot <- row_1 / row_2 / row_3
 full_plot + plot_annotation(tag_levels = list(c('A','B','C','D','','E','F','G'))) + plot_layout(heights=c(1.5,1,1.5))
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig7", file="full_fig.svg",device = 'svg', width=14, height=16)
+#ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig7", file="full_fig.svg",device = 'svg', width=14, height=16)
 
 
 
@@ -245,12 +245,12 @@ ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig7"
 ########### repeat removing fly 5 from all panels
 
 ## Bump PI divided by cue type
-filtered_bump_PI <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/filtered_bump_PI.csv",header = FALSE)
+filtered_bump_PI <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp38/data/third_version/filtered_bump_PI.csv",header = FALSE)
 names(filtered_bump_PI) <- paste0("fly", 1:ncol(filtered_bump_PI))
 
-filtered_bar_PI <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/filtered_bar_PI.csv",header = FALSE)
+filtered_bar_PI <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp38/data/third_version/filtered_bar_PI.csv",header = FALSE)
 names(filtered_bar_PI) <- paste0("fly", 1:ncol(filtered_bar_PI))
-filtered_wind_PI <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/filtered_wind_PI.csv",header = FALSE)
+filtered_wind_PI <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp38/data/third_version/filtered_wind_PI.csv",header = FALSE)
 names(filtered_wind_PI) <- paste0("fly", 1:ncol(filtered_wind_PI))
 
 
@@ -259,7 +259,7 @@ filtered_bump_PI <- filtered_bump_PI %>%
   mutate(fly = str_remove(fly, "fly") %>% as.numeric())
 
 #add configuration
-configuration <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/configuration.csv",header = FALSE)
+configuration <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp38/data/third_version/configuration.csv",header = FALSE)
 names(configuration) <- c('configuration')
 configuration <- as.data.frame(configuration[-c(5),])
 filtered_bump_PI$configuration <- rep(configuration[1:13,1],8)
@@ -297,7 +297,7 @@ p1 <- ggplot(filtered_bump_PI,aes(x=fly, y=PI, group=fly)) +
 
 
 #stickiness index
-filtered_SI <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/filtered_SI.csv",header = FALSE)
+filtered_SI <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp38/data/third_version/filtered_SI.csv",header = FALSE)
 names(filtered_SI) <- paste0("fly", 1:ncol(filtered_SI))
 
 
@@ -341,7 +341,7 @@ p4 <- ggplot() +
 
 
 ### Rotational speed around jumps
-filtered_rot_speed_aj <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp38/data/third_version/filtered_rot_speed_aj.csv")
+filtered_rot_speed_aj <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp38/data/third_version/filtered_rot_speed_aj.csv")
 filtered_rot_speed_aj$time <- filtered_rot_speed_aj$time - 1102
 
 filtered_rot_speed_aj$time <- filtered_rot_speed_aj$time/9.18
@@ -406,7 +406,7 @@ row_2 <- p4 | p5 | p6
 row_3 <- p7 + p8
 full_plot <- row_1 / row_2 / row_3
 full_plot + plot_annotation(tag_levels = list(c('A','B','C','D','','E','F','G'))) + plot_layout(heights=c(1.5,1,1.5))
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig7", file="full_fig_no_outlier.svg",device = 'svg', width=14, height=16)
+#ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig7", file="full_fig_no_outlier.svg",device = 'svg', width=14, height=16)
 
 
 
@@ -526,5 +526,5 @@ row_2 <- p4 | p5 | p6
 row_3 <- p7 + p8
 full_plot <- row_1 / row_2 / row_3
 full_plot + plot_annotation(tag_levels = list(c('A','B','C','D','','E','F','G'))) + plot_layout(heights=c(1.5,1,1.5))
-ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig7", file="full_fig_no_outlier_some_panels.svg",device = 'svg', width=14, height=16)
+#ggsave(path = "C:/Users/Melanie/Dropbox (HMS)/Manuscript-Basnak/Figures/SupFig7", file="full_fig_no_outlier_some_panels.svg",device = 'svg', width=14, height=16)
 

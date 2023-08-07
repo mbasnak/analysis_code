@@ -6,7 +6,7 @@ clear all; close all;
 
 %% Load data
 
-path = 'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp25\data\Experimental\two_ND_filters_3_contrasts';
+path = 'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp25\data\Experimental\two_ND_filters_3_contrasts';
 %Get folder names
 folderContents = dir(path);
 
@@ -101,4 +101,4 @@ title('High contrast');
 
 end
 
-saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\ExtraFigures\figure1_heading_polarhistograms.svg')
+%saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\ExtraFigures\figure1_heading_polarhistograms.svg')

@@ -15,7 +15,7 @@ library(patchwork)
 
 # offset precision distribution in this environment
 #load data
-offset_and_heading_data_closed_loop <- read.csv("Z:/Wilson Lab/Mel/Experiments/Uncertainty/Exp25/data/Experimental/two_ND_filters_3_contrasts/offset_and_heading_data.csv")
+offset_and_heading_data_closed_loop <- read.csv("Z:/wilsonlab/Mel/Experiments/Uncertainty/Exp25/data/Experimental/two_ND_filters_3_contrasts/offset_and_heading_data.csv")
 
 offset_and_heading_data_closed_loop$mean_bump_width <- rad2deg(offset_and_heading_data_closed_loop$mean_bump_width)
 

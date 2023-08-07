@@ -4,7 +4,7 @@ clear all; close all;
 
 %% Load data
 
-path = 'Z:\Wilson Lab\Mel\Experiments\Uncertainty\Exp35\data\high_reliability';
+path = 'Z:\wilsonlab\Mel\Experiments\Uncertainty\Exp35\data\high_reliability';
 
 folderContents = dir(path);
 
@@ -58,7 +58,7 @@ for fly = 1:length(data)
     ax.FontSize = 20;
 end
 
-saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\ExtraFigures\cc_offset_polarhistograms_by_cue_type.svg')
+%saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\ExtraFigures\cc_offset_polarhistograms_by_cue_type.svg')
 
 %% Plot coloring by cue order
 
@@ -81,4 +81,4 @@ for fly = 1:length(data)
     ax.FontSize = 20;
 end
 
-saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\ExtraFigures\cc_offset_polarhistograms_by_cue_order.svg')
+%saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\ExtraFigures\cc_offset_polarhistograms_by_cue_order.svg')

@@ -1720,7 +1720,7 @@ ax = gca;
 ax.FontSize = 14;
 set(gca,'xtick',[])
 
-%saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig7\example_fly1.svg')
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig7\example_fly1.svg')
 
 
 
@@ -1797,7 +1797,7 @@ ax = gca;
 ax.FontSize = 14;
 xlabel('Time (sec)','fontsize',16);
 
-%saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig7\example_fly2.svg')
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\Fig7\example_fly2.svg')
 
 
 %% Example fly for sup figure 5 (same learner fly from figure 5)
@@ -1884,4 +1884,4 @@ xlabel('Time (min)','fontsize',16);
 ax = gca;
 ax.FontSize = 14;
 
-%saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\ExtraFigures\example_fly_ig_offset_return.svg')
+saveas(gcf,'C:\Users\Melanie\Dropbox (HMS)\Manuscript-Basnak\Figures\ExtraFigures\example_fly_ig_offset_return.svg')
